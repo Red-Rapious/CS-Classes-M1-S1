@@ -38,14 +38,14 @@ The convolutional layer itself consists of small kernels (also called filters) u
 \end{definition}
 
 \begin{definition}[Kernel convolution]
-    An input of shape $D\times H\times W$ can be processed by a kernel of shape $D\times K\times K$ by computing at each possible spatial position the convolution between the kernel and the submatrix of the input. 
+    An input of shape $C\times H\times W$ can be processed by a kernel of shape $C\times K\times K$ by computing at each possible spatial position the convolution between the kernel and the submatrix of the input. 
     \begin{figure}[H]
         \centering
         \includegraphics[width=0.4\textwidth]{images/convolution-simple.png}
         \caption{Kernel convolution}
     \end{figure}
     
-    The output of this operation in an \emph{activation map} of dimension $1\times (H - K + 1) \times (W - K + 1)$ representing for each pixel the convolution between the kernel and corresponding chunk of the image.
+    The output of this operation in an \emph{activation map} of dimension $1\times (H - K + 1) \times (W - K + 1)$ representing for each pixel the convolution between the kernel and the corresponding chunk of the image.
     \begin{figure}[H]
         \centering
         \includegraphics[width=0.6\textwidth]{images/convolutional-map.png}
@@ -110,6 +110,76 @@ These two examples show that kernels used in convolutional layers express meanin
 In Figure \ref{fig:one-kernel-layer}, we used simply one kernel to compute one activation map. In practice, we repeat this process multiple times: we consider a set (or \emph{bank}) of filters having different weights values, and for each kernel of the set, we compute its activation map.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\textwidth]{images/multiple-kernels.png}
+    \includegraphics[width=0.7\textwidth]{images/multiple-kernels.png}
     \caption{Convolutional Layer using 6 kernels}
 \end{figure}
+Using a bank containing $C'$ filters, the output of the convolutional layer in an \emph{activation map} of dimension $C'\times (H - K + 1) \times (W - K + 1)$ representing for each pixel the convolution between the given kernel and the corresponding chunk of the image.
+
+\begin{remark}[Biases in Convolutional Layers]
+    Similarly to fully-connected layers, we often add to the activation map of each kernel a bias of size $1\times (H - K + 1) \times (W - K + 1)$. Those biases might me ommited in the rest of the chapter for the sake of simplicity.
+\end{remark}
+
+\subsubsection{Stacking convolutions}
+Like previously introduced layers, convolutional layers can be stacked to form deep networks. The layer shapes need to match, in particular the output channels of a layer must match the input channels of the next layer, and the output height and width must match the next input height and width.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/stacking-conv-layers.png}
+    \caption{Stacking of 3 Convolutional Layers of correct shapes}
+\end{figure}
+
+However, stacking two convolution layers next to each other produces another convolutional layers, and do not add representation power. Therefore, we use the exact same solution as for linear classifiers: we introduce non-linear layers using activation functions in between convolutional layers.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/stacking-conv-relu.png}
+    \caption{Adding ReLU layers in between Convolution Layers}
+\end{figure}
+
+\subsubsection{Spatial dimensions and Padding}
+As stated previously, using an input of width $W$ with a filter of kernel size $K$, the output width is $W-K+1$. A problem with the approach is that features maps decrease in size with each layer. This creates an upper bound on the maximum number of layers that we can use for our model. 
+
+A solution to this is to introduce \emph{padding} by adding zeros around the border of the input. When the kernel will slide around the edges of the input, a part of the coefficients that it will consider in its convolution will be zeros.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/padding.png}
+    \caption{Adding padding around the input}
+\end{figure}
+
+\begin{remark}[Padding strategies]
+    Even though we might imagine different padding strategies instead of always padding with zeros (for instance, nearest-neightbour padding, circular padding, random padding\dots), zero-padding seems to be both simple and effective in practice, and is the most commonly used strategy.
+\end{remark}
+
+Padding introduces an additional hyperparameter to the layer, $P$. 
+Using padding, the width of the output of the layer becomes:
+\begin{equation}
+    \label{eq:output-padding}
+    W'=W-K+2P+1
+\end{equation}
+A common way to set the value of $P$ is to choose it such as the output have the same size as the input. This is achieved by taking $P=(K-1)/2$, called \emph{same-padding}.
+
+\subsubsection{Receptive Fields}
+\begin{definition}[Receptive Field]
+    The \emph{receptive field} of an output neuron is the set of neurons of the input of which the output neuron depends on.
+\end{definition}
+
+By essence, Fully-connected layers have a trivial notion of receptive field: an output neuron is connected to each input neuron, its receptive field is therefore the entire input.
+
+Convolution layers are build in such a way that each element in the output simply depends on a receptive field of size $K$ (that is a square of area $K\times K$) in the input. As we stack convolutional layers after the others, each successive convolution adds $K-1$ to the receptive field size. After $L$ layers, the receptive field size is $1+L\times(K-1)$. This linear growth shows that by stacking enough layers, each output neuron will eventually have the entire input image in its receptive field. Nevertheless, this can be a problem in practice as we might need many layers for each output to depend on the whole image.
+
+A solution to this problem is to downsample the image size inside the network. This can be done by adding another hyperparameter, \emph{stride}.
+
+\subsubsection{Strided Convolution}
+\begin{definition}[Stride]
+    The hyperparameter \emph{stride} defines the number of pixels between two applications of the kernel.
+\end{definition}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.3\textwidth]{images/stride.png}
+    \caption{Effect of stride}
+\end{figure}
+
+Stride effectively downsamples the size of the image. Applying a convolution between an image of width $W$ and padding $P$ with a kernel of size $K$ and stride $S$ produces the following output dimension:
+\begin{equation}
+    \label{eq:output-stride}
+    W'=\frac{W-K+2P}{S}+1
+\end{equation}
+Note that choosing $S=1$ in \eqref{eq:output-stride} gives the same result as \eqref{eq:output-padding}. Depending on the implementation, the result can be rounded up or down in the case where it is not an integer. Usually, all the parameters are chosen such that $S$ divides $W-K+2P$.
