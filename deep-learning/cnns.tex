@@ -163,7 +163,15 @@ A common way to set the value of $P$ is to choose it such as the output have the
 
 By essence, Fully-connected layers have a trivial notion of receptive field: an output neuron is connected to each input neuron, its receptive field is therefore the entire input.
 
-Convolution layers are build in such a way that each element in the output simply depends on a receptive field of size $K$ (that is a square of area $K\times K$) in the input. As we stack convolutional layers after the others, each successive convolution adds $K-1$ to the receptive field size. After $L$ layers, the receptive field size is $1+L\times(K-1)$. This linear growth shows that by stacking enough layers, each output neuron will eventually have the entire input image in its receptive field. Nevertheless, this can be a problem in practice as we might need many layers for each output to depend on the whole image.
+Convolution layers are build in such a way that each element in the output simply depends on a receptive field of size $K$ (that is a square of area $K\times K$) in the input. As we stack convolutional layers after the others, each successive convolution adds $K-1$ to the receptive field size. After $L$ layers, the receptive field size is $1+L\times(K-1)$. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/receptive-field.png}
+    \caption{Receptive field of an output neuron}
+\end{figure}
+
+This linear growth shows that by stacking enough layers, each output neuron will eventually have the entire input image in its receptive field. Nevertheless, this can be a problem in practice as we might need many layers for each output to depend on the whole image.
 
 A solution to this problem is to downsample the image size inside the network. This can be done by adding another hyperparameter, \emph{stride}.
 
@@ -183,3 +191,59 @@ Stride effectively downsamples the size of the image. Applying a convolution bet
     W'=\frac{W-K+2P}{S}+1
 \end{equation}
 Note that choosing $S=1$ in \eqref{eq:output-stride} gives the same result as \eqref{eq:output-padding}. Depending on the implementation, the result can be rounded up or down in the case where it is not an integer. Usually, all the parameters are chosen such that $S$ divides $W-K+2P$.
+
+\subsection{Pooling Layers}
+\subsubsection{Introduction}
+Computer Vision, one of the most frequent use for CNNs, often deals with images of high quality, making downsampling an important task to drastically reduce the number of layers and the quantity of VRAM used by the model. We saw a first approach to downsampling embedded in Convolutional Layers, that is strided convolution. Pooling Layers are layers dedicated to downsampling, without learnable parameters.
+
+Pooling layers work similarly to convolutional layers, using a mechanism of kernels. Nevertheless, instead of applying a convolution between some kernel and the image, the layer will apply a pooling function to the area of the input. This will produce an activation map with dimensions depending on the hyperparameters of the layer -- kernel size, padding and stride, the same as the parameters of a convolutional layer.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{images/pooling-layer.png}
+    \caption{Behavior of a pooling layer}
+\end{figure}
+Another difference is that the operation is applied for each slice of the input volume. Choosing appropriate values for the hyperparameters (for instance $S\geq2$, \dots) allow to downsample the input without the need for learnable parameters.
+
+\subsubsection{Max Pooling}
+\begin{definition}[Max Pooling function]
+    For $K\geq 1$, the \emph{Max Pooling function} of kernel size $K$ is:
+    \begin{equation*}
+        \begin{aligned}
+            \textnormal{max}_P: \mathscr{M}_{K}(\R) &\longrightarrow \R\\
+            (m_{i, j}) &\longmapsto \max_{i, j} m_{i, j}
+        \end{aligned}
+    \end{equation*}
+\end{definition}
+
+A \emph{Max Pooling} layer applies the Max Pooling function to each location of size $K\times K$ in each slice of the input volume. We often choose the same kernel size as the slide (that is $K=S$) to avoid recovering twice the same pixel value. In this setting, it is equivalent to spliting each input channel into non-overlapping regions of size $K\times K$, from which are extracted the maximum value of the section and stored in the output channel.
+
+Max Pooling has some advantages over convolutional layers with stride: it does not involve learnable parameters, reducing the computational cost, but also introduces translational invariance to small spatial shifts. Indeed, if the position of a specific maximum pixel is moved slightly, we might intuitively think that it will stay the maximum of its region, making the model robust to small translations.
+
+\subsubsection{Average Pooling}
+\begin{definition}[Average Pooling function]
+    For $K\geq 1$, the \emph{Average Pooling function} of kernel size $K$ is:
+    \begin{equation*}
+        \begin{aligned}
+            \textnormal{avg}_P: \mathscr{M}_{K}(\R) &\longrightarrow \R\\
+            (m_{i, j}) &\longmapsto \frac{1}{K^2}\sum_{i, j} m_{i, j}
+        \end{aligned}
+    \end{equation*}
+    It simply returns the average of the matrix coefficients.
+\end{definition}
+
+Average Pooling works exactly the same as Max Pooling, but applying $\textnormal{avg}_P$ as a pooling function instead of $\textnormal{max}_P$.
+
+\subsection{A full CNN example: LeNet-5}
+Now that we have these different types of layers, we can stack them together to create a full CNN architecture. A classic model often fits the following architecture:
+\begin{equation*}
+    (\texttt{Conv, ReLU, Pooling})^{N_1} \rightarrow \texttt{Flatten} \rightarrow (\texttt{Linear, ReLU})^{N_2} \rightarrow \texttt{Linear}
+\end{equation*}
+
+As an example, we will take the 1998 model \emph{LeNet-5}:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/lenet-5.png}
+    \caption{LeNet-5 architecture}
+\end{figure}
+The first blocks of Convolutional and Pooling layers progressively decrease the spatial size of the input, while increasing the number of channels: the total volume of the input is preserved.
