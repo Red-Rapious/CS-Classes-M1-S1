@@ -1,0 +1,60 @@
+\section{Automatic Differentiation}
+In the following, we will consider a \say{set} of data points
+\begin{equation*}
+    X\in\R^{N\times d}
+\end{equation*}
+made of $N$ inputs of size $d$, and targets
+\begin{equation*}
+    Y\in\Y^n
+\end{equation*}
+where $\Y$ is an arbitrary set. It can be for instance $\Y=\R$ is the case of regression, a finite set such as $\iset{1}{C}$ in the case of classification, or $\Y=\R^{d'}$ in a more general setup.
+
+\subsection{Introduction}
+As stated previously, neural networks is a very expressive class of functions. However, the associated optimization problem is in general non-convex, giving very few theoretical guarantees and no closed-form expression. In practice, this is not an issue, since such optimization problem can be solved using \emph{gradient descent}.
+\subsubsection{Loss function}
+
+Gradient descent is done by minimizing the average of a differentiable loss function $\L:\Y\times\Y\to\R$. For instance, for regression, we might choose the squared error:
+\begin{equation*}
+    \L(\hat{y}, y) = (\hat{y}-y)^2
+\end{equation*}
+For classification, we might choose the logistic loss. Its expression for a two-classes model (that is $y\in\{0, 1\}$) is:
+\begin{equation*}
+    \L(\hat{y}, y) = y\log\hat{y} + (1-y)\log(1-\hat{y})
+\end{equation*}
+More generally, for a $C$-classes model (that is $y\in\iset{1}{C}$), the cross-entropy loss is:
+\begin{equation*}
+    \L(\hat{y}, y) =  \sum_{c=1}^C y_c \log \hat{y}_c
+\end{equation*}
+The average of the loss function is then given by:
+\begin{equation*}
+    J(f) = \frac{1}{N}\sum_{n=1}^N \L\left(f(X_n), Y_n\right)
+\end{equation*}
+which we will try to minimize.
+
+\subsubsection{Gradient descent}
+The idea behind gradient descent is therefore to be able to compute the gradient of $\L$ with respect to the paramters $\theta$ for each point of the dataset:
+\begin{figure}[H]
+    \centering 
+    \begin{minipage}{0.4\textwidth}
+    \begin{minted}[escapeinside=||, mathescape=true]{python}
+for epoch in range(EPOCHS):
+    for x, y in zip(X, Y):
+        compute |$\nabla_\theta\L$|
+        |$\theta = \theta - \gamma\nabla_\theta\L$|
+    \end{minted}
+    \end{minipage}
+    \caption{Pseudo-code of gradient descent}
+\end{figure}
+The only remaining challenge is the computation of $\nabla_\theta\L$, preferably automatically; this is the problem which we will address in this chapter.
+
+\subsection{Optimization methods}
+\subsubsection{Stochastic Gradient Descent}
+\subsubsection{Batch gradient descent}
+\subsubsection{Minibatch gradient descent}
+\subsubsection{Newton's method}
+
+\subsection{Computing gradients}
+\subsubsection{By hand}
+\subsubsection{Numerical differentiation}
+\subsubsection{Symbolic differentiation}
+\subsubsection{Automatic differentiation}

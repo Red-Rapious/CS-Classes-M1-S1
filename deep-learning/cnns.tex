@@ -226,7 +226,7 @@ Max Pooling has some advantages over convolutional layers with stride: it does n
     \begin{equation*}
         \begin{aligned}
             \textnormal{avg}_P: \mathscr{M}_{K}(\R) &\longrightarrow \R\\
-            (m_{i, j}) &\longmapsto \frac{1}{K^2}\sum_{i, j} m_{i, j}
+            (m_{i, j}) &\longmapsto \frac{1}{K^2}\sum_{i=1}^K \sum_{j=1}^K m_{i, j}
         \end{aligned}
     \end{equation*}
     It simply returns the average of the matrix coefficients.
