@@ -60,7 +60,22 @@ The most straightforward approach to computing $\nabla_\theta\L$ would be to der
 Furthermore, this approach is not modular, as changing the loss function or adding a layer requires to re-derive the gradient from scratch. Such a method does not scale: if the computations can be done in a reasonable amount of time for small models using linear and activation layers, complex models introduced in the next chapters have enormous gradient expressions, making the computation way too long and tidious to be done by hand.
 
 \subsubsection{Numerical differentiation}
+A first automatic approach to compute the gradient automatically would be to use \emph{numerical differentiation}, a method to estimate the derivative of the function using finite differences. Recall that since the derivative of a real-valued function is the limit of its growth rate:
+\begin{equation*}
+    f'(x) = \lim_{h\to0} \frac{f(x+h)-f(x)}{h}
+\end{equation*}
+one can approximate the derivative using the slope between two points close to $x$:
+\begin{equation*}
+    f'(x) \simeq \frac{f(x+h)-f(x)}{h}
+\end{equation*}
+for some small number $h$. However, this approach does not work well in practice because of round-off errors which can have a strong impact on the result and cause gradient descent to diverge.
+
 \subsubsection{Symbolic differentiation}
+To avoid round-off errors, another approach could be to use symbolic differentiation: the idea is to formally compute the expression of the derivative and then to evaluate it numerically. The issue with symbolic differentiation is its scalability: without optimization of the computation, it can produce exponentially large expressions that take a long time to symbolically compute and numerically evaluate. To maintain reasonable expression sizes, one needs to apply simplification operations between each step, resulting in a heavy computational cost.
+
+Hopefully, we do not need all the expressivity that symbolic differentiation has: we are only interested in the numerical evaluation of the derivative; we do not need to keep the formal expression, only the numerical evaluation. 
+
+This is the idea of \emph{automatic differentiation} with accumulation: we will keep the idea of symbolic differentiation by computing the derivative as an operation level, but reduce the size of intermediate computations by only keeping the numerical values.
 
 \subsection{Automatic differentiation}
 \subsubsection{Computational Graphs}
