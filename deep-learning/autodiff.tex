@@ -133,3 +133,64 @@ We are given the upstream gradient of the loss that we want to compute with resp
     \includegraphics[width=.6\textwidth]{images/modularity.png}
     \caption{Local process of computing the downstream gradient}
 \end{figure}
+
+\subsubsection{A complete example}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.6\textwidth]{images/complete-example.png}
+    \caption{Computational graph for the function $f(x, w) = \frac{1}{1+e^{-(w_0x_0+w_1x_1+w_2)}}$}
+\end{figure}
+We do not have to break down the gradient computation only into elementary operations such as additions or multiplications: we can define blocks, such as \say{Sigmoid}, and hard-code their gradients to avoid using automatic differentiation on it.
+
+\subsection{Extension to multivariate calculus}
+So far, we only considered backpropagation in the case of scalars. The same principle can nevertheless be extended to multivariate calculus using vectors and matrices.
+
+\subsubsection{Reminder on vector derivatives}
+For a real-valued function $f:\R\longrightarrow\R$, the regular derivative is a scalar:
+\begin{equation*}
+    \frac{\dd f}{\dd x} = \partfrac{f}{x} \in \R
+\end{equation*}
+
+For a function taking a vector and returning a scalar, that is $f:\R^n\longrightarrow\R$, its derivative is its \emph{gradient}, that is:
+\begin{equation*}
+    \nabla f\in\R^n \where \left(\nabla f\right)_i = \partfrac{f}{x_i}
+\end{equation*}
+The $i$-coordinate of the gradient is the partial derivative of $f$ with respect to the $i$-th variable of the input vector.
+
+Finally, for a differentiable function taking a vector and returning another vector, that is $f:\R^n\longrightarrow\R^m$, its derivative is its \emph{Jacobian}, that is:
+\begin{equation*}
+    J_f 
+    = \begin{bmatrix} \partfrac{f}{x_1} & \dots & \partfrac{f}{x_n}\end{bmatrix} 
+    = \begin{bmatrix} 
+        \nabla^\tp f_1\\ 
+        \vdots\\ 
+        \nabla^\tp f_m
+    \end{bmatrix}
+    = \begin{bmatrix}
+        \partfrac{f_1}{x_1} & \dots & \partfrac{f_1}{x_n}\\
+        \vdots & \ddots & \vdots\\
+        \partfrac{f_m}{x_1} & \dots & \partfrac{f_m}{x_n}
+    \end{bmatrix}
+    \in\mathscr{M}_{m, n}(\R)
+\end{equation*}
+
+\subsubsection{Example: linear layer gradient}
+Consider a linear layer of the form $f(x)=Wx$ where $W$ is an $m\times n$ matrix. The $i$-th coordinate of the output of is
+\begin{equation*}
+    f_i = W_ix=\sum_j W_{i,j}x_j
+\end{equation*}
+where $W_i$ is the $i$-th row of $W$. Therefore, its Jacobian is:
+\begin{equation*}
+    (J_f)_{i, j} = \partfrac{f_i}{x_j} = W_{i, j}
+\end{equation*}
+hence $J_f=W$.
+
+\subsubsection{Generalized multivariate chain rule}
+Consider two differentiable functions $f:\R^m\longrightarrow\R^k$ and $g:\R^n\longrightarrow\R^m$, and $a\in\R^n$. The chain rule is expressed as:
+\begin{equation}
+    D_a(f\circ g) = D_{g(a)}f\circ D_ag
+\end{equation}
+where $D_af$ for instance is the derivative of $f$ evaluated in $a$. Furthermore, the Jacobians verify:
+\begin{equation}
+    J_{f\circ g}(a)=J_f(g(a)) J_g(a)
+\end{equation}
