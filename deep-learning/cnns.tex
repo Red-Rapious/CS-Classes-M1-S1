@@ -247,3 +247,8 @@ As an example, we will take the 1998 model \emph{LeNet-5}:
     \caption{LeNet-5 architecture}
 \end{figure}
 The first blocks of Convolutional and Pooling layers progressively decrease the spatial size of the input, while increasing the number of channels: the total volume of the input is preserved.
+
+\subsection{Normalization}
+Deep convolutional neural networks are described previously can be extremly effective when trained; nevertheless, they are also very difficult to train, and we need to properly prepare data for the descent to converge.
+
+A recent solution to ease the training is to add \emph{normalization layers} in the network.
