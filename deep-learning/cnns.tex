@@ -60,10 +60,16 @@ CNNs introduce new operators taking advantage of the spatial structure of the in
 Similarly to Fully-Connected Layers, \emph{Convolution Layers} have learnable weights, but also have the particularity to respect the spatial information.
 
 \subsubsection{Input shape}
-A Fully-Connected layer receives some flattened vector and outputs another vector:
+A Fully-Connected layer (also known as Linear layer) receives some flattened vector and outputs another vector:
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{images/fully-connected.png}
+    \begin{tikzpicture}
+        \parallelepiped{(-4, 0, 0)}{6}{.5}{.5}{$3072$}{$1$}{}{blue!20}
+
+        \draw[->, thick] (-3.4, -.2) -- (0.2, -.2) node[above, pos=.5] {$Wx$} node[below, pos=.5] {$W\in\mathscr{M}_{10,3072}(\R)$};
+
+        \parallelepiped{(4, 0, 0)}{3}{.5}{.5}{$10$}{$1$}{}{red!20}
+    \end{tikzpicture}
     \caption{Fully-Connected Layer}
 \end{figure}
 
