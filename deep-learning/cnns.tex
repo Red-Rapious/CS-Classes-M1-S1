@@ -9,7 +9,7 @@
             \pgfmathsetmacro{\temp}{random(0, 1)}
             \temp
         }
-        \fill[orange!70] (-1.9, -1.9) rectangle (1.9, 1.9);
+        \fill[orange!60] (-1.9, -1.9) rectangle (1.9, 1.9);
         \matrix [
             matrix of math nodes,
             nodes={
@@ -46,7 +46,7 @@
 
         \foreach \y in {-2, -1.5, ..., 2}
         {
-           \node[circle,draw,thick,fill=orange!70] at (5.5, \y) {};
+           \node[circle,draw,thick,fill=orange!60] at (5.5, \y) {};
         }
 
         \draw[<->, thick] (6, 2.1) -- (6, -2.1) node[right, pos=0.5] {$1024$};
@@ -64,11 +64,13 @@ A Fully-Connected layer (also known as Linear layer) receives some flattened vec
 \begin{figure}[H]
     \centering
     \begin{tikzpicture}
+        \node at (-7, 0.7) {Input};
         \parallelepiped{(-4, 0, 0)}{6}{.5}{.5}{$3072$}{$1$}{}{blue!20}
 
         \draw[->, thick] (-3.4, -.2) -- (0.2, -.2) node[above, pos=.5] {$Wx$} node[below, pos=.5] {$W\in\mathscr{M}_{10,3072}(\R)$};
 
-        \parallelepiped{(4, 0, 0)}{3}{.5}{.5}{$10$}{$1$}{}{red!20}
+        \node at (2.5, .7) {Output};
+        \parallelepiped{(4, 0, 0)}{3}{.5}{.5}{$10$}{$1$}{}{red!30}
     \end{tikzpicture}
     \caption{Fully-Connected Layer}
 \end{figure}
@@ -100,7 +102,17 @@ The convolutional layer itself consists of small kernels (also called filters) u
     The output of this operation in an \emph{activation map} of dimension $1\times (H - K + 1) \times (W - K + 1)$ representing for each pixel the convolution between the kernel and the corresponding chunk of the image.
     \begin{figure}[H]
         \centering
-        \includegraphics[width=0.6\textwidth]{images/convolutional-map.png}
+        \begin{tikzpicture}[scale=.9]
+            \node at (.8, 1.7) {Input image};
+            \parallelepiped{(0, 0, 0)}{.5}{4}{3}{$3$}{$32$}{$32$}{blue!20}
+            \parallelepiped{(1.3, .3, .3)}{.5}{1.2}{.9}{$3$}{$5$}{$5$}{orange!50}
+
+            \node at (6.7, 1.7) {Activation map};
+            \parallelepiped{(6, 0, 0)}{.2}{3.8}{2.8}{$1$}{$28$}{$28$}{red!30}
+            \draw[->, thick] (1.8, 0) -- (6.5, 0) node[above, pos=.4] {\small Convolution};
+
+            \parallelepiped{(7.45, .85, 2)}{.15}{.25}{.2}{}{}{}{orange!50}
+        \end{tikzpicture}
         \caption{Input and output of the convolution operation}
         \label{fig:one-kernel-layer}
     \end{figure}
