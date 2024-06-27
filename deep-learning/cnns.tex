@@ -4,7 +4,53 @@
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{images/flatten.png}
+    \begin{tikzpicture}
+        \newcommand{\randint}{
+            \pgfmathsetmacro{\temp}{random(0, 1)}
+            \temp
+        }
+        \fill[orange!70] (-1.9, -1.9) rectangle (1.9, 1.9);
+        \matrix [
+            matrix of math nodes,
+            nodes={
+                minimum size=1em, 
+                outer sep=0pt,
+                inner sep=0,line
+                width=0.5pt,
+                append after command={
+                    \pgfextra{\draw[thick] 
+                    ($(\tikzlastnode.north west)+(-0.4em,+0.4em)$)
+                    rectangle ($(\tikzlastnode.south east)+(0.4em,-0.4em)$);}
+                }
+            },
+            nodes in empty cells,
+            column sep=-0.5pt,
+            row sep=-0.5pt
+        ]
+        {
+            \randint & \randint & \randint & \randint & \randint \\
+            \randint & \randint & \randint & \randint & \randint \\
+            \randint & \randint & \randint & \randint & \randint \\
+            \randint & \randint & \randint & \randint & \randint \\
+            \randint & \randint & \randint & \randint & \randint \\
+        };
+
+        \draw[<->, thick] (-1.9, -2.1) -- (1.9, -2.1) node[below, pos=0.5] {$32$};
+        \draw[<->, thick] (-2.1, -1.9) -- (-2.1, 1.9) node[left, pos=0.5] {$32$};
+
+        \draw[-, thick] (2.1, 0) -- (5, 0) node[above, pos=0.5] {Flatten};
+        \draw[-, thick] (5, 2) -- (5, -2);
+
+        \draw[->, thick] (5, 2) -- (5.2, 2);
+        \draw[->, thick] (5, -2) -- (5.2, -2);
+
+        \foreach \y in {-2, -1.5, ..., 2}
+        {
+           \node[circle,draw,thick,fill=orange!70] at (5.5, \y) {};
+        }
+
+        \draw[<->, thick] (6, 2.1) -- (6, -2.1) node[right, pos=0.5] {$1024$};
+    \end{tikzpicture}
     \caption{Flatten layer breaking the spatial strucutre of input data}
 \end{figure}
 
