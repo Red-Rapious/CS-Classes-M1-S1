@@ -95,7 +95,7 @@ The convolutional layer itself consists of small kernels (also called filters) u
     An input of shape $C\times H\times W$ can be processed by a kernel of shape $C\times K\times K$ by computing at each possible spatial position the convolution between the kernel and the submatrix of the input. 
     \begin{figure}[H]
         \centering
-        \begin{tikzpicture}[scale=.6]
+        \begin{tikzpicture}[scale=.5]
             \tdplotsetmaincoords{70}{140}
             \begin{scope}[tdplot_main_coords,canvas is yz plane at x=0]
                 \draw[fill=orange!50, thick] (0,0) rectangle (3, 3);
@@ -200,9 +200,37 @@ These two examples show that kernels used in convolutional layers express meanin
 In Figure \ref{fig:one-kernel-layer}, we used simply one kernel to compute one activation map. In practice, we repeat this process multiple times: we consider a set (or \emph{bank}) of filters having different weights values, and for each kernel of the set, we compute its activation map.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{images/multiple-kernels.png}
+    \begin{tikzpicture}
+        % Input
+        \node at (.8, 1.7) {Input image};
+        \parallelepiped{(0, 0, 0)}{.5}{4}{3}{$3$}{$32$}{$32$}{blue!20}
+
+        % Convolution Layer
+        \draw[thick] (1.5, -1) -- ++ (2.25, 0);
+        \node[rectangle,draw,thick,rounded corners] at (5, -1) {\begin{varwidth}{2.5cm}\centering Convolution Layer\end{varwidth}};
+        \draw[thick, ->] (6.25, -1) -- ++ (2.25, 0);
+
+        % Kernels
+        \node at (5, -4.5) {6 kernels};
+        \draw[thick, ->] (5.1, -2.5) -- ++ (0, 0.9);
+        \parallelepiped{(3.7, -3, 0)}{.3}{1}{.75}{$3$}{$5$}{}{orange!40};
+        \foreach \x in {4.2, 4.7, ..., 5.7} {
+            \parallelepiped{(\x, -3, 0)}{.3}{1}{.75}{}{}{}{orange!40};
+        }
+        \parallelepiped{(6.2, -3, 0)}{.3}{1}{.75}{}{}{$5$}{orange!40};
+
+        % Activation maps
+        \node at (10.8, 1.7) {6 activation maps};
+        \parallelepiped{(9, 0, 0)}{.2}{3.5}{2.75}{$1$}{$28$}{}{red!40};
+        \foreach \x in {9.5, 10, ..., 11} {
+            \parallelepiped{(\x, 0, 0)}{.2}{3.5}{2.75}{}{}{}{red!40};
+        }
+        \parallelepiped{(11.5, 0, 0)}{.2}{3.5}{2.75}{}{}{$28$}{red!40};
+        \node at (10.7, -4.5) {$6\times28\times28$ output};
+    \end{tikzpicture}
     \caption{Convolutional Layer using 6 kernels}
 \end{figure}
+
 Using a bank containing $C'$ filters, the output of the convolutional layer in an \emph{activation map} of dimension $C'\times (H - K + 1) \times (W - K + 1)$ representing for each pixel the convolution between the given kernel and the corresponding chunk of the image.
 
 \begin{remark}[Biases in Convolutional Layers]
