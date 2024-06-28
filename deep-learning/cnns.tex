@@ -95,7 +95,33 @@ The convolutional layer itself consists of small kernels (also called filters) u
     An input of shape $C\times H\times W$ can be processed by a kernel of shape $C\times K\times K$ by computing at each possible spatial position the convolution between the kernel and the submatrix of the input. 
     \begin{figure}[H]
         \centering
-        \includegraphics[width=0.4\textwidth]{images/convolution-simple.png}
+        \begin{tikzpicture}[scale=.6]
+            \tdplotsetmaincoords{70}{140}
+            \begin{scope}[tdplot_main_coords,canvas is yz plane at x=0]
+                \draw[fill=orange!50, thick] (0,0) rectangle (3, 3);
+                \draw (0,0) grid (3, 3);
+
+                \draw[fill=blue!30, thick] (9, 4) rectangle (12, 7);
+                \draw (8,0) grid (16, 8);
+
+                \draw[thick,dotted] (0, 0) -- (9, 4);
+                \draw[thick,dotted] (0, 3) -- (9, 7);
+                \draw[thick,dotted] (3, 0) -- (12, 4);
+                \draw[thick,dotted] (3, 3) -- (12, 7);
+
+                \draw[fill=red!50, thick] (19, 8) rectangle (20, 9);
+                \draw (18,4) grid (24, 10);
+
+                \draw[thick,dotted] (9,4) -- (19,8);
+                \draw[thick,dotted] (9,7) -- (19,9);
+                \draw[thick,dotted] (12,4) -- (20,8);
+                \draw[thick,dotted] (12,7) -- (20,9);
+
+                \node at (1.5, -1.5) {Kernel};
+                \node at (11.5, -1.5) {Input};
+                \node at (22, 2.5) {Activation map};
+            \end{scope}
+        \end{tikzpicture}
         \caption{Kernel convolution}
     \end{figure}
     
@@ -156,12 +182,12 @@ Intuitively, the result of the kernel convolution tells us for each pixel \emph{
         \begin{minipage}{0.4\textwidth}
             \centering
             \caption*{Input image}
-            \includegraphics[width=.7\textwidth]{images/pre-sobel.png}
+            \includegraphics[width=.9\textwidth]{images/pre-sobel.png}
         \end{minipage}
         \begin{minipage}{0.4\textwidth}
             \centering
             \caption*{Sobel operator applied to the image}
-            \includegraphics[width=.7\textwidth]{images/post-sobel.png}
+            \includegraphics[width=.9\textwidth]{images/post-sobel.png}
         \end{minipage}
         
         \caption{Effect of the Sobel operator on an image}
