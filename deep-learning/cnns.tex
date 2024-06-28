@@ -151,7 +151,7 @@ Intuitively, the result of the kernel convolution tells us for each pixel \emph{
     \begin{equation*}
         G := \frac{1}{16}\begin{bmatrix}
             1 & 2 & 1\\
-            2 & 4 & 1\\
+            2 & 4 & 2\\
             1 & 2 & 1
         \end{bmatrix}
     \end{equation*}
@@ -213,11 +213,11 @@ In Figure \ref{fig:one-kernel-layer}, we used simply one kernel to compute one a
         % Kernels
         \node at (5, -4.5) {6 kernels};
         \draw[thick, ->] (5.1, -2.5) -- ++ (0, 0.9);
-        \parallelepiped{(3.7, -3, 0)}{.3}{1}{.75}{$3$}{$5$}{}{orange!40};
-        \foreach \x in {4.2, 4.7, ..., 5.7} {
+        \parallelepiped{(3.8, -3, 0)}{.3}{1}{.75}{$3$}{$5$}{}{orange!40};
+        \foreach \x in {4.3, 4.8, ..., 5.8} {
             \parallelepiped{(\x, -3, 0)}{.3}{1}{.75}{}{}{}{orange!40};
         }
-        \parallelepiped{(6.2, -3, 0)}{.3}{1}{.75}{}{}{$5$}{orange!40};
+        \parallelepiped{(6.3, -3, 0)}{.3}{1}{.75}{}{}{$5$}{orange!40};
 
         % Activation maps
         \node at (10.8, 1.7) {6 activation maps};
@@ -327,11 +327,47 @@ A solution to this problem is to downsample the image size inside the network. T
 \begin{definition}[Stride]
     The hyperparameter \emph{stride} defines the number of pixels between two applications of the kernel.
 \end{definition}
-\begin{figure}[H]
+\begin{wrapfigure}{r}{0.4\textwidth}
     \centering
-    \includegraphics[width=0.3\textwidth]{images/stride.png}
+    \begin{tikzpicture}
+        \newcommand{\randint}{
+            \pgfmathsetmacro{\temp}{random(0, 1)}
+            \temp
+        }
+        \fill[orange!60] (-2, -2) rectangle (2, 2);
+        \matrix [
+            matrix of math nodes,
+            nodes={
+                minimum size=1em, 
+                outer sep=0pt,
+                inner sep=0,line
+                width=0.5pt,
+                append after command={
+                    \pgfextra{\draw[thick] 
+                    ($(\tikzlastnode.north west)+(-0.3em,+0.3em)$)
+                    rectangle ($(\tikzlastnode.south east)+(0.3em,-0.3em)$);}
+                }
+            },
+            nodes in empty cells,
+            column sep=-0.5pt,
+            row sep=-0.5pt
+        ]
+        {
+            \randint & \randint & \randint & \randint & \randint & \randint \\
+            \randint & \randint & \randint & \randint & \randint & \randint \\
+            \randint & \randint & \randint & \randint & \randint & \randint \\
+            \randint & \randint & \randint & \randint & \randint & \randint \\
+            \randint & \randint & \randint & \randint & \randint & \randint \\
+            \randint & \randint & \randint & \randint & \randint & \randint \\
+        };
+
+        \draw[densely dashed, color=red, line width=1mm] (-2, 0) rectangle (0, 2);
+        \draw[color=red, line width=1mm] (-2/3, 0) rectangle (4/3, 2);
+
+        \draw[<->, color=red, thick] (-2, 2.2) -- (-2/3, 2.2) node[above, pos=.5] {stride};
+    \end{tikzpicture}
     \caption{Effect of stride}
-\end{figure}
+\end{wrapfigure}
 
 Stride effectively downsamples the size of the image. Applying a convolution between an image of width $W$ and padding $P$ with a kernel of size $K$ and stride $S$ produces the following output dimension:
 \begin{equation}
