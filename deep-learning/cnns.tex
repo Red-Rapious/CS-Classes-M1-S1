@@ -456,7 +456,47 @@ Convolution layers are build in such a way that each element in the output simpl
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{images/receptive-field.png}
+    \begin{tikzpicture}[scale=.9]
+        \tikzstyle{custom width}=[line width=0.6mm]
+        \tikzstyle{orange}=[color=orange]
+        \tikzstyle{blue}=[color=RoyalBlue]
+        \tikzstyle{green}=[color=SeaGreen]
+
+        \draw[step=0.5] (0,0) grid (3.5,3.5);
+        \node at (1.725, -.4) {Input};
+        \draw[step=0.5] (3.99,0) grid (7.5,3.5);
+        \draw[step=0.5] (7.99,0) grid (11.5,3.5);
+        \draw[step=0.5] (11.99,0) grid (15.5,3.5);
+        \node at (13.725, -.4) {Output};
+
+        \draw[orange, custom width] (0,2) rectangle ++(1.5,1.5);
+        \draw[orange, dashed, custom width] (1.5, 3.5) -- (4.5,3);
+        \draw[orange, dashed, custom width] (1.5, 2) -- (4.5,2.5);
+
+        \draw[orange, custom width] (2,0) rectangle ++(1.5,1.5);
+        \draw[orange, dashed, custom width] (3.5, 1.5) -- (6.5,1);
+        \draw[orange, dashed, custom width] (3.5, 0) -- (6.5,.5);
+
+        \draw[blue, custom width] (4.5,1.5) rectangle ++(1.5,1.5);
+        \draw[blue, dashed, custom width] (6,3) -- (9,2.5);
+        \draw[blue, dashed, custom width] (6,1.5) -- (9,2);
+
+        \draw[blue, custom width] (5.5,0.5) rectangle ++(1.5,1.5);
+        \draw[blue, dashed, custom width] (7,1.5) -- (10,1.5);
+        \draw[blue, dashed, custom width] (7,0.5) -- (10,1);
+
+        \draw[orange, custom width] (4.5,2.5) rectangle ++(.5,.5);
+        \draw[orange, custom width] (6.5,0.5) rectangle ++(.5,.5);
+
+        \draw[green, custom width] (9,1) rectangle ++(1.5,1.5);
+        \draw[green, dashed, custom width] (10.5,2.5) -- (13.5,2);
+        \draw[green, dashed, custom width] (10.5,1) -- (13.5,1.5);
+
+        \draw[blue, custom width] (9,2) rectangle ++(.5,.5);
+        \draw[blue, custom width] (10,1) rectangle ++(.5,.5);
+
+        \draw[green, custom width] (13.5,1.5) rectangle ++(.5,.5);
+    \end{tikzpicture}
     \caption{Receptive field of an output neuron}
 \end{figure}
 
