@@ -321,7 +321,115 @@ As stated previously, using an input of width $W$ with a filter of kernel size $
 A solution to this is to introduce \emph{padding} by adding zeros around the border of the input. When the kernel will slide around the edges of the input, a part of the coefficients that it will consider in its convolution will be zeros.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{images/padding.png}
+    \begin{tikzpicture}
+        \newcommand{\randint}{
+            \pgfmathsetmacro{\temp}{random(0, 9)}
+            \temp
+        }
+        \newcommand{\phant}{
+            \makebox[0pt][l]{\footnotesize\,$\cdot$}\phantom{0}
+        }
+
+        \tikzstyle{number matrix}=[
+            matrix of math nodes,
+            nodes={
+                minimum size=1em, 
+                outer sep=0pt,
+                inner sep=0,line
+                width=0.5pt,
+            },
+            nodes in empty cells,
+            column sep=-0.5pt,
+            row sep=-0.5pt
+        ]
+        
+        \matrix [number matrix, nodes={
+            append after command={
+                \pgfextra{\draw[thick, dashed]
+                ($(\tikzlastnode.north west)+(-0.3em,+0.3em)$)
+                rectangle ($(\tikzlastnode.south east)+(0.3em,-0.3em)$);}
+            }
+        }] at (0, 0)
+        {
+            0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+            0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+            0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+            0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+            0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+            0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+            0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+            0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        };
+
+        \matrix [number matrix, nodes={
+            append after command={
+                \pgfextra{\draw[thick, fill=gray!30]
+                ($(\tikzlastnode.north west)+(-0.3em,+0.3em)$)
+                rectangle ($(\tikzlastnode.south east)+(0.3em,-0.3em)$);}
+            }
+        }] at (0, 0)
+        {
+            2 & 5 & \randint & \randint & \randint & \randint \\
+            7 & 1 & \randint & \randint & \randint & \randint \\
+            \randint & \randint & \randint & \randint & \randint & \randint \\
+            \randint & \randint & \randint & \randint & \randint & \randint \\
+            \randint & \randint & \randint & \randint & \randint & \randint \\
+            \randint & \randint & \randint & \randint & \randint & \randint \\
+        };
+
+        \fill[color=blue, fill opacity=.4] (-8/3, 8/3) rectangle (-2/3, 2/3);
+
+        % Dashed connections
+        \draw[-, dashed] (-8/3, 8/3) -- (4, 1);
+        \draw[-, dashed] (-2/3, 8/3) -- (6, 1);
+        \draw[-, dashed] (-8/3, 2/3) -- (4, -1);
+        \draw[-, dashed] (-2/3, 2/3) -- (6, -1);
+
+        \draw[-, dashed] (4, 1) -- (8, 2);
+        \draw[-, dashed] (6, 1) -- (26/3, 2);
+        \draw[-, dashed] (4, -1) -- (8, 4/3);
+        \draw[-, dashed] (6, -1) -- (26/3, 4/3);
+
+        \matrix [number matrix, nodes={
+            append after command={
+                \pgfextra{\draw[thick, fill=orange, fill opacity=.6]
+                ($(\tikzlastnode.north west)+(-0.3em,+0.3em)$)
+                rectangle ($(\tikzlastnode.south east)+(0.3em,-0.3em)$);}
+            }
+        }] at (5, 0)
+        {
+            \randint & \randint & \randint \\
+            \randint & 1 & 1 \\
+            \randint & 0 & 2 \\
+        };
+
+        \fill[color=red, fill opacity=.5] (8, 2) rectangle (26/3, 4/3);
+        \matrix [number matrix, nodes={
+            append after command={
+                \pgfextra{\draw[thick]
+                ($(\tikzlastnode.north west)+(-0.3em,+0.3em)$)
+                rectangle ($(\tikzlastnode.south east)+(0.3em,-0.3em)$);}
+            }
+        }] at (10, 0)
+        {
+            9 & \phant & \phant & \phant & \phant & \phant \\
+            \phant & \phant & \phant & \phant & \phant & \phant \\
+            \phant & \phant & \phant & \phant & \phant & \phant \\
+            \phant & \phant & \phant & \phant & \phant & \phant \\
+            \phant & \phant & \phant & \phant & \phant & \phant \\
+            \phant & \phant & \phant & \phant & \phant & \phant \\
+        };
+
+        \node at (3.3, 0) {\Large *};
+        \node at (6.9, 0) {\Large =};
+
+        \node at (0, 3.2) {Input image with $(1, 1)$ padding};
+        \node at (0, -3.2) {$6\times6 \longrightarrow 8\times8$};
+        \node at (5, -1.5) {$3\times3$};
+        \node at (10, 2.5) {Output image};
+        \node at (10, -2.5) {$6\times6$};
+
+    \end{tikzpicture}
     \caption{Adding padding around the input}
 \end{figure}
 
@@ -335,7 +443,7 @@ Using padding, the width of the output of the layer becomes:
     \label{eq:output-padding}
     W'=W-K+2P+1
 \end{equation}
-A common way to set the value of $P$ is to choose it such as the output have the same size as the input. This is achieved by taking $P=(K-1)/2$, called \emph{same-padding}.
+A common way to set the value of $P$ is to choose it such as the output have the same size as the input. This is achieved by taking $P=(K-1)/2$, called \emph{same-padding}. This is only possible if $K$ is odd, which is often the case in practice, since same-padding is often the expected behavior.
 
 \subsubsection{Receptive Fields}
 \begin{definition}[Receptive Field]
@@ -397,7 +505,7 @@ A solution to this problem is to downsample the image size inside the network. T
         \draw[densely dashed, color=red, line width=1mm] (-2, 0) rectangle (0, 2);
         \draw[color=red, line width=1mm] (-2/3, 0) rectangle (4/3, 2);
 
-        \draw[<->, color=red, thick] (-2, 2.2) -- (-2/3, 2.2) node[above, pos=.5] {stride};
+        \draw[<->, color=red, very thick] (-2, 2.2) -- (-2/3, 2.2) node[above, pos=.5] {\bf stride};
     \end{tikzpicture}
     \caption{Effect of stride}
 \end{wrapfigure}
