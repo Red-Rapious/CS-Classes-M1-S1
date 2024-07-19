@@ -565,7 +565,34 @@ Pooling layers work similarly to convolutional layers, using a mechanism of kern
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{images/pooling-layer.png}
+    \begin{tikzpicture}
+        % Left block
+        \parallelepiped{(0, 0, 0)}{2}{3}{2.5}{$64$}{$224$}{$224$}{orange!70};
+        \parallelepiped{(-1.5, 0, 0)}{.15}{3}{2.5}{1}{}{}{blue!50};
+        \draw[thick] (-2,0) -- ++(2, 0);
+
+        % Right block
+        \parallelepiped{(7, -.5, 0)}{2}{1.5}{1.5}{$64$}{$112$}{$112$}{orange!70};
+        \parallelepiped{(5.5, -.5, 0)}{.15}{1.5}{1.5}{1}{}{}{blue!50};
+        \draw[thick] (5,-.5) -- ++(2, 0);
+
+        % Pooling arrow
+        \draw[thick, ->] (1.5, -1.2) -- ++(2.2, 0) node[pos=.5, above] {Pooling};
+        % Downsampling arrow
+        \draw[thick, ->] (0.2, -6.5) -- ++(4.3, 0) node[pos=.5, above] {Downsampling};
+        
+        % Left image
+        \draw[thick, ->] (-1.5, -3.8) -- ++(0,-1);
+        \node at (-1.5, -6.5) {\includegraphics[width=80pt]{images/plante.jpg}};
+        \node at (-3.3, -6.5) {$224$};
+        \node at (-1.5, -8.2) {$224$};
+        
+        % Right image
+        \draw[thick, <-] (5.5, -2.8) -- ++(0,-2.8);
+        \node at (5.5, -6.5) {\includegraphics[width=40pt]{images/plante.jpg}};
+        \node at (6.6, -6.5) {$112$};
+        \node at (5.5, -7.5) {$112$};
+    \end{tikzpicture}
     \caption{Behavior of a pooling layer}
 \end{figure}
 Another difference is that the operation is applied for each slice of the input volume. Choosing appropriate values for the hyperparameters (for instance $S\geq2$, \dots) allow to downsample the input without the need for learnable parameters.
