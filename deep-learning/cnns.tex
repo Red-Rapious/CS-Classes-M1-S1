@@ -644,3 +644,35 @@ The first blocks of Convolutional and Pooling layers progressively decrease the 
 Deep convolutional neural networks are described previously can be extremly effective when trained; nevertheless, they are also very difficult to train, and we need to properly prepare data for the descent to converge.
 
 A recent solution to ease the training is to add \emph{normalization layers} in the network.
+
+\subsubsection{Batch Normalization}
+The idea of Batch Normalization is to normalize the outputs of a layer, often by giving the output a zero mean and unit variance. This improves optimization by guaranteeing that a layer always receive similar data from the previous layer's output. Indeed, while training, the distribution of the output of a layer might change, which tends to increase the complexity of the learning process. In contrast, the output of a batch normalization layers always has the same mean and variance; therefore, the next layer can always \say{see} the same input data distribution, improving convergence.
+
+Normalizing batches of activations can simply be implemented using the following formula:
+\begin{equation*}
+    \hat{x}^{(k)} := \frac{x^{(k)} - \E[x^{(k)}]}{\sqrt{\V[x^{(k)}]}}
+\end{equation*}
+Hopefully, this is a differentiable function, and can therefore be seen as any other layer in the network, and implement its backward gradient.
+
+\subsubsection{Batch Normalization in practice}
+Consider a fully-connected setup, in which we have a batch $x$ consisting of $N$ inputs, each of size $D$. We will use the $N$ batch samples to compute the empirical mean for each of the element of the $D$-shaped vector:
+\begin{equation*}
+    \mu_j := \frac{1}{N}\sum_{i=1}^N x_{i, j}
+\end{equation*}
+which gives us a vector $\mu$ of size $D$. Similarly, the standard deviation of the batch can be computed element-wise:
+\begin{equation*}
+    \sigma_j^2 := \frac{1}{N}\sum_{i=1}^N (x_{i,j}-\mu_j)^2
+\end{equation*}
+giving us a vector $\sigma$ of size $D$ as well. Finally, each element of the batch $x$ is normalized, giving us $\hat{x}$:
+\begin{equation*}
+    \hat{x}_{i,j} := \frac{x_{i,j}-\mu_j}{\sqrt{\sigma^2_j+\epsilon}}
+\end{equation*}
+The small constant $\epsilon$ is added at the denominator to avoid diving by zero when the standard deviation is null.
+
+In practice, zero mean and unit variance can be too hard of a constraint on the network. We prefer to add learnable scale and shift parameters $\gamma$ and $\beta$ of size $D$, allowing the network to choose what mean and variance it wants for the next layer. The acutal output is therefore $y$, defined by:
+\begin{equation*}
+    y_{i,j} := \gamma_j\hat{x}_{i,j}+\beta_j
+\end{equation*}
+Note that learning $\gamma=\sigma$ and $\beta=\mu$ recovers the identity function, making the network able to bypass the normalization layer if it is not needed.
+
+An important note is that batch normalization introduces dependence on the minibatches: previously, each image in the input batch was handled independently of the others, which is not the case anymore with batch normalization. We cannot do this at test time, since it would not guarantee the reproducibility of classification, and more importantly, it would be a security breach to make each classification depend on the other inputs. To avoid this, batch normalization layers behave differently during training and testing.
