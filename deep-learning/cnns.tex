@@ -675,4 +675,77 @@ In practice, zero mean and unit variance can be too hard of a constraint on the 
 \end{equation*}
 Note that learning $\gamma=\sigma$ and $\beta=\mu$ recovers the identity function, making the network able to bypass the normalization layer if it is not needed.
 
-An important note is that batch normalization introduces dependence on the minibatches: previously, each image in the input batch was handled independently of the others, which is not the case anymore with batch normalization. We cannot do this at test time, since it would not guarantee the reproducibility of classification, and more importantly, it would be a security breach to make each classification depend on the other inputs. To avoid this, batch normalization layers behave differently during training and testing.
+An important note is that batch normalization introduces dependence on the minibatches: previously, each image in the input batch was handled independently of the others, which is not the case anymore with batch normalization. We cannot do this at test time, since it would not guarantee the reproducibility of classification, and more importantly, it would be a security breach to make each classification depend on the other inputs. To avoid this, batch normalization layers behave differently during training and testing. During training, the layer normalizes the batches as described before, while maintaining the empirical mean and variance of the inputs, $\mu$ and $\sigma$. These empirical vectors learned during training are then treated as constants and used during testing to normalize the test inputs.
+
+Hence, at test time, the normalization layer performs the following operation:
+\begin{equation*}
+    y = \gamma\cdot\frac{x-\mu}{\sigma}+\beta
+\end{equation*}
+Another interesting property of this method is that during testing, the batch normalization layer becomes a linear operator. Therefore, it can be fused with the previous fully-connected or convolutional layer. For instance, if the previous layer is a fully-connected, its weight matrix and bias vector can be modified using the four parameters of the normalization layer (learned mean and variance, and empirical mean and variance). Performing this operation guarantees that the batch normalization layer does not add any inference time. 
+
+\subsubsection{Batch Normalization for Convolutional Networks}
+For fully-connected layers, the batch dimension is:
+\begin{equation*}
+    x: N\times D
+\end{equation*}
+Therefore, the batch normalization parameters are the following:
+\begin{equation*}
+    \begin{cases*}
+        \mu, \sigma: 1\times D & (empirical mean and standard deviation)\\
+        \gamma, \beta: 1\times D & (learned mean and standard deviation)
+    \end{cases*}
+\end{equation*}
+
+This needs to be adapted for convolutional layers, but remains very similar. The batch dimension is:
+\begin{equation*}
+    x: N\times C\times H\times W
+\end{equation*}
+Instead of averaging only over the batch elements, we will also average over both spacial dimensions. This means that we will take for each channel the average and standard deviation taking into account all the pixels of all the images in the batch. Therefore, the batch normalization parameters are the following:
+\begin{equation*}
+    \begin{cases*}
+        \mu, \sigma: 1\times C\times 1\times 1 & (empirical mean and standard deviation)\\
+        \gamma, \beta: 1\times C\times 1\times 1 & (learned mean and standard deviation)
+    \end{cases*}
+\end{equation*}
+which can also be seen as vectors of size $C$; it is nevertheless more convenient to see them in tensor form, $1\times C\times 1\times 1$.
+
+\subsubsection{Advantages and downsides of batch normalization}
+As stated previously, adding batch normalization in neural networks allows for models to train much faster, while adding no overhead at testing time when placed after fully-connected or convolutional layers.
+
+Not only the models converge quicker at fixed learning rate, but it also stabilizes the model even with higher learning rates, allowing shorter training times without the risk of divergence.
+
+While they are widely used in practice, normalization layers also come with downsides: the reason of the effectiveness of batch normalization is not well-understood theoretically, and it introduces complex code because of the distinction between training and testing. This is actually a very common source of bugs in projects: one have to remember to change the mode from training to testing. 
+
+Finally, batch normalization is not always appropriate: some very unbalanced data sets might not fit appropriately with batch normalization, and this can reduce the performance of the model. This depends highly on the application: for computer vision, batch normalization is most of the time suitable.
+
+\subsubsection{Layer and Instance normalizations}
+A variant to batch normalization, called \emph{layer normalization}, has be proposed. It aims at unifying the behavior of the normalization layer at training and testing time. This guarantees, even at training time, the independence between elements of one batch. The idea is to normalize the input in the layer direction instead of the batch direction. For a fully-connected layer with batch dimension:
+\begin{equation*}
+    x:N\times D
+\end{equation*}
+the layer normalization parameters become:
+\begin{equation*}
+    \begin{cases*}
+        \mu, \sigma: N\times 1 & (empirical mean and standard deviation)\\
+        \gamma, \beta: \;\,1\times D & (learned mean and standard deviation)
+    \end{cases*}
+\end{equation*}
+This kind of normalization is currently used in recurrent neural networks (RNNs) and transformers.
+
+The equivalent of layer normalization for convolutional layers is called \emph{instance normalization}: similarly, instead of averaging over both the batch and spatial dimensions, we will only normalize over the spatial dimensions. For a convolution layer with batch dimension:
+\begin{equation*}
+    x: N\times C\times H\times W
+\end{equation*}
+the layer normalization parameters become:
+\begin{equation*}
+    \begin{cases*}
+        \mu, \sigma: N\times C\times 1\times 1 & (empirical mean and standard deviation)\\
+        \gamma, \beta: \;\,1\times C\times 1\times 1 & (learned mean and standard deviation)
+    \end{cases*}
+\end{equation*}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.7\textwidth]{images/normalization-types.png}
+    \caption{Visualization of the different types of normalization}
+\end{figure}
