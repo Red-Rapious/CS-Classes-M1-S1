@@ -1,4 +1,5 @@
 \section{Introduction to Reinforcement Learning}
+\subsection{What is Reinforcement Learning?}
 Machine learning problems can be distinguished in three major paradigms. Given a set of inputs and corresponding outputs, \emph{supervised learning} tries to learn the function mapping inputs to outputs. \emph{Unsupervised learning} studies the structure of data, without being given labels. The third paradigm is called \emph{reinforcement learning}: such problems aim at optimizing the actions of an agent in an environment to maximize its reward.
 
 Formally, we control an agent that can observe at each time step $t$ the \emph{state} of the environment, $S_t$. It can use this state to choose an action $A_t$, to which the environment will reply with a reward $R_t$, and a new state $S_{t+1}$.
@@ -8,6 +9,7 @@ Formally, we control an agent that can observe at each time step $t$ the \emph{s
 This is called one \emph{episode} of learning.
 
 \subsection{Markov Decision Process}
+\subsubsection{Formalisation}
 The \emph{Markov Decision Process} (MDP) is a mathematical formulation of the Reinforcement Learning process. It makes the assumption of the \emph{Markov property}: the current state completely caracterizes the state of the world.
 
 \begin{definition}[Markov Decision Process]
@@ -38,3 +40,38 @@ We want to optimize the \emph{discounted return} (also known as \emph{cumulative
 \begin{equation*}
     G_t=R_{t+1}+\gamma R_{t+2}+\dots+\gamma^{T-t-1}R_T = \sum_{k=t+1}^T\gamma^{k-t-a}R_k
 \end{equation*}
+Note that the discounted return $G_t$ is a random variable, since the rewards $(R_k)_k$ depend on the sampled states $(S_k)_k$. 
+%Therefore, we introduce the following two deterministic functions.
+Therefore, we introduce the following deterministic function.
+
+\begin{definition}[Value function]
+    Given a policy $\pi$, the \emph{value function} $v_\pi$ is defined by:
+    \begin{equation*}
+        v_\pi(s) = \E\left[G_t|S_t=s\right]
+    \end{equation*}
+    where the expectation is taken over the sampled states $(s_k)_{k>t}$ and in which the successive actions $A_k$ are picked using the policy: $A_k=\pi(S_k)$.
+\end{definition}
+
+%%% This part is unclear and doesn't use the same definition of the policy as other sources do - I'll ask during the lecture
+% \begin{definition}[Action-value function]
+%     Given a policy $\pi$, the \emph{action-value function} $q_\pi$ is defined by:
+%     \begin{equation*}
+%         q_\pi(s, a) = \E\left[G_t|S_t=s, A_t=a\right]
+%     \end{equation*}
+%     where the expectation is taken over the sampled states $(s_k)_{k>t}$
+% \end{definition}
+
+% These functions can be used in two ways. The first is policy evaluation: given a policy $\pi$, compute its value function, acting as a metric to measure how good a policy is. 
+% Note that:
+% \begin{equation*}
+%     v_\pi(s)=\E_a[q_\pi(s,a)] = \sum_{a\in\A}\pi(a|s)\cdot q_\pi(s,a)
+% \end{equation*}
+% Another goal is \emph{policy improvement}: given $v_\pi$, imp
+
+The optimization problem associated with the Markov Decision Process is to select the best policy, that is the policy which maximizes the expected discounted return:
+\begin{equation}
+    \pi^*=\argmax_\pi \E[G_t]
+\end{equation}
+where the expectation is taken over the sampled states $(s_k)_{k>t}$ and in which the successive actions $A_k$ are picked using the policy: $A_k=\pi(S_k)$.
+
+\subsubsection{Example: Gridworld}
