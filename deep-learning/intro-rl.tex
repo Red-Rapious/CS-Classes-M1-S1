@@ -1,0 +1,40 @@
+\section{Introduction to Reinforcement Learning}
+Machine learning problems can be distinguished in three major paradigms. Given a set of inputs and corresponding outputs, \emph{supervised learning} tries to learn the function mapping inputs to outputs. \emph{Unsupervised learning} studies the structure of data, without being given labels. The third paradigm is called \emph{reinforcement learning}: such problems aim at optimizing the actions of an agent in an environment to maximize its reward.
+
+Formally, we control an agent that can observe at each time step $t$ the \emph{state} of the environment, $S_t$. It can use this state to choose an action $A_t$, to which the environment will reply with a reward $R_t$, and a new state $S_{t+1}$.
+\begin{equation*}
+    S_t\longrightarrow A_t\longrightarrow R_t \Longrightarrow S_{t+1}\longrightarrow A_{t+1} \longrightarrow \dots
+\end{equation*}
+This is called one \emph{episode} of learning.
+
+\subsection{Markov Decision Process}
+The \emph{Markov Decision Process} (MDP) is a mathematical formulation of the Reinforcement Learning process. It makes the assumption of the \emph{Markov property}: the current state completely caracterizes the state of the world.
+
+\begin{definition}[Markov Decision Process]
+    A Markov Decision Process is a 5-tuple $(\S, \A, \Rc, \P, \gamma)$ where:
+    \begin{itemize}
+        \item $\S$ is the set of all states
+        \item $\A$ is the set of possible actions
+        \item $\Rc:\S\times\A\to\R$ is a function mapping a (state, action) pair to an immediate reward
+        \item $\P$ is a probability distribution; for $s,s'\in\S$, $a\in\A$, $\P(S_{t+1}=s'|S_t=s,A_t=a)$ is the probability to transition from state $s$ to state $s'$ after choosing the action $a$.
+        \item $\gamma\in[0,1]$ is a \emph{discount factor}, quantifying how much we value rewards coming soon conversely to rewards coming later. $\gamma=1$ values equally all future rewards, while $\gamma=0$ means that we only care about the next reward.
+    \end{itemize}
+
+    Initially (at time step $t=0$), an initial state $S_0$ is sampled. Then for any $t\in\iset{0}{T}$\footnote{We might have $T=+\infty$} the following process is iterated:
+    \begin{itemize}
+        \item The agent chooses an action $A_t$
+        \item The environment computes the associated reward $R_t=\Rc(S_t,A_t)$
+        \item The environment samples the next step $S_{t+1}\sim\P(\cdot|S_t,A_t)$
+        \item The agent receives the reward $R_t$ and the next step $S_{t+1}$
+        \item \dots
+    \end{itemize}
+\end{definition}
+
+\begin{definition}[Policy]
+    A \emph{policy} $\pi:\S\to\A$ is a function that specifies which action to take in each state.
+\end{definition}
+
+We want to optimize the \emph{discounted return} (also known as \emph{cumulative discounted reward}), that is:
+\begin{equation*}
+    G_t=R_{t+1}+\gamma R_{t+2}+\dots+\gamma^{T-t-1}R_T = \sum_{k=t+1}^T\gamma^{k-t-a}R_k
+\end{equation*}
