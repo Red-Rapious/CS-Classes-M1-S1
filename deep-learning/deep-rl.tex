@@ -2,6 +2,8 @@
 \subsection{What is Reinforcement Learning?}
 Machine learning problems can be distinguished in three major paradigms. Given a set of inputs and corresponding outputs, \emph{supervised learning} tries to learn the function mapping inputs to outputs. \emph{Unsupervised learning} studies the structure of data, without being given labels. The third paradigm is called \emph{reinforcement learning}: such problems aim at optimizing the actions of an agent in an environment to maximize its reward.
 
+The actions of the agent impact the data collected and the state of the environment. Reinforcement learning is often applied to video games (Atari, Starcraft, \dots), to maneuver robots, or to learn how to control complex systems such as cooling systems in datacenters.
+
 Formally, we control an agent that can observe at each time step $t$ the \emph{state} of the environment, $S_t$. It can use this state to choose an action $A_t$, to which the environment will reply with a reward $R_t$, and a new state $S_{t+1}$.
 \begin{equation*}
     S_t\longrightarrow A_t\longrightarrow R_t \Longrightarrow S_{t+1}\longrightarrow A_{t+1} \longrightarrow \dots
@@ -15,9 +17,12 @@ The \emph{Markov Decision Process} (MDP) is a mathematical formulation of the Re
 \begin{definition}[Markov Decision Process]
     A Markov Decision Process is a 5-tuple $(\S, \A, \Rc, \P, \gamma)$ where:
     \begin{itemize}
-        \item $\S$ is the set of all states
-        \item $\A$ is the set of possible actions
-        \item $\Rc:\S\times\A\to\R$ is a function mapping a (state, action) pair to an immediate reward
+        \item $\S$ is the set of all states, the \emph{state space}
+        \item $\A$ is the set of possible actions, the \emph{action space}
+        \item $\Rc:\S\times\A\to\R$ is a function mapping a (state, action) pair to an immediate reward. Note that the reward might be random; therefore, we have:
+        \begin{equation*}
+            \Rc(a,s) = \E[R_{t+1}|S_t=s,A_t=a]
+        \end{equation*}
         \item $\P$ is a probability distribution; for $s,s'\in\S$, $a\in\A$, $\P(S_{t+1}=s'|S_t=s,A_t=a)$ is the probability to transition from state $s$ to state $s'$ after choosing the action $a$.
         \item $\gamma\in[0,1]$ is a \emph{discount factor}, quantifying how much we value rewards coming soon conversely to rewards coming later. $\gamma=1$ values equally all future rewards, while $\gamma=0$ means that we only care about the next reward.
     \end{itemize}
@@ -32,51 +37,39 @@ The \emph{Markov Decision Process} (MDP) is a mathematical formulation of the Re
     \end{itemize}
 \end{definition}
 
+\begin{definition}[Discounted return]
+    The \emph{discounted return} (also known as \emph{cumulative discounted reward}) is:
+    \begin{equation*}
+        G_t=R_{t+1}+\gamma R_{t+2}+\dots+\gamma^{T-t-1}R_T = \sum_{k=t+1}^T\gamma^{k-t-a}R_k
+    \end{equation*}
+\end{definition}
+The objective is therefore to maximize the expected return $\E[G_t]$, where the expectation is taken over the sampled states $(S_k)_{k>t}$ and rewards $(R_k)_{k>t}$.
+
 \begin{definition}[Policy]
-    A \emph{policy} $\pi:\S\to\A$ is a function that specifies which action to take in each state.
-\end{definition}
-
-We want to optimize the \emph{discounted return} (also known as \emph{cumulative discounted reward}), that is:
-\begin{equation*}
-    G_t=R_{t+1}+\gamma R_{t+2}+\dots+\gamma^{T-t-1}R_T = \sum_{k=t+1}^T\gamma^{k-t-a}R_k
-\end{equation*}
-Note that the discounted return $G_t$ is a random variable, since the rewards $(R_k)_k$ depend on the sampled states $(S_k)_k$. 
-Therefore, we introduce the following two deterministic functions.
-% Therefore, we introduce the following deterministic function.
-
-\begin{definition}[Value function]
-    Given a policy $\pi$, the \emph{value function} $v_\pi$ is defined by:
+    A \emph{policy} $\pi:\S\to\A$ is a function that specifies which action to take in each state. The agent can choose a stochastic strategy, encoded by a probability distribution\footnote{More precisely, we consider here only \emph{stationary policies}, that is policies that only depends on the current state (and not the previous states and rewards, for instance). This is because there always exists an optimal policy that only depends on the current state; including information about previous states, actions or rewards does not provide better policies.}:
     \begin{equation*}
-        v_\pi(s) = \E\left[G_t|S_t=s\right]
+        \pi(a)=\P(A_t=a|S_t=s)
     \end{equation*}
-    where the expectation is taken over the sampled states $(s_k)_{k>t}$ and in which the successive actions $A_k$ are picked using the policy: $A_k=\pi(S_k)$.
-\end{definition}
-
-\begin{definition}[Action-value function]
-    Given a policy $\pi$, the \emph{action-value function} $q_\pi$ is defined by:
+    In this case, we maximize the expected return:
     \begin{equation*}
-        q_\pi(s, a) = \E\left[G_t|S_t=s, A_t=a\right]
+        \max_\pi\E_\pi[G_t]
     \end{equation*}
-    where the expectation is taken over the sampled states $(s_k)_{k>t}$. The difference with the value function is that we assume that the action $a$ is taken, making it in a sense \say{one episode after}.
+    where $\E_\pi$ denotes the expectation under the use of policy $\pi$ by the agent.
 \end{definition}
-Note that:
-\begin{equation*}
-    v_\pi(s)=q_\pi(s,\pi(s))
-\end{equation*}
 
-These functions can be used in two ways. The first is policy evaluation: given a policy $\pi$, compute its value function, acting as a metric to measure how good a policy is. 
+% These functions can be used in two ways. The first is policy evaluation: given a policy $\pi$, compute its value function, acting as a metric to measure how good a policy is. 
 % Note that:
 % \begin{equation*}
 %     v_\pi(s)=\E_a[q_\pi(s,a)] = \sum_{a\in\A}\pi(a|s)\cdot q_\pi(s,a)
 % \end{equation*}
-Another goal can be \emph{policy improvement}: given $v_\pi$, improve $\pi$ by picking the best possible action $a^*$:
-\begin{equation*}
-    a^* = \argmax_a q_\pi(s,a)
-\end{equation*}
-Note that we therefore have:
-\begin{equation*}
-    q_\pi(s,a^*) = \E_{s'}\left[r+\gamma v_\pi(s')\right] = \sum_{s'}\P(s'|s,a)\cdot[r+\gamma\cdot v_\pi(s')]
-\end{equation*}
+% Another goal can be \emph{policy improvement}: given $v_\pi$, improve $\pi$ by picking the best possible action $a^*$:
+% \begin{equation*}
+%     a^* = \argmax_a q_\pi(s,a)
+% \end{equation*}
+% Note that we therefore have:
+% \begin{equation*}
+%     q_\pi(s,a^*) = \E_{s'}\left[r+\gamma v_\pi(s')\right] = \sum_{s'}\P(s'|s,a)\cdot[r+\gamma\cdot v_\pi(s')]
+% \end{equation*}
 
 \subsubsection{Example: Gridworld}
 Let's analyze a simple example of Reinforcement Learning problem. Gridworld is a task in which the states are the positions in the grid, and the actions are the movements in all 4 directions. The goal is two reach one of the terminal states, in the least number of actions.
@@ -87,6 +80,27 @@ Formally, we can define a Markov decision process by setting:
 \end{equation*}
 
 % TODO: TikZ figure for the grid and optimal policy
+
+\subsubsection{Value function and Q-function}
+Note that the discounted return $G_t$ is a random variable, since the rewards $(R_k)_k$ depend on the sampled states $(S_k)_k$. 
+Therefore, we introduce the following two deterministic functions.
+% Therefore, we introduce the following deterministic function.
+
+\begin{definition}[Value function]
+    Given a policy $\pi$, the \emph{value function} $v_\pi$ is defined by:
+    \begin{equation*}
+        v_\pi(s) = \E_\pi\left[G_t|S_t=s\right]
+    \end{equation*}
+    where the expectation is taken over the sampled states $(s_k)_{k>t}$ and in which the successive actions $A_k$ are picked using the policy: $A_k=\pi(S_k)$.
+\end{definition}
+
+\begin{definition}[Q-function]
+    Given a policy $\pi$, the \emph{Q-function} (also known as \emph{action-value function}) $q_\pi$ is defined by:
+    \begin{equation*}
+        q_\pi(s, a) = \E_\pi\left[G_t|S_t=s, A_t=a\right]
+    \end{equation*}
+    where the expectation is taken over the sampled states $(s_k)_{k>t}$. The difference with the value function is that we assume that the action $a$ is taken, making it in a sense \say{one episode after}.
+\end{definition}
 
 \subsubsection{Optimal policy}
 The optimization problem associated with the Markov Decision Process is to select the best policy, that is the policy which maximizes the expected discounted return:
