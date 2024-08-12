@@ -1,0 +1,130 @@
+\section{Deep Reinforcement Learning}
+\subsection{What is Reinforcement Learning?}
+Machine learning problems can be distinguished in three major paradigms. Given a set of inputs and corresponding outputs, \emph{supervised learning} tries to learn the function mapping inputs to outputs. \emph{Unsupervised learning} studies the structure of data, without being given labels. The third paradigm is called \emph{reinforcement learning}: such problems aim at optimizing the actions of an agent in an environment to maximize its reward.
+
+Formally, we control an agent that can observe at each time step $t$ the \emph{state} of the environment, $S_t$. It can use this state to choose an action $A_t$, to which the environment will reply with a reward $R_t$, and a new state $S_{t+1}$.
+\begin{equation*}
+    S_t\longrightarrow A_t\longrightarrow R_t \Longrightarrow S_{t+1}\longrightarrow A_{t+1} \longrightarrow \dots
+\end{equation*}
+This is called one \emph{episode} of learning.
+
+\subsection{Markov Decision Process}
+\subsubsection{Formalisation}
+The \emph{Markov Decision Process} (MDP) is a mathematical formulation of the Reinforcement Learning process. It makes the assumption of the \emph{Markov property}: the current state completely caracterizes the state of the world.
+
+\begin{definition}[Markov Decision Process]
+    A Markov Decision Process is a 5-tuple $(\S, \A, \Rc, \P, \gamma)$ where:
+    \begin{itemize}
+        \item $\S$ is the set of all states
+        \item $\A$ is the set of possible actions
+        \item $\Rc:\S\times\A\to\R$ is a function mapping a (state, action) pair to an immediate reward
+        \item $\P$ is a probability distribution; for $s,s'\in\S$, $a\in\A$, $\P(S_{t+1}=s'|S_t=s,A_t=a)$ is the probability to transition from state $s$ to state $s'$ after choosing the action $a$.
+        \item $\gamma\in[0,1]$ is a \emph{discount factor}, quantifying how much we value rewards coming soon conversely to rewards coming later. $\gamma=1$ values equally all future rewards, while $\gamma=0$ means that we only care about the next reward.
+    \end{itemize}
+
+    Initially (at time step $t=0$), an initial state $S_0$ is sampled. Then for any $t\in\iset{0}{T}$\footnote{We might have $T=+\infty$} the following process is iterated:
+    \begin{itemize}
+        \item The agent chooses an action $A_t$
+        \item The environment computes the associated reward $R_t=\Rc(S_t,A_t)$
+        \item The environment samples the next step $S_{t+1}\sim\P(\cdot|S_t,A_t)$
+        \item The agent receives the reward $R_t$ and the next step $S_{t+1}$
+        \item \dots
+    \end{itemize}
+\end{definition}
+
+\begin{definition}[Policy]
+    A \emph{policy} $\pi:\S\to\A$ is a function that specifies which action to take in each state.
+\end{definition}
+
+We want to optimize the \emph{discounted return} (also known as \emph{cumulative discounted reward}), that is:
+\begin{equation*}
+    G_t=R_{t+1}+\gamma R_{t+2}+\dots+\gamma^{T-t-1}R_T = \sum_{k=t+1}^T\gamma^{k-t-a}R_k
+\end{equation*}
+Note that the discounted return $G_t$ is a random variable, since the rewards $(R_k)_k$ depend on the sampled states $(S_k)_k$. 
+Therefore, we introduce the following two deterministic functions.
+% Therefore, we introduce the following deterministic function.
+
+\begin{definition}[Value function]
+    Given a policy $\pi$, the \emph{value function} $v_\pi$ is defined by:
+    \begin{equation*}
+        v_\pi(s) = \E\left[G_t|S_t=s\right]
+    \end{equation*}
+    where the expectation is taken over the sampled states $(s_k)_{k>t}$ and in which the successive actions $A_k$ are picked using the policy: $A_k=\pi(S_k)$.
+\end{definition}
+
+\begin{definition}[Action-value function]
+    Given a policy $\pi$, the \emph{action-value function} $q_\pi$ is defined by:
+    \begin{equation*}
+        q_\pi(s, a) = \E\left[G_t|S_t=s, A_t=a\right]
+    \end{equation*}
+    where the expectation is taken over the sampled states $(s_k)_{k>t}$. The difference with the value function is that we assume that the action $a$ is taken, making it in a sense \say{one episode after}.
+\end{definition}
+Note that:
+\begin{equation*}
+    v_\pi(s)=q_\pi(s,\pi(s))
+\end{equation*}
+
+These functions can be used in two ways. The first is policy evaluation: given a policy $\pi$, compute its value function, acting as a metric to measure how good a policy is. 
+% Note that:
+% \begin{equation*}
+%     v_\pi(s)=\E_a[q_\pi(s,a)] = \sum_{a\in\A}\pi(a|s)\cdot q_\pi(s,a)
+% \end{equation*}
+Another goal can be \emph{policy improvement}: given $v_\pi$, improve $\pi$ by picking the best possible action $a^*$:
+\begin{equation*}
+    a^* = \argmax_a q_\pi(s,a)
+\end{equation*}
+Note that we therefore have:
+\begin{equation*}
+    q_\pi(s,a^*) = \E_{s'}\left[r+\gamma v_\pi(s')\right] = \sum_{s'}\P(s'|s,a)\cdot[r+\gamma\cdot v_\pi(s')]
+\end{equation*}
+
+\subsubsection{Example: Gridworld}
+Let's analyze a simple example of Reinforcement Learning problem. Gridworld is a task in which the states are the positions in the grid, and the actions are the movements in all 4 directions. The goal is two reach one of the terminal states, in the least number of actions.
+
+Formally, we can define a Markov decision process by setting:
+\begin{equation*}
+    \S=\set{(i,j)}{1\leq i,j\leq5} \qquad \A=\{\leftarrow,\rightarrow,\uparrow,\downarrow\} \qquad \Rc=s\longmapsto-1
+\end{equation*}
+
+% TODO: TikZ figure for the grid and optimal policy
+
+\subsubsection{Optimal policy}
+The optimization problem associated with the Markov Decision Process is to select the best policy, that is the policy which maximizes the expected discounted return:
+\begin{equation}
+    \pi^*=\argmax_\pi \E[G_t]
+\end{equation}
+where the expectation is taken over the sampled states $(S_k)_{k>t}$ and in which the successive actions $A_k$ are picked using the policy: $A_k=\pi(S_k)$.
+
+\begin{definition}[Optimal action-value function]
+    The optimal action-value function $q^*$ is the maximum expected cumulative reward achievable from a given (state, action) pair:
+    \begin{equation*}
+        q^*(s,a) = \max_\pi\E\left[G_t|S_t=s,A_t=a\right]
+    \end{equation*}
+\end{definition}
+
+\begin{theorem}[Bellman's principle of optimality -- 1952]
+    An optimal policy has the property that whatever the initial state and initial decision are, the remaining decisions must constitute an optimal policy with regard to the state resulting from the first decision.
+\end{theorem}
+
+\begin{property}[Bellman's equation]
+    Intuitively, if the optimal state-action values for the next time-step $q^*(s',a)$ are known, then the optimal strategy is to take the action that maximizes the expected value of $r+ \gamma\cdot q^*(s, a)$. Formally, this gives us:
+    \begin{equation}
+        q^*(s,a) = \E_{s'}\left[r+\gamma\cdot\max_{a'}q^*(s',a')|s,a\right]
+    \end{equation}
+    Therefore, the optimal policy takes in each state the action maximizing $q^*(s,a)$.
+\end{property}
+
+\subsubsection{Value iteration algorithm}
+We can derive an iterative update from Bellman's equation:
+\begin{equation*}
+    q_{i+1}(s,a) = \E\left[r+\gamma\cdot\max_{a'}q_i(s',a')|s,a\right]
+\end{equation*}
+At each step, we refine our approximation of $q^*$ by following Bellman's equation. Under mathematical conditions, we will then have:
+\begin{equation*}
+    \lim_{i\to+\infty}q_i = q^*
+\end{equation*}
+
+Unfortunately, this idea is not scalable: it requires the computation of $q(s,a)$ for every (state, action) pair, even though the state space can be huge. For instance, if we try to apply this reinforcement learning approach to a video game, we need to compute the result for any combination of pixels on the screen.
+
+Therefore, we use in practice an approximator of $q$ instead of computing the exact value of $q$: this is called Q-learning. 
+\newpage
