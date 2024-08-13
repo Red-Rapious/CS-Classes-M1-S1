@@ -1,0 +1,40 @@
+\section{Optimization and loss functions}
+\subsection{Tensors in \texttt{PyTorch}}
+A tensor is a $d$-dimensional array in \texttt{PyTorch}. Tensors are used in deep learning to represent all kind of data, from images to weight matrices. 
+
+\paragraph*{Tensor creation}
+A tensor can be created from a list: \mintinline{python}{x = torch.Tensor([[1,0,2],[3,2,2]])}. By default, tensors are not deepcopied, but can be cloned: \mintinline{python}{x.clone()}. Each tensor has a data type, which can be specified at its creation: \mintinline{python}{x = torch.Tensor(..., dtype=torch.int64)}. In the case of data (for instance, training examples), the first dimension of a tensor is usually the samples: \mintinline{python}{x.shape[0]} is the batch size.
+
+\paragraph*{Operations}
+Most operations on tensors (\mintinline{python}{+}, \mintinline{python}{*}, \dots) are performed coordinate-wise and need matching sizes. Mathematical functions from the \mintinline{python}{torch} library, such as \mintinline{python}{torch.exp} or \mintinline{python}{x**2}, are vectorized and therefore performed coordinate-wise. Notably, matrix multiplication can be perfomed using the \mintinline{python}{x @ y} syntax.
+
+\paragraph*{Shapes}
+A tensor shape can be obtained by calling \mintinline{python}{x.shape}. Reshaping can be performed using \mintinline{python}{x.view(1,3,-1)}, where \mintinline{python}{-1} acts as a wildcard for \texttt{PyTorch} to fill in automatically the appropriate dimension. For instance, \mintinline{python}{x.view(-1)} flattens the tensor into a one-dimensional vector. The operation \mintinline{python}{x.unsqueeze(0)} adds a dimension of size 1 to the tensor.
+
+\paragraph*{Gradients}
+Tensors can have an associated gradient, stored in \mintinline{python}{x.grad}. We can remove (and clone) this tensor from the computation of the gradient by using \mintinline{python}{y = x.detach()}.
+
+\paragraph*{Other operations}
+See the \href{https://pytorch.org/docs/stable/tensors.html}{\texttt{PyTorch} documentation} for numerous operations defined on tensors. Most convenient ones include \mintinline{python}{torch.sum(x)}, \mintinline{python}{torch.mean(x)}. A tensor can also be converted to a \texttt{NumPy} array using \mintinline{python}{x.numpy()} or \mintinline{python}{x.detach().numpy()}.
+
+Manipulating tensors and tensor sizes is complex and leads to many bugs in deep learning projects. Many errors can go unnoticed due to wrong tensor sizes and Python's dynamic typing. As a general advice, always verify your intermediate computations using for instance \mintinline{python}{print(x[:5])}, and your tensor shapes with \mintinline{python}{print(x.shape)}!
+
+\subsection{Loss functions}
+\subsubsection{Mean Square Error}
+\begin{definition}[Mean Square Error]
+    The \emph{mean square error} is the loss function defined by:
+    \begin{equation*}
+        \begin{aligned}
+            \ell : \R^d\times\R^d&\longrightarrow\R\\
+            x, y&\longmapsto \norm{x-y}_2^2
+        \end{aligned}
+    \end{equation*}
+\end{definition}
+
+\subsubsection{Cross Entropy}
+
+\subsection{First-order optimization}
+
+\subsection{Convergence analysis}
+
+\subsection{Gradient descent variants}
