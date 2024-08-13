@@ -91,7 +91,7 @@ Therefore, we introduce the following two deterministic functions.
     \begin{equation*}
         v_\pi(s) = \E_\pi\left[G_t|S_t=s\right]
     \end{equation*}
-    where the expectation is taken over the sampled states $(s_k)_{k>t}$ and in which the successive actions $A_k$ are picked using the policy: $A_k=\pi(S_k)$.
+    where the expectation is taken over the sampled states $(S_k)_{k>t}$ and in which the successive actions $A_k$ are picked using the policy: $A_k=\pi(S_k)$.
 \end{definition}
 
 \begin{definition}[Q-function]
@@ -141,4 +141,3 @@ At each step, we refine our approximation of $q^*$ by following Bellman's equati
 Unfortunately, this idea is not scalable: it requires the computation of $q(s,a)$ for every (state, action) pair, even though the state space can be huge. For instance, if we try to apply this reinforcement learning approach to a video game, we need to compute the result for any combination of pixels on the screen.
 
 Therefore, we use in practice an approximator of $q$ instead of computing the exact value of $q$: this is called Q-learning. 
-\newpage
