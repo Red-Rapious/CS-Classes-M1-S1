@@ -115,7 +115,7 @@ In practice, training deep neural network can become challenging because of nume
     \item[Access to the gradient] The gradient of $\L$ is often too expensive to compute on the entire dataset. In practice, $\nabla\L(\theta_t)$ is replaced by a stochastic or mini-batch approximation $\tilde{\nabla}_t$. 
 \end{description}
 
-\subsubsection{Gradient descent variants}
+\subsubsection{Gradient approximations}
 In the following, we will consider that the objective function $\L$ is a loss function between a prediction and a label for one specific example, that is:
 \begin{equation*}
     \forall i\in\iset{1}{n}, \quad \L_i(\theta) = \ell(g_\theta(x_i),y_i)
@@ -146,5 +146,60 @@ In the following, $\eta>0$ denotes a \emph{learning rate} (or \emph{step-size}).
 Keep in mind that the final goal is to reduce the population risk, that is $\E[\ell(g_\theta(X), Y)]$. We need to pay attention to overfitting in addition to using the optimization algorithm to reduce the training error. In this class, we focus specifically on the performance of the optimization algorithm in minimizing the objective function, rather than the model's generalization error. In the next chapters, we will see techniques to avoid overfitting.
 
 \subsection{Convergence analysis}
+We aim at providing theoreticla guarantees over the convergence rates of our algorithms. Optimizing non-convex functions is hard in general, but we will make the following assumptions:
+\begin{itemize}
+    \item The objective function is non-convex but differentiable and $\beta$-smooth, that is:
+    \begin{equation*}
+        \forall\theta,\theta'\in\R^p, \quad \norm{\nabla\L(\theta)-\nabla\L(\theta')}_2 \leq \beta\cdot\norm{\theta-\theta'}_2
+    \end{equation*}
+    \item We access unbiased noisy gradients $\tilde{\nabla}_t$, where:
+    \begin{equation*}
+        \E[\tilde{\nabla}_t] = \nabla\L(\theta_t) \quad \textnormal{and} \quad \V[\tilde{\nabla}_t] \leq\sigma^2
+    \end{equation*}
+\end{itemize}
+
+\begin{property}[Worst-case convergence to global optimum]
+    For any first-order algorithm, there exists a smooth function $\L$ such that its approximation error is at least:
+    \begin{equation*}
+        \L(\theta_t)-\L(\theta^*) = \Omega(t^{-\frac{1}{d}})
+    \end{equation*}
+\end{property}
+This is prohibitive for large dimensional spaces, since this makes the convergence extremly slow. Therefore, we often choose to restrict ourselves to guarantees for local optima.
+
+\begin{theorem}[Convergence of non-convex SGD to a stationary point]
+    Let $\L:\R^p\to\R$ be a smooth function and $\Delta=\L(\theta_0)-\L(\theta^*)$. Then, SGD with step-size:
+    \begin{equation*}
+        \eta=\min\left(\frac{1}{\beta}, \sqrt{\frac{2\Delta}{T\beta\sigma^2}}\right)
+    \end{equation*}
+    achieves the error:
+    \begin{equation*}
+        \E\left[\min_{t\leq T}\norm{\nabla\L(\theta_t)}^2\right] \leq \frac{4\beta\Delta}{T} + \sqrt{\frac{8\beta\Delta\sigma^2}{T}}
+    \end{equation*}
+    Furthermore,
+    \begin{itemize}
+        \item without noise, $\eta=\frac{1}{\beta}$ is optimal, and require $O\left(\frac{\beta\Delta}{\epsilon^2}\right)$ iterations for $\norm{\nabla\L(\theta_t)}\leq\epsilon$
+        \item with noise, $\eta=O\left(T^{-\frac{1}{2}}\right)$ is optimal, and requires $O\left(\frac{\beta\Delta\sigma^2}{\epsilon^4}\right)$ iterations for $\norm{\nabla\L(\theta_t)}\leq\epsilon$
+        \item if $\eta$ is fixed and $\sigma>0$, there is a lower limit in $O\left(\sqrt{\eta\beta}\sigma\right)$ for $\norm{\nabla\L(\theta_t)}$
+    \end{itemize}
+\end{theorem}
+
+These guarantees prove that GD and SGD converge to a stationary point. Nevertheless, we have no guarantee that this stationary point is actually a local minimum. A local minimum can be defined using second order derivatives: it is both a \textbf{stationary} point, that is $\nabla\L(\theta)=0$, and a \textbf{convexity} point, where the Hessian $H_\L(x)$ is semi-definite positive. The problem is that stationary points can block our algorithm by cancelling the gradient: we are then stuck in saddle points.
+
+An idea to converge towards a local minimum is to add a small noise, allowing the parameter to escape saddle points. When slightly pushed away from the equilibrium by the noise, the parameter will come back to it only is the equilibrium is stable, that is for local minima.
+
+We make the additional assumption that the Hessian $H_\L$ is $\rho$-Lipschitz with respect to the spectral norm. Therefore, with probability at least $1-\delta$, the number of iterations to reach a gradient norm $\norm{\nabla\L(\theta_t)}\leq\epsilon$ and near-convexity $\lambda_1(H_\L(\theta_t))\geq-\sqrt{\rho\epsilon}$ is bounded by:
+\begin{equation*}
+    O\left(\frac{\beta\Delta}{\epsilon^2}\cdot\log\left(\frac{p\beta\Delta}{\epsilon\delta}\right)^4\right)
+\end{equation*}
+
+To conclude:
+\begin{itemize}
+    \item The loss landscape of deep learning training is non-convex and potentially difficult to optimize
+    \item SGD converges to a stationary point in $O(\epsilon^{-4})$ iterations
+    \item GD converges to a stationary point in $O(\epsilon^{-2})$ iterations
+    \item Adding small noise to GD make it converge to a local minimum in $O(\epsilon^{-2}\log(\epsilon^{-1})^4)$ iterations.
+    \item Convergence to a global minimum is prohibitive in high-dimensional spaces. We need at least $\Omega(\epsilon^{-d})$ iterations for smooth functions; we need additional assumptions to ensure fast rates, such as the Polyak-Losasiewicz condition.
+\end{itemize}
+
 
 \subsection{Gradient descent variants}
