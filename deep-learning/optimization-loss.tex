@@ -201,5 +201,109 @@ To conclude:
     \item Convergence to a global minimum is prohibitive in high-dimensional spaces. We need at least $\Omega(\epsilon^{-d})$ iterations for smooth functions; we need additional assumptions to ensure fast rates, such as the Polyak-Losasiewicz condition.
 \end{itemize}
 
-
 \subsection{Gradient descent variants}
+Mini-batch gradient descent is the algorithm of choice when training a neural network. The term SGD is usually employed even when mini-batches are used! But despite working very well on fundamental examples (such as MLPs), some important questions remain. For instance, choosing learning rates can be difficult: how can we adapt the learning rate during training? Do we apply the same learning rate to all parameter updates? How to espace saddle points when the gradient is close to zero in all dimensions? We will introduce modifications to SGD to address these issues.\footnote{For more information, you can read \href{https://www.ruder.io/optimizing-gradient-descent/}{this nice survey} by Sebastian Ruder of different gradient descent optimization algorithms.}
+
+\subsubsection{Momentum}
+The core idea of \emph{momentum} is to accelerate SGD by dampening oscillations, that is averaging the last values of the latest gradients. We maintain a hidden state $v_t$ which is updated at each step, and used to update the parameter:
+\begin{equation*}
+    \begin{aligned}
+        v_{t+1} &= \gamma\cdot v_t+\eta\cdot\nabla\L(\theta_t)\\
+        \theta_{t+1} &= \theta_t - v_{t+1}
+    \end{aligned}
+\end{equation*}
+where $\gamma$ is a decay factor, with a typical value of $\gamma=0.9$. Intuitively, $v_t$ will store a sort of average of the previous gradients; note that:
+\begin{equation*}
+    \forall k\geq 0, \quad v_{t+1} = \gamma^k\cdot v_{t-k} + \eta\sum_{i=0}^k \gamma^i \nabla\L(\theta_{t-i})
+\end{equation*}
+If we choose $v_0=0$, then we have:
+\begin{equation*}
+    \quad v_{t+1} = \eta\sum_{i=0}^t \gamma^{t-i} \nabla\L(\theta_i)
+\end{equation*}
+which corresponds to a weighted sum of the previous gradients, each with a factor decreasing as the number of iterations increases.
+
+\subsubsection{Nesterov accelerated gradient}
+With momentum, we first compute the gradient and then make a step following our momentum and add the gradient. Nesterov proposed to first make the step following the momentum, and then adjusting by computing the gradient locally. Formally, this gives us:
+\begin{equation*}
+    \begin{aligned}
+        v_{t+1} &= \gamma\cdot v_t + \eta\cdot\nabla\L(\theta_t-\gamma\cdot v_t)\\
+        \theta_{t+1} &= \theta_t - v_{t+1}
+    \end{aligned}
+\end{equation*}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.7\textwidth]{images/nesterov.png}
+    \caption{Nesterov method. Brown corresponds to the accumulated gradient jump $\gamma\cdot v_t$, red to the gradient correction $\eta\cdot\nabla\L(\theta_t-\gamma\cdot v_t)$, and blue to the standard momentum.}
+\end{figure}
+
+\subsubsection{AdaGrad}
+We would like to adapt our updates to each individual parameter, i.e.~have a different decreasing learning rate for each parameter. This is what AdaGrad (standing for Adaptative Gradient) does:
+\begin{equation*}
+    \begin{aligned}
+        s_{t+1,i} &= s_{t,i} + \nabla\L(\theta_t)_i^2\\
+        \theta_{t+1,i} &= \theta_{t,i} - \frac{\eta}{\sqrt{s_{t+1,i}+\epsilon}}\cdot\nabla\L(\theta_t)_i
+    \end{aligned}
+\end{equation*}
+This provides a decreasing learning rate, allowing to go fast at the beginning and slower when approaching the minimum. This requires no manual tuning of the learning rate. Typical default values are $\eta=0.01$ and $\epsilon=10^{-8}$.
+
+\subsubsection{RMSProp}
+The problem with AdaGrad is that the learning rate goes to zero, and never forgets about the past. An idea to avoid this is to use an exponential average instead:
+\begin{equation*}
+    \begin{aligned}
+        s_{t+1,i} &= \gamma\cdot s_{t,i} + (1-\gamma)\cdot\nabla\L(\theta_t)_i^2\\
+        \theta_{t+1,i} &= \theta_{t,i} - \frac{\eta}{\sqrt{s_{t+1,i}+\epsilon}}\cdot\nabla\L(\theta_t)_i
+    \end{aligned}
+\end{equation*}
+where $\gamma$ is a decay factor (similarly to the idea of momentum), with default values $\gamma=0.9$ and $\eta=0.001$.
+
+\subsubsection{Adam}
+From the algorithm variations presented previously emerge two big ideas: using momentum to store the gradient, and having individual learning rates. Combining RMSProp and momentum gives us a widely used algorithm, Adam (for Adaptative Moment Estimation). It uses the following equations:
+\begin{equation*}
+    \begin{aligned}
+        m_{t+1} &= \beta_1\cdot m_t + (1-\beta_1)\cdot\nabla\L(\theta_t)\\
+        v_{t+1} &= \beta_2\cdot v_t + (1-\beta_2)\cdot\nabla\L(\theta_t)^2\\
+        \hat{m}_{t+1} &= \frac{m_{t+1}}{1-\beta_1^{t+1}}\\
+        \hat{v}_{t+1} &= \frac{v_{t+1}}{1-\beta_2^{t+1}}\\
+        \theta_{t+1} &= \theta_t - \frac{\eta}{\sqrt{\hat{v}_{t+1}}+\epsilon}\cdot\hat{m}_{t+1}
+    \end{aligned}
+\end{equation*}
+While they seem complex, these are just the extension and combinaison of the algorithms detailled before. $m_t$ and $v_t$ are estimates for the first and second moments of the gradients, just like we used in momentum and RMSProp. Because $m_0=v_0=0$, these estimates are biased towards $0$, thus the factors $(1-\beta^{t+1})^{-1}$ are here to counteract these biases. Typical values are $\beta_1=0.9$, $\beta_2=0.999$ and $\epsilon=10^{-8}$.
+
+\subsubsection{AMSGrad}
+Sometimes, Adam forgets too fast. To fix it, we replace the moving average by a $\max$ operator:
+\begin{equation*}
+    \begin{aligned}
+        m_{t+1} &= \beta_1\cdot m_t + (1-\beta_1)\cdot\nabla\L(\theta_t)\\
+        v_{t+1} &= \beta_2\cdot v_t + (1-\beta_2)\cdot\nabla\L(\theta_t)^2\\
+        \hat{v}_{t+1} &= \max(\hat{v}_t, v_{t+1})\\
+        \theta_{t+1} &= \theta_t - \frac{\eta}{\sqrt{\hat{v}_{t+1}}+\epsilon}\cdot m_{t+1}
+    \end{aligned}
+\end{equation*}
+
+\subsection{\texttt{PyTorch} optimizers}
+All these optimizers are built-in in \texttt{PyTorch}. They share the similar constructor:
+\begin{center}
+    \mintinline{python}{torch.optim.*(params, lr=..., momentum=...)}
+\end{center}
+Default values are different for all optimizers. In this construction, \mintinline{python}{params} should be an iterable (like a list) containing the parameters to optimize over. It can be obtained from any model with \mintinline{python}{module.parameters()}. The \mintinline{python}{setp} method updates the internal state of the optimizer acoording to the \mintinline{python}{grad} attributes of the \mintinline{python}{params}, and updates the latter according to the internal state.
+
+A simple training loop is of the form:
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[t]{.7\textwidth}
+        \begin{minted}{python}
+criterion = nn.NLLLoss()
+optimizer = torch.optim.SGD(model.parameters(),lr = 0.001)
+model.train()
+for epoch in range(num_epochs):
+    for inputs, targets in dataloader:
+        inputs, targets = inputs.to(device), targets.to(device)
+        optimizer.zero_grad()
+        outputs = model(inputs)
+        loss = criterion(outputs, targets)
+        loss.backward()
+        optimizer.step()
+        \end{minted}
+        \caption{A simple \texttt{PyTorch} training loop.}
+    \end{minipage}
+\end{figure}
