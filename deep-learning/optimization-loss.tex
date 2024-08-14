@@ -79,6 +79,71 @@ In \texttt{PyTorch}, cross entropy can be used with the line \mintinline{python}
 Finally, be aware that gradient can explode when going through a softmax, due to numerical errors. This is however taken care of by the \texttt{PyTorch} implementation of \mintinline{python}{nn.CrossEntropyLoss} and \mintinline{python}{nn.LogSoftmax}.
 
 \subsection{First-order optimization}
+\subsubsection{Introduction}
+Given an objective function $\L:\R^d\longrightarrow\R$, the goal of optimization is to find a minimized $\theta^*\in\R^d$ of $\L$, that is:
+\begin{equation*}
+    \theta^*\in\argmin_{\theta\in\R^d}\L(\theta)
+\end{equation*}
+A standard approach to doing so is to use an iterative algorithm relying on the gradient $\nabla\L(\theta_t)$ at each iteration $t\geq0$.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.9\textwidth]{images/distill-momentum.png}
+    \caption{Simulation of gradient descent from \href{https://distill.pub/2017/momentum/}{\nolinkurl{https://distill.pub/2017/momentum/}}.}  
+\end{figure}
+
+\subsubsection{Gradient descent structure}
+Iterative optimization algorithms all follow the same structure:
+\begin{description}
+    \item[Initialization] We start with a random parameter $\theta_0\in\R^p$. The choice of the initial value is very important in practice, as a good initialization will help our model to converge and reduce overfitting.
+    \item[Iteration] The current value of the parameter is updated using a rule of the form
+    \begin{equation*}
+        \theta_{t+1}=\phi_t(\theta_t,\nabla\L(\theta_t),s_t)
+    \end{equation*}
+    where $s_t$ is a hidden variable that is also updated at each iteration. The update function, $\phi_t$, might depend on the step $t$ (for instance when using various step sizes). The most basic version of gradient descent is $\theta_{t+1}=\theta_t-\eta\cdot\nabla\L(\theta_t)$, where $\eta$ is the learning rate (or step size).
+    \item[Stopping time] The algorithm stops after a certain number $T$ of iterations. This is important in practice and $T$ should be picked carefully to avoid overfitting.
+\end{description}
+
+\subsubsection{Difficulties in neural network training}
+In practice, training deep neural network can become challenging because of numerous difficulties.
+\begin{description}
+    \item[Non-convexity] If $\L$ is convex, that is:
+    \begin{equation*}
+        \forall\theta,\theta'\in\R^p, \quad \L\left(\frac{\theta+\theta'}{2}\right) \leq \frac{\L(\theta)+\L(\theta')}{2}
+    \end{equation*}
+    the optimization problem is fairly simple. Most theoretical results use this assumption in order to prove the convergence of the algorithm. In practice, this is often not the case, making the optimization problem very hard.
+    \item[High dimensionality] The number of parameters $d$ can be huge: for instance, the VGG-16 network, a convolutional neural network trained on the ImageNet dataset, has $p=138\,357\,544$ parameters.
+    \item[Access to the gradient] The gradient of $\L$ is often too expensive to compute on the entire dataset. In practice, $\nabla\L(\theta_t)$ is replaced by a stochastic or mini-batch approximation $\tilde{\nabla}_t$. 
+\end{description}
+
+\subsubsection{Gradient descent variants}
+In the following, we will consider that the objective function $\L$ is a loss function between a prediction and a label for one specific example, that is:
+\begin{equation*}
+    \forall i\in\iset{1}{n}, \quad \L_i(\theta) = \ell(g_\theta(x_i),y_i)
+\end{equation*}
+Our objective function $\L$ will be the training error:
+\begin{equation*}
+    \L(\theta) = \frac{1}{n}\sum_{i=1}^n \L_i(\theta) =  \frac{1}{n}\sum_{i=1}^n \ell(g_\theta(x_i),y_i)
+\end{equation*}
+In the following, $\eta>0$ denotes a \emph{learning rate} (or \emph{step-size}). The following variants of gradient descent are often used:
+\begin{description}
+    \item[Batch gradient descent] It uses the true gradient:
+    \begin{equation*}
+        \theta_{t+1} = \theta_t-\eta\cdot\frac{1}{n}\sum_{i=1}^n\nabla\L_i(\theta)
+    \end{equation*}
+    This approach gives the best possible gradient, but is very expensive if the dataset is large (when $n$ is big).
+    \item[Stochastic gradient descent] The gradient is approximated with one random sample
+    \begin{equation*}
+        \theta_{t+1} = \theta_t-\eta\cdot\L_{i_t}(\theta)
+    \end{equation*}
+    This approach is very efficient but often instable, since one element might contain noise, making the convergence difficult.
+    \item[Mini-batch gradient descent] The gradient is approximated with multiple random samples:
+    \begin{equation*}
+        \theta_{t+1} = \theta_t-\eta\cdot\frac{1}{b}\sum_{i=1}^b\nabla\L_{i_{b,t}}(\theta)
+    \end{equation*} 
+    where $b>0$ is the \emph{batch size}. This method is a good tradeoff between speed and convergence, with a parameter $b$ that can be adjusted to obtain the best results.
+\end{description}
+
+Keep in mind that the final goal is to reduce the population risk, that is $\E[\ell(g_\theta(X), Y)]$. We need to pay attention to overfitting in addition to using the optimization algorithm to reduce the training error. In this class, we focus specifically on the performance of the optimization algorithm in minimizing the objective function, rather than the model's generalization error. In the next chapters, we will see techniques to avoid overfitting.
 
 \subsection{Convergence analysis}
 
