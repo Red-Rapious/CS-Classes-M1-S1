@@ -26,12 +26,57 @@ Manipulating tensors and tensor sizes is complex and leads to many bugs in deep 
     \begin{equation*}
         \begin{aligned}
             \ell : \R^d\times\R^d&\longrightarrow\R\\
-            x, y&\longmapsto \norm{x-y}_2^2
+            x, y&\longmapsto \norm{x-y}_2^2 = (x-y)^\tp(x-y)
         \end{aligned}
     \end{equation*}
 \end{definition}
 
+MSE has a probabilistic interpretation, fitting the following probabilistic model: we are trying to learn a certain function $g_\theta$, parametered by $\theta\in\R^p$. To do so, we are given tuples of data of the form $(X_i, Y_i)$, where $Y_i$ is the label corresponding to $X_i$. We assume that the probabilistic relationship between $X_i$ and $Y_i$ is the following:
+\begin{equation*}
+    Y_i=g_\theta(X_i)+\epsilon_i
+\end{equation*}
+where $\epsilon_i\sim\mathcal{N}(0,\sigma^2I_d)$ are i.i.d.~centered Gaussian random variables (that is of mean 0 and variance $\sigma^2$). We also assume that the $X_i$ are i.i.d.~and independent of $\theta$.
+
+Let's apply the Maximum Likelihood principle to this probabilistic model. The likelihood for the data to be drawn from a given $\theta$ is:
+\begin{equation*}
+    \begin{aligned}
+        \P_\theta((X_i,Y_i)_i)&=\prod_i \P(X_i) \cdot \P_\theta\left(\epsilon_i=Y_i-g_\theta(X_i)\right)\\
+        &=\prod_i \P(X_i) \cdot \frac{1}{\sqrt{(2\pi)^d|\sigma^2I_d|}}\cdot\exp\left(-\frac{1}{2}(Y_i-g_\theta(X_i)-0)^\tp(\sigma^2I_d)^{-1}(Y_i-g_\theta(X_i)-0)\right) \\
+        &=\prod_i \frac{\P(X_i)}{\sqrt{(2\pi\sigma^2)^d}}\cdot\exp\left(-\frac{1}{2\sigma^2}\norm{Y_i-g_\theta(X_i)}_2^2\right) \\
+        &\propto\exp\left(-\frac{\sum_i\norm{Y_i-g_\theta(X_i)}_2^2}{2\sigma^2}\right)\\
+        &= \exp\left(-\frac{\ell(Y_i,g_\theta(X_i))}{2\sigma^2}\right)
+    \end{aligned}
+\end{equation*}
+Therefore, maximizing the $\log$-likelihood is equivalent to minimizing the MSE.
+
+In \texttt{PyTorch}, means square error can be used with the line \mintinline{python}{criterion = nn.MSELoss()}. It supports several parameters, such as \mintinline{python}{reduction='sum'}, \mintinline{python}{reduction='mean'}, which are described in \href{https://pytorch.org/docs/stable/generated/torch.nn.MSELoss.html}{the documentation}. Once set, \mintinline{python}{criterion} takes as input two tensors of shapes $[N,d]$, where $N$ is the batch size and $d$ is the dimension of the output vectors. Note that when $d=1$, the output should be of size $[N,1]$ and not $[N]$; in that case, \mintinline{python}{x.unsqueeze(-1)} can come in handy.
+
 \subsubsection{Cross Entropy}
+\begin{definition}[Cross Entropy]
+    The \emph{cross entropy} is the loss function defined by:
+    \begin{equation*}
+        \begin{aligned}
+            \ell : \R^C\times\iset{1}{C}&\longrightarrow\R\\
+            x, y&\longmapsto -\log\left(\frac{\exp(x_y)}{\sum_i\exp(x_i)}\right)
+        \end{aligned}
+    \end{equation*}
+\end{definition}
+
+Similarly to MSE, minimizing the cross entropy corresponds to maximizing the $\log$-likelihood for a certain probabilistic model. Assume that there is a parameter $\theta\in\R^p$ such that, for all classes $k\in\iset{1}{C}$,
+\begin{equation*}
+    \log\P(Y_i=k|X_i) \propto g_\theta(X_i)_k
+\end{equation*}
+where $X_i$ are i.i.d.~and independent of $\theta$. Then, the likelihood for the data to be drawn for a given $\theta$ is:
+\begin{equation*}
+    \begin{aligned}
+        \P_\theta((X_i,Y_i)_i) &= \prod_i\P(X_i)\cdot\P_\theta(Y_i|X_i)\\
+        &\propto\prod_i\frac{\exp(g_\theta(X_i)_{Y_i})}{\sum_k\exp(g_\theta(X_i)_k)}        
+    \end{aligned}
+\end{equation*}
+
+In \texttt{PyTorch}, cross entropy can be used with the line \mintinline{python}{criterion = nn.CrossEntropyLoss()}. It supports several parameters, such as \mintinline{python}{reduction='sum'}, \mintinline{python}{reduction='mean'}, which are described in \href{https://pytorch.org/docs/stable/generated/torch.nn.MSELoss.html}{the documentation}. Once set, \mintinline{python}{criterion} takes as input two tensors: the \emph{scores} (a tensor of shape $[N,C]$), and either a class index per sample, or class probabilities for each sample. Note that \mintinline{python}{nn.CrossEntropyLoss} is the composition of \mintinline{python}{nn.LogSoftmax} and \mintinline{python}{nn.NLLLoss}.
+
+Finally, be aware that gradient can explode when going through a softmax, due to numerical errors. This is however taken care of by the \texttt{PyTorch} implementation of \mintinline{python}{nn.CrossEntropyLoss} and \mintinline{python}{nn.LogSoftmax}.
 
 \subsection{First-order optimization}
 
