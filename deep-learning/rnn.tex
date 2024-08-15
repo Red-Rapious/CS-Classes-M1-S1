@@ -129,10 +129,77 @@ where $\theta$ is some threshold.
 To avoid vanishing gradient, the most widely used solution is to change the recurrent neural network architecture.
 
 \subsection{Long Short-Term Memory (LSTM)}
+\subsubsection{Recurrent equation}
+The equation defining vanilla recurrent neural network is the following:
+\begin{equation}
+    h_t = \tanh\left(W\begin{bmatrix}
+            h_{t-1}\\
+            x_t
+        \end{bmatrix}\right)
+\end{equation}
+Instead, the \emph{Long Short-Term Memory} (LSTM) architecture was introduced to solve the vanishing gradient problem. Its recurring equation goes as follow:
+\begin{equation*}
+    \tag{LSTM}
+    \begin{aligned}
+        \begin{bmatrix}
+            i\\
+            f\\
+            o\\
+            g
+        \end{bmatrix}
+        &= \begin{bmatrix}
+            \sigma\\
+            \sigma\\
+            \sigma\\
+            \tanh
+        \end{bmatrix} W \begin{bmatrix}
+            h_{t-1}\\
+            x_t
+        \end{bmatrix} \\
+        c_t &= f \odot c_{t-1} + i\odot g\\
+        h_t &= o \odot \tanh(c_t)
+    \end{aligned}
+\end{equation*}
+Instead of keeping only one vector at each time step, two are used: the cell state $c_t$ and the hidden state $h_t$. On top of this, four gates values, $i,f,o$ and $g$ are computed at each time step, which will be used to compute $c_t$ and $h_t$. Each gate can somehow be intuitively interpreted:
+\begin{itemize}
+    \item \textbf{Input gate} $i$ specifies whether to write in the cell
+    \item \textbf{Forget gate} $f$ specifies whether to erase the cell from its previous content
+    \item \textbf{Output gate} $o$ specifies how much should the cell be revealed to the hidden state
+    \item \textbf{Cell input gate} $g$ specifies what to write in the cell
+\end{itemize}
+Note that the $g$ gate is the only one to go through a $\tanh$ linearity. The $i,f$ and $o$ gates have coefficients in $[0,1]$, which fits the opened/closed gate interpretation, while $g$ has coefficients in $[-1,1]$, which is the range of values of $c_t$.
 
+The new cell value is a combinaison of its previous value $c_{t-1}$ and the cell input gate $g$: the proportion of both values are controlled by the forget gate $f$ and the input gate $i$. The new $c_t$ value being computed, it is sent to the classical hidden state $h_t$; the output gate $o$ controls what coefficients are being sent.
 
+\subsubsection{Gradient flow}
+While it might seem very complex, LSTM improves the gradient flow throughout the cell. An important behavior is that the gradient propagation from $c_t$ to $c_{t-1}$ only passes through an element-wise multiplication by $f$, and no matrix multiplication by $W^\tp$.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.5\textwidth]{images/lstm-flow.png}
+    \caption{Gradient flow through an LSTM cell.}
+\end{figure}
+
+Therefore, chaining together multiple LSTM cells by unrolling the computational graph does not make the gradient vanish if $f$ is working correctly: it creates an uninterrupted gradient flow from late cell states to early state cells.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/lstm-uninterrupted-grad.png}
+    \caption{Uninterrupted gradient flow.}
+\end{figure}
 
 \subsection{Multilayer Recurrent Neural Networks}
-So far, we only considered the use of a recurrent neural network with only one hidden cell. But RNNs cells can also be combined to form multi-layer architectures. In a multi-layer RNN, the input is fed into a first hidden state, which is then used as the input for a second hidden state (another layer), which is eventually passed into a feed-forward layer to produce an output.
+So far, we only considered the use of a recurrent neural network with only one hidden cell. Empirically, neural networks with more layers often perform better, as we saw for MLPs and CNNs. We would like to apply this layering idea to RNNs.
+
+The idea of multilayer RNNs is to feed then hidden states produced at each time steps into a second RNN, with different weight matrices.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.5\textwidth]{images/two-layer-rnn.png}
+    \caption{A two-layer RNN.}
+\end{figure}
+This process can be iterated to create deep recurrent neural networks, by adding two, three, ore more RNNs on top of each other. Note that while it is very common for CNNs to have very deep networks, RNNs are often used in practice with no more than three or four layers.
+
+\subsection*{RNN: Summary}
+RNNs give us a lot of flexibility in architecture design by allowing one/many to one/many models. Vanilla RNNs are simple but don't work so well, because of exploding and vanishing gradients. LSTM is the most commonly used alternative to vanilla RNNs, used to solve the vanishing gradient problem.
+
+%But RNNs cells can also be combined to form multi-layer architectures. In a multi-layer RNN, the input is fed into a first hidden state, which is then used as the input for a second hidden state (another layer), which is eventually passed into a feed-forward layer to produce an output.
 
 \newpage
