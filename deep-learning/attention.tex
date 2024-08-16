@@ -53,4 +53,20 @@ This process that was applied for the first decoder step $t=1$ can be iterated f
 \end{figure}
 This overcomes the bottleneck problem encountered for unique context vectors: at each step, the decoder is able to choose the relevant hidden states of the encoder, which selects only relevant information. When working with very long sequences, the model will be able to shift its attention around and focus on important parts of the inputs.
 
+\subsection{Visualizing and interpreting attention weights}
+\begin{wrapfigure}[14]{r}{.45\textwidth}
+    \captionsetup{justification=raggedleft}
+    \centering
+    \includegraphics[width=.45\textwidth]{images/attention-visualization.pdf}
+    \caption{Visualization of attention weights for English-to-French translation.\protect\footnotemark}
+\end{wrapfigure}
+\footnotetext{Image taken from Bahdanau et al, \say{Neural machine translation by jointly learning to align and translate}, ICLR 2015}
+The attention weights can be used to gain interpretability of the model: we can see for each output word which original words it was the most focused on.  
+
+Diagonal attention (the first four words and the last 5 words) means that words correspond in order between French and English. High coefficients outside the diagonal (for instance, \say{European}/\say{européenne}) show words out of order between the two sentences. Finally, some lines and columns have more than one non-zero coefficient, such as the \say{was} or \say{say} columns: these show that the verb conjugation requires more than one word of context to be translated.
+
+\newpage
+\subsection{Image captioning with RNNs and Attention}
+It is important to notice that the decoder does not use the fact that the hidden states $h_i$ form an ordered sequence, but only considers them as an unordered set $\set{h_i}{i\in I}$. This means that we can use the same architecture given any set of input hidden vectors $\set{h_i}{i\in I}$, especially for other types of data that do not form sequences.
+
 \newpage
