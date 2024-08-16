@@ -28,16 +28,16 @@ Intuitively, the alignment score $e_{t,i}\in\R$ quantifies how much \emph{attent
 \begin{figure}[H]
     \centering
     \includegraphics[width=.5\textwidth]{images/attention-scores.png}
-    \caption{Applying softmax to alignment scores gives us attention scores.}
+    \caption{Applying $\softmax$ to alignment scores gives us attention scores.}
 \end{figure}
 
-The alignment scores are arbitrary real numbers. Therefore, we apply to them the softmax operations for each decoder state $s_{t-1}$, giving us \emph{attention weights} $(a_{t,i})$ satisfying:
+The alignment scores are arbitrary real numbers. Therefore, we apply to them the $\softmax$ operations for each decoder state $s_{t-1}$, giving us \emph{attention weights} $(a_{t,i})$ satisfying:
 \begin{equation*}
     \sum_i a_{t,i} = 1 
 \end{equation*}
 That being done, we can finally compute the context vector for each time step $t$ of the decoder, using a sum of the hidden states $(h_i)$ weighted by the attention scores $(a_{t,i})$:
 \begin{equation*}
-    c_t = \sum_i a_{t,i}\cdot h_i
+    c_t = \sum_i a_{t,i} h_i
 \end{equation*}
 This gives us the context vector $c_t$ which will be used for the generation of $y_t$ by the decoder. Note that this is all differentiable and allows us to backpropagate through the parameters of $f_{\textnormal{att}}$; in particular, we do not need to supervise the attention weights.
 \begin{figure}[H]
@@ -60,7 +60,7 @@ This overcomes the bottleneck problem encountered for unique context vectors: at
     \includegraphics[width=.45\textwidth]{images/attention-visualization.pdf}
     \caption{Visualization of attention weights for English-to-French translation.\protect\footnotemark}
 \end{wrapfigure}
-\footnotetext{Image taken from Bahdanau et al, \say{Neural machine translation by jointly learning to align and translate}, ICLR 2015}
+\footnotetext{Image taken from Bahdanau et al., \say{Neural machine translation by jointly learning to align and translate}, ICLR 2015}
 The attention weights can be used to gain interpretability of the model: we can see for each output word which original words it was the most focused on.  
 
 Diagonal attention (the first four words and the last 5 words) means that words correspond in order between French and English. High coefficients outside the diagonal (for instance, \say{European}/\say{européenne}) show words out of order between the two sentences. Finally, some lines and columns have more than one non-zero coefficient, such as the \say{was} or \say{say} columns: these show that the verb conjugation requires more than one word of context to be translated.
@@ -73,9 +73,9 @@ Consider a deep convolutional neural network, without fully-connected layers at 
 \begin{equation*}
     e_{t,i,j} = f_{\textnormal{att}}(s_{t-1}, h_{i,j})
 \end{equation*}
-We then pass each grid of alignment scores into the softmax operator, giving us a normalized probability distribution, the grid of attention weights $(a_{t,i,j})$. Once again, the context of the image can be summarized with respect to the attention weights by computing a context vector $c_t$:
+We then pass each grid of alignment scores into the $\softmax$ operator, giving us a normalized probability distribution, the grid of attention weights $(a_{t,i,j})$. Once again, the context of the image can be summarized with respect to the attention weights by computing a context vector $c_t$:
 \begin{equation*}
-    c_t = \sum_{i,j} a_{t,i,j} \cdot h_{i,j}
+    c_t = \sum_{i,j} a_{t,i,j} h_{i,j}
 \end{equation*} 
 Feeding the context vector $c_1$ alongside the start token $y_0$ into the decoder RNN starting with hidden state $s_0$ can be used to generate a caption corresponding to the image.
 \begin{figure}[H]
@@ -89,6 +89,109 @@ Feeding the context vector $c_1$ alongside the start token $y_0$ into the decode
     \includegraphics[width=\textwidth]{images/attention-bird.png}
     \caption{Visualizing attention over time during captioning.\protect\footnotemark}
 \end{figure}
-\footnotetext{Image taken from Xu et al, \say{Show, Attend, and Tell: Neural Image Caption Generation with Visual Attention}, ICML 2015}
+\footnotetext{Image taken from Xu et al., \say{Show, Attend, and Tell: Neural Image Caption Generation with Visual Attention}, ICML 2015}
+
+\subsection{Attention Layer}
+We saw that attention could be used in a variety of situations, for input data such as hidden states of an RNN or features grid of a CNN. The attention mechanism can be generalized into an \emph{Attention Layer}, which provides an abstraction to use attention in diverse contexts.
+
+\subsubsection{Simple generalization}
+Let's start by building an attention layer which exactly mimics the behavior described previously. In its simplest form, it uses the following inputs:
+\begin{itemize}
+    \item A \emph{query vector} $q$ of size $D_Q$ (the equivalent of the decoder states vectors $s_t$)
+    \item A set of \emph{inputs vectors} $X$ of shape $N_X\times D_X$ (the equivalent of the encoder states vector $h_i$)
+    \item A \emph{similarity function} $f_{\textnormal{acc}}:\R^{D_Q}\times\R^{D_X} \longrightarrow \R$ that can take $q$ and a certain $X_i$ as inputs and return their similarity (or alignment score)
+\end{itemize}
+Like we detailled previously, the computations done by the attention layer are:
+\begin{itemize}
+    \item The similarities $e$ of shape $N_X$, obtained by setting $e_i = f_{\textnormal{acc}}(q, X_i)$
+    \item The attention weights $a=\softmax(e)$ of shape $N_X$
+    \item The output vector $y = \sum_i a_i X_i$ of shape $D_X$
+\end{itemize}
+
+\subsubsection{Changing the similarity function}
+While early papers on attention used a specialized function $f_{\textnormal{acc}}$ to compute similarity, it turns out to be much more simple and efficient to simply use a dot product for similarity, while keeping the same performances. Therefore, we change $X$ to be of shape $N_X\times D_Q$, and we compute the similarities with:
+\begin{equation*}
+    e_i = q\cdot X_i
+\end{equation*}
+
+In practice, large similarities will cause $\softmax$ to saturate and give vanishing gradients: if one coefficient is much higher than the others, the softmax distribution will peak at this element, and have an almost-zero gradient everywhere. To avoid this, we normalize $e$ by dividing it by $\sqrt{D_Q}$, giving us the \emph{scaled dot product} for similarity:
+\begin{equation*}
+    e_i = \frac{q\cdot X_i}{\sqrt{D_Q}}
+\end{equation*}
+
+\subsubsection{Multiple query vectors}
+In previous applications of the attention layer (sequence-to-sequence, image captioning), we always used a single query vector (the decoder states). We would like to generalize this to handle multiple query vectors at a time; therefore, we replace the query vector $q$ by a set of query vectors $Q$ of size $N_Q\times D_Q$. Instead of computing the similaritie score between the query vector and each input vector, we will compute the similarities for each query vector and for each input vector:
+\begin{equation*}
+    E_{k,i} = \frac{Q_k\cdot X_i}{\sqrt{D_Q}}
+\end{equation*}
+These operations can be written and implemented using a matrix multiplication:
+\begin{equation}
+    E = \frac{Q\times X^\tp}{\sqrt{D_Q}}
+    \label{eq:similarity-matrix}
+\end{equation}
+
+To ensure that each query vector is independent of the others, we take the $\softmax$ only over the $D_Q$ dimension of $E$:
+\begin{equation*}
+    A_{k,i} = \softmax_i(E_k) = \softmax_i(E, \textnormal{dim=1}) = \frac{e^{E_{k,i}}}{\sum_{i'}e^{E_{k,i'}}}
+\end{equation*}
+where $A$ is therefore of shape $N_Q\times N_X$.
+
+Finally, the output vector is replaced by a set of output vectors verifying:
+\begin{equation*}
+    Y_k = \sum_i A_{k,i}X_i
+\end{equation*}
+This output matrix of shape $N_Q\times D_X$ can be written directly as:
+\begin{equation}
+    Y = AX 
+    \label{eq:output-matrix}
+\end{equation}
+
+\subsubsection{Key-value distinction}
+Note that in these computations, we are using the input vectors $X$for two different things. Firstly, we use them to compute the similarities with the query vectors $Q$ (in \autoref{eq:similarity-matrix}). Secondly, we use them to compute the output vectors $Y$ (in \autoref{eq:output-matrix}). In all generality, we can see this as two different things, and might want to use two separate sets of vectors to do so. Therefore, we often separate the input vectors into \emph{key vectors} and \emph{value vectors}.
+
+The attention layer will still take as input a query matrix $Q$ and an input matrix $X$, but will also use a learnable \emph{key matrix} $W_K$ of shape $D_X\times D_Q$ and a learnable \emph{value matrix} $W_V$ of shape $D_X\times D_V$. These learnable matrices will be used to translate the input vectors $X$ into key vectors $K$ and value vectors $V$:
+\begin{equation*}
+    \begin{cases}
+        K = X\times W_K\\
+        V = X\times W_V
+    \end{cases}
+\end{equation*}
+The similarities will then be computed using the key vectors:
+\begin{equation*}
+    E = Q\times K^\tp
+\end{equation*}
+and the output vectors of shape $N_Q\times D_V$ will be computed using the value vectors:
+\begin{equation*}
+    Y = A\times V
+\end{equation*}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.4\textwidth]{images/attention-layer.png}
+    \caption{Schema of the attention layer making the distinction between keys and values.}
+\end{figure}
+
+\subsection{Self-Attention layer}
+\subsubsection{Principle}
+We introduced a general architecture for the attention layer, which allows us to \say{search} for certain queries $Q$ into some inputs $X$. A special case of this, often used in practice, is the \emph{Self-Attention layer}: we only consider one input matrix $X$, which will be used both for inputs and queries.
+
+Similarly to the key and value matrices, we will predict the query matrix $Q$ using the input matrix $X$. We therefore add another learnable matrix $W_Q$ of shape $D_X\times D_Q$, and we retrieve $Q$ by computing:
+\begin{equation*}
+    Q = X\times W_Q
+\end{equation*}
+Everything else works in the exact same way as the attention layer with key-value distinction.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.35\textwidth]{images/self-attention-layer.png}
+    \caption{Self-attention layer.}
+\end{figure}
+
+\subsubsection{Positional encoding}
+Note that permuting the input vectors will propagate the permutation up to the outputs; the self-attention layer is \emph{permutation equivariant}, which can be interpreted as the fact that it works on a set of vectors. 
+
+This behavior might actually be unwanted, as the position of the vectors might bring more information. In order to make the self-attention processing aware of the positions, we often concatenate the input with the \emph{positional encoding} of the vectors.
+
+To do so, we often use a learned lookup table $P$, and append at the end of the $i$-th input vector the coefficient $P(i)$. This can also be done with a fixed -- not-learned -- function.
 
 \newpage
