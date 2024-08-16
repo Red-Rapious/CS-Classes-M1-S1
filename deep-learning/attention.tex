@@ -67,6 +67,28 @@ Diagonal attention (the first four words and the last 5 words) means that words 
 
 \newpage
 \subsection{Image captioning with RNNs and Attention}
-It is important to notice that the decoder does not use the fact that the hidden states $h_i$ form an ordered sequence, but only considers them as an unordered set $\set{h_i}{i\in I}$. This means that we can use the same architecture given any set of input hidden vectors $\set{h_i}{i\in I}$, especially for other types of data that do not form sequences.
+It is important to notice that the decoder does not use the fact that the hidden states $(h_i)_i$ form an ordered sequence, but only considers them as an unordered set $\set{h_i}{i\in I}$. This means that we can use the same architecture given any set of input hidden vectors $\set{h_i}{i\in I}$, especially for other types of data that do not form sequences.
+
+Consider a deep convolutional neural network, without fully-connected layers at the end. The ouput of this CNN can be interpreted as a grid of feature vectors of the image. We see these feature vectors just like a sequence of hidden states of an encoder RNN: we can therefore apply the attention mechanism to them. We consider a simple model $f_{\textnormal{acc}}$ that we use to compute the alignment scores of each feature in the grid:
+\begin{equation*}
+    e_{t,i,j} = f_{\textnormal{att}}(s_{t-1}, h_{i,j})
+\end{equation*}
+We then pass each grid of alignment scores into the softmax operator, giving us a normalized probability distribution, the grid of attention weights $(a_{t,i,j})$. Once again, the context of the image can be summarized with respect to the attention weights by computing a context vector $c_t$:
+\begin{equation*}
+    c_t = \sum_{i,j} a_{t,i,j} \cdot h_{i,j}
+\end{equation*} 
+Feeding the context vector $c_1$ alongside the start token $y_0$ into the decoder RNN starting with hidden state $s_0$ can be used to generate a caption corresponding to the image.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.9\textwidth]{images/attention-cnn.png}
+    \caption{Applying attention to a grid of features for image captioning.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/attention-bird.png}
+    \caption{Visualizing attention over time during captioning.\protect\footnotemark}
+\end{figure}
+\footnotetext{Image taken from Xu et al, \say{Show, Attend, and Tell: Neural Image Caption Generation with Visual Attention}, ICML 2015}
 
 \newpage
