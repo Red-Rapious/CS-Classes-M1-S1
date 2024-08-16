@@ -1,4 +1,3 @@
-\newpage
 \section{Recurrent Neural Networks}
 \subsection{Processing Sequences}
 So far, all the deep neural networks that we studied (MLPs, CNNs) had the same \emph{feed-forward} global structure: the network receives an input of fixed size, which is fed into the successive layers of the network, which produces a fixed-size output. This is known as a \emph{one-to-one} model, and is mostly used for image classification.
@@ -201,5 +200,3 @@ This process can be iterated to create deep recurrent neural networks, by adding
 RNNs give us a lot of flexibility in architecture design by allowing one/many to one/many models. Vanilla RNNs are simple but don't work so well, because of exploding and vanishing gradients. LSTM is the most commonly used alternative to vanilla RNNs, used to solve the vanishing gradient problem.
 
 %But RNNs cells can also be combined to form multi-layer architectures. In a multi-layer RNN, the input is fed into a first hidden state, which is then used as the input for a second hidden state (another layer), which is eventually passed into a feed-forward layer to produce an output.
-
-\newpage
