@@ -87,7 +87,7 @@ Given an objective function $\L:\R^d\longrightarrow\R$, the goal of optimization
 A standard approach to doing so is to use an iterative algorithm relying on the gradient $\nabla\L(\theta_t)$ at each iteration $t\geq0$.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.9\textwidth]{images/distill-momentum.png}
+    \includegraphics[width=.9\textwidth]{optimization-loss/distill-momentum.png}
     \caption{Simulation of gradient descent from \href{https://distill.pub/2017/momentum/}{\nolinkurl{https://distill.pub/2017/momentum/}}.}  
 \end{figure}
 
@@ -232,7 +232,7 @@ With momentum, we first compute the gradient and then make a step following our 
 \end{equation*}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.7\textwidth]{images/nesterov.png}
+    \includegraphics[width=.7\textwidth]{optimization-loss/nesterov.png}
     \caption{Nesterov method. Brown corresponds to the accumulated gradient jump $\gamma\cdot v_t$, red to the gradient correction $\eta\cdot\nabla\L(\theta_t-\gamma\cdot v_t)$, and blue to the standard momentum.}
 \end{figure}
 

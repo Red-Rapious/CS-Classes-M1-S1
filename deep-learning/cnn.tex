@@ -182,12 +182,12 @@ Intuitively, the result of the kernel convolution tells us for each pixel \emph{
         \begin{minipage}{0.4\textwidth}
             \centering
             \caption*{Input image}
-            \includegraphics[width=.9\textwidth]{images/pre-sobel.png}
+            \includegraphics[width=.9\textwidth]{cnn/pre-sobel.png}
         \end{minipage}
         \begin{minipage}{0.4\textwidth}
             \centering
             \caption*{Sobel operator applied to the image}
-            \includegraphics[width=.9\textwidth]{images/post-sobel.png}
+            \includegraphics[width=.9\textwidth]{cnn/post-sobel.png}
         \end{minipage}
         
         \caption{Effect of the Sobel operator on an image}
@@ -583,13 +583,13 @@ Pooling layers work similarly to convolutional layers, using a mechanism of kern
         
         % Left image
         \draw[thick, ->] (-1.5, -3.8) -- ++(0,-1);
-        \node at (-1.5, -6.5) {\includegraphics[width=80pt]{images/plante.jpg}};
+        \node at (-1.5, -6.5) {\includegraphics[width=80pt]{cnn/plante.jpg}};
         \node at (-3.3, -6.5) {$224$};
         \node at (-1.5, -8.2) {$224$};
         
         % Right image
         \draw[thick, <-] (5.5, -2.8) -- ++(0,-2.8);
-        \node at (5.5, -6.5) {\includegraphics[width=40pt]{images/plante.jpg}};
+        \node at (5.5, -6.5) {\includegraphics[width=40pt]{cnn/plante.jpg}};
         \node at (6.6, -6.5) {$112$};
         \node at (5.5, -7.5) {$112$};
     \end{tikzpicture}
@@ -635,7 +635,7 @@ Now that we have these different types of layers, we can stack them together to 
 As an example, we will take the 1998 model \emph{LeNet-5}:
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{images/lenet-5.png}
+    \includegraphics[width=0.8\textwidth]{cnn/lenet-5.png}
     \caption{LeNet-5 architecture}
 \end{figure}
 The first blocks of Convolutional and Pooling layers progressively decrease the spatial size of the input, while increasing the number of channels: the total volume of the input is preserved.

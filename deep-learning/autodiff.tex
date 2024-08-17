@@ -82,7 +82,7 @@ This is the idea of \emph{automatic differentiation} with accumulation: we will 
 Automatic differentiation uses a data structure called \emph{Computational Graphs} to represent the computation that is happening inside the model.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.7\textwidth]{images/computational-graph.png}
+    \includegraphics[width=.7\textwidth]{autodiff/computational-graph.png}
     \caption{Computational graph for $\L(\softmax(Wx+b), y)$}
     \label{fig:computational-graph}
 \end{figure}
@@ -91,7 +91,7 @@ In Figure \ref{fig:computational-graph}, reading from left to right, we can see 
 Computational graphs can then be used to apply the main algorithm to compute the gradient, called \emph{backpropagation}. We will illustrate its behavior by considering the function $f(x, y, z) = (x+y)\times z$, to which is associated the following computational graph:
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.5\textwidth]{images/simple-graph.png}
+    \includegraphics[width=.5\textwidth]{autodiff/simple-graph.png}
     \caption{Computational graph for $f(x, y, z) = (x+y)\times z$}
 \end{figure}
 
@@ -99,7 +99,7 @@ Computational graphs can then be used to apply the main algorithm to compute the
 The first step of backpropagation is to compute the outputs during a \emph{forward pass}. This is simply done by replacing each input by its numerical value, and applying the operations described by the nodes of the graph. Using $x=-2$, $y=5$, $z=-4$ in the previous example yields:
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.5\textwidth]{images/forward-graph.png}
+    \includegraphics[width=.5\textwidth]{autodiff/forward-graph.png}
     \caption{Forward pass}
 \end{figure}
 
@@ -130,14 +130,14 @@ Consider for instance a function $f$ taking $x$ and $y$ as inputs, and producing
 We are given the upstream gradient of the loss that we want to compute with respect to our output, $\partfrac{\L}{z}$. Our goal is now simply to propagate the gradient computation by providing the downstream derivatives, that is $\partfrac{\L}{x}$ and $\partfrac{\L}{y}$. Since we know the expression of $f$, we are able to compute the local derivatives $\partfrac{z}{x}$ and $\partfrac{z}{y}$; using chain rule, we can therefore provide the downstream gradient.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.6\textwidth]{images/modularity.png}
+    \includegraphics[width=.6\textwidth]{autodiff/modularity.png}
     \caption{Local process of computing the downstream gradient}
 \end{figure}
 
 \subsubsection{A complete example}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.6\textwidth]{images/complete-example.png}
+    \includegraphics[width=.6\textwidth]{autodiff/complete-example.png}
     \caption{Computational graph for the function $f(x, w) = \frac{1}{1+e^{-(w_0x_0+w_1x_1+w_2)}}$}
 \end{figure}
 We do not have to break down the gradient computation only into elementary operations such as additions or multiplications: we can define blocks, such as \say{Sigmoid}, and hard-code their gradients to avoid using automatic differentiation on it.

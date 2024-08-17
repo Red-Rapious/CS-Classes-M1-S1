@@ -6,7 +6,7 @@ Originally, the transformer architecture was proposed for machine translation, a
 We are given a sentence in English and want to translate it in French. To do so, we use two RNNs, an encoder which will handling the input tokens, and a decoder which will generate the output sentence.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{images/seq-to-seq.png}
+    \includegraphics[width=\textwidth]{attention/seq-to-seq.png}
     \caption{Sequence-to-sequence using an RNN.}
 \end{figure}
 After the processing of the original sentence, the encoder will summarize the entire context of that input sentence using two vectors: the initial decoder state $s_0$, and the context vector $c$. In practice, $s_0$ is often obtained by feeding $h_T$ through a feed-forward neural network, and $c$ is often set to $h_T$ directly.
@@ -27,7 +27,7 @@ Intuitively, the alignment score $e_{t,i}\in\R$ quantifies how much \emph{attent
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.5\textwidth]{images/attention-scores.png}
+    \includegraphics[width=.5\textwidth]{attention/attention-scores.png}
     \caption{Applying $\softmax$ to alignment scores gives us attention scores.}
 \end{figure}
 
@@ -42,13 +42,13 @@ That being done, we can finally compute the context vector for each time step $t
 This gives us the context vector $c_t$ which will be used for the generation of $y_t$ by the decoder. Note that this is all differentiable and allows us to backpropagate through the parameters of $f_{\textnormal{att}}$; in particular, we do not need to supervise the attention weights.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.65\textwidth]{images/attention-context.png}
+    \includegraphics[width=.65\textwidth]{attention/attention-context.png}
     \caption{Computation of the context vector using attention scores.}
 \end{figure}
 This process that was applied for the first decoder step $t=1$ can be iterated for every following step: we compute the alignment scores using the new hidden state $s_1$, then the attention scores, giving us the context vector $c_t$, which is fed into the decoder alongside $y_{t-1}$.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.9\textwidth]{images/attention-unrolled.png}
+    \includegraphics[width=.9\textwidth]{attention/attention-unrolled.png}
     \caption{Unrolling the computational graph with attention.}
 \end{figure}
 This overcomes the bottleneck problem encountered for unique context vectors: at each step, the decoder is able to choose the relevant hidden states of the encoder, which selects only relevant information. When working with very long sequences, the model will be able to shift its attention around and focus on important parts of the inputs.
@@ -57,7 +57,7 @@ This overcomes the bottleneck problem encountered for unique context vectors: at
 \begin{wrapfigure}[14]{r}{.45\textwidth}
     \captionsetup{justification=raggedleft}
     \centering
-    \includegraphics[width=.45\textwidth]{images/attention-visualization.pdf}
+    \includegraphics[width=.45\textwidth]{attention/attention-visualization.pdf}
     \caption{Visualization of attention weights for English-to-French translation.\protect\footnotemark}
 \end{wrapfigure}
 \footnotetext{Image taken from Bahdanau et al., \say{Neural machine translation by jointly learning to align and translate}, ICLR 2015}
@@ -80,13 +80,13 @@ We then pass each grid of alignment scores into the $\softmax$ operator, giving 
 Feeding the context vector $c_1$ alongside the start token $y_0$ into the decoder RNN starting with hidden state $s_0$ can be used to generate a caption corresponding to the image.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.9\textwidth]{images/attention-cnn.png}
+    \includegraphics[width=.9\textwidth]{attention/attention-cnn.png}
     \caption{Applying attention to a grid of features for image captioning.}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{images/attention-bird.png}
+    \includegraphics[width=\textwidth]{attention/attention-bird.png}
     \caption{Visualizing attention over time during captioning.\protect\footnotemark}
 \end{figure}
 \footnotetext{Image taken from Xu et al., \say{Show, Attend, and Tell: Neural Image Caption Generation with Visual Attention}, ICML 2015}
@@ -167,7 +167,7 @@ and the output vectors of shape $N_Q\times D_V$ will be computed using the value
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.4\textwidth]{images/attention-layer.png}
+    \includegraphics[width=.4\textwidth]{attention/attention-layer.png}
     \caption{Schema of the attention layer making the distinction between keys and values.}
 \end{figure}
 
@@ -185,7 +185,7 @@ Everything else works in the exact same way as the attention layer with key-valu
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.35\textwidth]{images/self-attention-layer.png}
+    \includegraphics[width=.35\textwidth]{attention/self-attention-layer.png}
     \caption{Self-attention layer.}
 \end{figure}
 
@@ -203,7 +203,7 @@ This behavior can be manually enforced in self-attention layers. To do so, we \e
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.35\textwidth]{images/masked-attention.png}
+    \includegraphics[width=.35\textwidth]{attention/masked-attention.png}
     \caption{Masked self-attention layer.}
 \end{figure}
 
@@ -213,7 +213,7 @@ Another variant of the attention layer is the \emph{multi-head self-attention la
 Such layers are used with two hyperparameters: $D_Q$, the query dimension, and $H$, the number of heads.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.45\textwidth]{images/multi-head-attention.png}
+    \includegraphics[width=.45\textwidth]{attention/multi-head-attention.png}
     \caption{Multi-head self-attention layer.}
 \end{figure}
 
@@ -221,7 +221,7 @@ Such layers are used with two hyperparameters: $D_Q$, the query dimension, and $
 A self-attention layer can be added at the end of a CNN to reproduce a similar behavior to the attention-based RNN for image captioning.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.85\textwidth]{images/self-attention-cnn.png}
+    \includegraphics[width=.85\textwidth]{attention/self-attention-cnn.png}
     \caption{Self-attention layer used after the output of a CNN.}
 \end{figure}
 
@@ -241,7 +241,7 @@ A very famous paper\footnote{Vaswani et al., \say{Attention is all you need}, Ne
 The input vectors are first fed into a \emph{multi-head self-attention layer}. To improve the gradient flow, a residual connection from the original vectors is added after the self-attention. The vectors are then independently normalized using \emph{layer normalization}. Each vector is then fed into its own \emph{MLP} (multi-layer perceptron); once again, a residual connection is added to the output. A final \emph{layer normalization} step is added before the end of the block.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.4\textwidth]{images/transformer-block.png}
+    \includegraphics[width=.4\textwidth]{attention/transformer-block.png}
     \caption{The transformer block.}
 \end{figure}
 Note that the self-attention layer is the only source of interaction between vectors: layer normalization and MLPs are performed independently. This architecture is highly scalable and highly parallelizable, because of the underlying self-attention properties.
@@ -252,7 +252,7 @@ A \emph{Transformer model} is simply a sequence of transformer blocks. In the or
 Transformer models also are particularly adapted for finetuning: in natural language processing, transformers are often pre-trained using a lot of text from internet, and fed into a giant transformer model that can be later finetuned to fit specialized NLP tasks.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.4\textwidth]{images/transformer-model.png}
+    \includegraphics[width=.4\textwidth]{attention/transformer-model.png}
     \caption{A transformer model using three transformer blocks.}
 \end{figure}
 

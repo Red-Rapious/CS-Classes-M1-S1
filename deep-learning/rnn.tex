@@ -6,7 +6,7 @@ When considering other applications, we would like more flexibility on the input
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.8\textwidth]{images/sequences.png}
+    \includegraphics[width=.8\textwidth]{rnn/sequences.png}
 \end{figure}
 
 \emph{Recurrent Neural Networks} (RNNs) is a general paradigm which allows to handle all these different setups.
@@ -15,7 +15,7 @@ When considering other applications, we would like more flexibility on the input
 \subsubsection{General form}
 \begin{wrapfigure}{r}{0.2\textwidth}
     \centering
-    \includegraphics[width=.2\textwidth]{images/vanilla-rnn.png}
+    \includegraphics[width=.2\textwidth]{rnn/vanilla-rnn.png}
     \caption{A simple RNN.}
 \end{wrapfigure}
 In its simplest form, a Recurrent Neural Network posesses an internal hidden state which is updated each time that it reads an input. The handling of a sequential input (for instance, a sentence) follows this update loop: a fixed-size bit of the input is fed into the network, and is combined with the internal hidden state to produce an output and update the state. The next bit of the input is then fed to the network, and so on. 
@@ -43,7 +43,7 @@ We can create a simple RNN built around a single hidden vector $h_t$:
 Alongside with this intuition of RNNs as networks with hidden cells, it is also useful to think of RNNs as computational graphs. The graph of an RNN can be unfolded over multiple time steps, expliciting the inputs and gradient flow.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.7\textwidth]{images/rnn-graph.png}
+    \includegraphics[width=.7\textwidth]{rnn/rnn-graph.png}
     \caption{Unfolded computational graph of an RNN.}
 \end{figure}
 The initial hidden state $h_0$ is often initialized to 0 in most contexts. It is then fed to the $f_W$ function with the first input $x_1$, which produces the new hidden state $h_1$. This hidden state can be used to compute the output $y_1$.
@@ -53,7 +53,7 @@ Note that the parameter $W$ remains the same for all; when computing the gradien
 This unfolded view also allows to understand the relationship with the loss more explicitely.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.7\textwidth]{images/graph-loss.png}
+    \includegraphics[width=.7\textwidth]{rnn/graph-loss.png}
     \caption{Loss of the unfolded graph.}
 \end{figure}
 Each output $y_t$ produced can be fed into some loss, for instance by comparing it to some gound truth label. The individual losses $\L_t$ can then be summed into a total loss $\L$, from which the backpropagation will start. Therefore, if we want to compute the gradient $\frac{\partial\L}{\partial W}$, the gradient flow will start in $\L$, separate itself into the different temporal steps $\L_t$, and then combine itself back to $W$ since the parameter is the same at each time step. This is called \emph{backpropagation through time}, as the forward pass is done by generating outputs at increasing time steps, while the backward pass is done starting from the most recently generated outputs.
@@ -65,7 +65,7 @@ The previous examples involve a mechanism in which an output $y_t$ is produced f
 In the many-to-one situation, we usually decide to produce an output only for the final input. The decision is therefore made based only on the final hidden state of the layer, $h_T$; the intuition behind this is that $h_T$ depends on all the previous hidden states $h_t$, and is therefore able to store the information used for the final decision. 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.7\textwidth]{images/rnn-many-to-one.png}
+    \includegraphics[width=.7\textwidth]{rnn/rnn-many-to-one.png}
     \caption{Many-to-one situation.}
 \end{figure}
 
@@ -73,7 +73,7 @@ In the many-to-one situation, we usually decide to produce an output only for th
 In the one-to-many situation, we typically feed the function with the input only once. After that, the model will keep producing outputs depending solely on the previous hiddens state. This generation process usually stops when a certain output is produced, corresponding to some end-of-file token. 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.7\textwidth]{images/rnn-one-to-many.png}
+    \includegraphics[width=.7\textwidth]{rnn/rnn-one-to-many.png}
     \caption{One-to-many situation.}
 \end{figure}
 
@@ -81,7 +81,7 @@ In the one-to-many situation, we typically feed the function with the input only
 While many-to-one and one-to-many situations are pretty straighforward, many-to-many requires more work, as it would be tricky to manage to make it work with only one recurrent neural network. For instance, in the case of machine translation, it is difficult to produce a translation before the whole input sentence is finished. It seems to be simpler to first read the original sentence, then generate a translated sentence. Furthermore, there is no guarantee that the best hidden states for input understanding are the same as the best hidden states for output generation. Therefore, the sequence to sequence situation is usually handled with two RNNs: an encoder and a decoder.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.8\textwidth]{images/rnn-many-to-many.png}
+    \includegraphics[width=.8\textwidth]{rnn/rnn-many-to-many.png}
     \caption{Encoder and decoder for the many-to-many situation.}
 \end{figure}
 The encoder will receive the input and summarize it all into the final hidden state of this first many-to-one RNN. This final vector is used by the decoder, a one-to-many RNN, which will use the accumulated context to generate outputs.
@@ -105,13 +105,13 @@ Let's consider the previously introduced vanilla RNN. Its recurrence equation is
 which corresponds to the following diagram:
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.5\textwidth]{images/rnn-backprop.png}
+    \includegraphics[width=.5\textwidth]{rnn/rnn-backprop.png}
     \caption{Simple computational graph of an RNN cell. Gradient flow is represented in red.}
 \end{figure}
 This architecture actually causes an issue in the way that the gradient flows throughout the graph. When unrolling the computational graph, we can see that in order to arrive up to $h_0$, the gradient must flow through every previous cell, and will therefore contain as many $W^\tp$ factors as they are time steps.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{images/rnn-flow-unroll.png}
+    \includegraphics[width=\textwidth]{rnn/rnn-flow-unroll.png}
     \caption{Unrolled computational graph of an RNN. Gradient flow is represented in red.}
 \end{figure}
 This can cause an issue in one of two possible ways. If the largest eigenvalue of the $W$ matrix is greater than 1, the gradient will explode. If the largest eigenvalue if smaller than 1, the gradient will vanish.
@@ -174,14 +174,14 @@ The new cell value is a combinaison of its previous value $c_{t-1}$ and the cell
 While it might seem very complex, LSTM improves the gradient flow throughout the cell. An important behavior is that the gradient propagation from $c_t$ to $c_{t-1}$ only passes through an element-wise multiplication by $f$, and no matrix multiplication by $W^\tp$.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.5\textwidth]{images/lstm-flow.png}
+    \includegraphics[width=.5\textwidth]{rnn/lstm-flow.png}
     \caption{Gradient flow through an LSTM cell.}
 \end{figure}
 
 Therefore, chaining together multiple LSTM cells by unrolling the computational graph does not make the gradient vanish if $f$ is working correctly: it creates an uninterrupted gradient flow from late cell states to early state cells.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{images/lstm-uninterrupted-grad.png}
+    \includegraphics[width=\textwidth]{rnn/lstm-uninterrupted-grad.png}
     \caption{Uninterrupted gradient flow.}
 \end{figure}
 
@@ -191,7 +191,7 @@ So far, we only considered the use of a recurrent neural network with only one h
 The idea of multilayer RNNs is to feed then hidden states produced at each time steps into a second RNN, with different weight matrices.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.5\textwidth]{images/two-layer-rnn.png}
+    \includegraphics[width=.5\textwidth]{rnn/two-layer-rnn.png}
     \caption{A two-layer RNN.}
 \end{figure}
 This process can be iterated to create deep recurrent neural networks, by adding two, three, ore more RNNs on top of each other. Note that while it is very common for CNNs to have very deep networks, RNNs are often used in practice with no more than three or four layers.
