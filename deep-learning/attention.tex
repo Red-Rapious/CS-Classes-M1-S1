@@ -171,7 +171,7 @@ and the output vectors of shape $N_Q\times D_V$ will be computed using the value
     \caption{Schema of the attention layer making the distinction between keys and values.}
 \end{figure}
 
-\subsection{Self-Attention layer}
+\subsection{Self-Attention Layer}
 \subsubsection{Principle}
 We introduced a general architecture for the attention layer, which allows us to \say{search} for certain queries $Q$ into some inputs $X$. A special case of this, often used in practice, is the \emph{Self-Attention layer}: we only consider one input matrix $X$, which will be used both for inputs and queries.
 
@@ -193,5 +193,33 @@ Note that permuting the input vectors will propagate the permutation up to the o
 This behavior might actually be unwanted, as the position of the vectors might bring more information. In order to make the self-attention processing aware of the positions, we often concatenate the input with the \emph{positional encoding} of the vectors.
 
 To do so, we often use a learned lookup table $P$, and append at the end of the $i$-th input vector the coefficient $P(i)$. This can also be done with a fixed -- not-learned -- function.
+
+\subsubsection{Masked Self-Attention Layer}
+For certain applications, such as language modelling where we want to predict the next word, we do not want the vectors to \say{look ahead} in the sentence, but only consider the previous vectors. In an RNN, this happens already by design, because of the way that the outputs are generated.
+
+This behavior can be manually enforced in self-attention layers. To do so, we \emph{mask} the layer, by setting some similarity scores $E_{k,i}$ to $-\infty$. This will set the corresponding attention scores $A_{k,i}$ to 0 because of the $\softmax$ formula; this way, the \say{future vectors} will not be taken into account when computing the weighted sum.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.35\textwidth]{images/masked-attention.png}
+    \caption{Masked self-attention layer.}
+\end{figure}
+
+\subsubsection{Multi-Head Self-Attention Layer}
+Another variant of the attention layer is the \emph{multi-head self-attention layer}. The idea is to use $H$ \say{attention heads} in parallel, running $H$ attention layers independently. Each input vector $X_k$ is split into $H$ chunks of equal sizes; all $H$ sets of chunks are then fed into separate self-attention layers, producing $H$ sets of output chunks which are then concatenated to produce the output vectors $Y_k$. This architecture is quite common in practice.
+
+Such layers are used with two hyperparameters: $D_Q$, the query dimension, and $H$, the number of heads.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.45\textwidth]{images/multi-head-attention.png}
+    \caption{Multi-head self-attention layer.}
+\end{figure}
+
+\subsubsection{Example: CNN with Self-Attention}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.85\textwidth]{images/self-attention-cnn.png}
+    \caption{Self-attention layer used after the output of a CNN.}
+\end{figure}
 
 \newpage
