@@ -171,6 +171,8 @@ and the output vectors of shape $N_Q\times D_V$ will be computed using the value
     \caption{Schema of the attention layer making the distinction between keys and values.}
 \end{figure}
 
+% TODO: summarize the changes with equations system at each step
+
 \subsection{Self-Attention Layer}
 \subsubsection{Principle}
 We introduced a general architecture for the attention layer, which allows us to \say{search} for certain queries $Q$ into some inputs $X$. A special case of this, often used in practice, is the \emph{Self-Attention layer}: we only consider one input matrix $X$, which will be used both for inputs and queries.
@@ -216,10 +218,50 @@ Such layers are used with two hyperparameters: $D_Q$, the query dimension, and $
 \end{figure}
 
 \subsubsection{Example: CNN with Self-Attention}
+A self-attention layer can be added at the end of a CNN to reproduce a similar behavior to the attention-based RNN for image captioning.
 \begin{figure}[H]
     \centering
     \includegraphics[width=.85\textwidth]{images/self-attention-cnn.png}
     \caption{Self-attention layer used after the output of a CNN.}
 \end{figure}
+
+\subsection{Transformers}
+\subsubsection{Processing sequences}
+We saw three ways to process sequences, each with their upsides and downsides.
+
+Recurrent Neural Networks are very good at processing long sequences, since the last hidden state $h_T$ depends directly on all the previous inputs and hidden states. Their biggest drawback is that they are not parallelizable: we need to compute hidden states sequentially, which is unadapted to GPUs. 
+
+Convolutions, and especially 1D convolutions, provide a highly parallelizable alternative. Unfortunately, they do not really suit language processing and long sequences, since the context window of each output is restricted to the kernel size.
+
+Finally, self-attention provide a great alternative, that is both adapted to long sequences, since each output vector depend on each input vector, and highly parallelizable. It remains very memory intensive, but can still run on large GPUs. What type of layers should we therefore use to build neural networks to process sequences?
+
+\subsubsection{The Transformer block}
+A very famous paper\footnote{Vaswani et al., \say{Attention is all you need}, NeurIPS 2017} showed that we can solely rely on attention layers to build sequence-processing networks. To do so, we build a new block type, called the \emph{transformer} block, using only self-attention to compare input vectors.
+
+The input vectors are first fed into a \emph{multi-head self-attention layer}. To improve the gradient flow, a residual connection from the original vectors is added after the self-attention. The vectors are then independently normalized using \emph{layer normalization}. Each vector is then fed into its own \emph{MLP} (multi-layer perceptron); once again, a residual connection is added to the output. A final \emph{layer normalization} step is added before the end of the block.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.4\textwidth]{images/transformer-block.png}
+    \caption{The transformer block.}
+\end{figure}
+Note that the self-attention layer is the only source of interaction between vectors: layer normalization and MLPs are performed independently. This architecture is highly scalable and highly parallelizable, because of the underlying self-attention properties.
+
+\subsubsection{Transformer model}
+A \emph{Transformer model} is simply a sequence of transformer blocks. In the original paper, 6 transformer blocks were used for the encoder and 6 blocks for the decoder; each block had a query dimension $D_Q=512$ and 6 attention heads.
+
+Transformer models also are particularly adapted for finetuning: in natural language processing, transformers are often pre-trained using a lot of text from internet, and fed into a giant transformer model that can be later finetuned to fit specialized NLP tasks.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.4\textwidth]{images/transformer-model.png}
+    \caption{A transformer model using three transformer blocks.}
+\end{figure}
+
+\subsection*{Attention and Transformers: Summary}
+Adding attention to RNN models allow them to look at different part of the input sequence at different time steps; this avoids having to fit the entire context into one single fixed-size context vector.
+
+Attention can be generalized into a self-attention layer, a powerful network primitive used to compare vectors with each others.
+
+Transformers are new neural network models made of transformer blocks, simple wrappers around self-attentions layers.
+
 
 \newpage
