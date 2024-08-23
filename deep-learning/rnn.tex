@@ -136,7 +136,7 @@ The equation defining vanilla recurrent neural network is the following:
             x_t
         \end{bmatrix}\right)
 \end{equation}
-Instead, the \emph{Long Short-Term Memory} (LSTM) architecture was introduced to solve the vanishing gradient problem. Its recurring equation goes as follow:
+The \emph{Long Short-Term Memory} (LSTM) architecture was introduced to solve the vanishing gradient problem. Its recurring equation goes as follows:
 \begin{equation*}
     \tag{LSTM}
     \begin{aligned}
@@ -159,6 +159,8 @@ Instead, the \emph{Long Short-Term Memory} (LSTM) architecture was introduced to
         h_t &= o \odot \tanh(c_t)
     \end{aligned}
 \end{equation*}
+where $\odot$ denotes the Hadamard (component-wise) product.
+
 Instead of keeping only one vector at each time step, two are used: the cell state $c_t$ and the hidden state $h_t$. On top of this, four gates values, $i,f,o$ and $g$ are computed at each time step, which will be used to compute $c_t$ and $h_t$. Each gate can somehow be intuitively interpreted:
 \begin{itemize}
     \item \textbf{Input gate} $i$ specifies whether to write in the cell
