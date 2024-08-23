@@ -1,6 +1,62 @@
 \section{Regularity and Robustness}
 \subsection{Stability during training}
+During the training of neural networks, the gradients can sometimes become very large, leading to a strong drop in accuracy. The final results can be quite random, and the final performance of the network depends on initialization.
+
+\subsubsection{Gradient vanishing and gradient explosion}
+This is mainly caused by two problems: gradient vanishing and gradient explosion, that we previously adressed in the specific case of RNNs and LSTM. Formaly, if $\theta_t$ are the iterates of the parameters learned using stochastic gradient descent on minibatches $(x_{t,i}, y_{t,i})_{i\in\iset{1}{K}}$ at time $t$, the parameter updates is:
+\begin{equation*}
+    \theta_{t+1}=\theta_t-\frac{\eta}{K}\sum_{i=1}^K \nabla\L_{x_{t,i}, y_{t,i}}(\theta)
+\end{equation*}
+where $\L_{x,y}(\theta)=\ell(g_\theta(x),y)$. When the gradients $\nabla\L_{x_{t,i}, y_{t,i}}(\theta)$ are very small compared to $\theta_t$, the iteration does not modify the parameters, and the optimization converges towards a non-minimal value. Alternatively, when the gradients are very large compared to $\theta_t$, the iteration will push the parameters to extreme values, and the optimization will not converge.
+
+These two issues happen frequently in deep learning; backpropagation uses extensively the chain rule, causing the gradient to multiply along the layers. If we consider an estimator $g^{(L)}$ of the form:
+\begin{equation*}
+    g^{(L)}(x) = f^{(L)}\circ f^{(L-1)} \circ \dots\circ f^{(1)}(x)
+\end{equation*}
+where $f^{(l)}:\R\longrightarrow\R$, then:
+\begin{equation*}
+    g^{(L)'}(x) = \prod_{l=1}^L f^{(l)'} \circ g^{(l-1)}(x)
+\end{equation*}
+In this setup, if $f^{(l)'} \circ g^{(l-1)}(x) \simeq c$, then $g^{(L)'}(x) \simeq c^L$. Depending on the value of $c$, the gradient $g^{(L)'}(x)$ can become exponentially small w.r.t.~L (when $c<1$) or exponentially large (when $c>1$).
+
+\subsubsection{Mitigation techniques}
+We already explored diverse mitigation techniques to avoid these gradient problems. 
+
+\begin{description}
+    \item[Gradient clipping] The easiest method consists in limiting the gradient norm to a fixed value. It can be simply used in \texttt{PyTorch} with the following line:
+    \begin{center}
+        \mintinline{python}{torch.nn.utils.clip_grad_norm_(model.parameters(), threshold)}
+    \end{center}
+    Nevertheless, this is only for gradient explosion, and adds an extra hyperparameter.
+    \item[Architecture changes] Another common approach to limit the gradient norm is to add changes to the network architecture. This is the use of gates in RNNs, residual connections in CNNs, and specialized layers such as dropout or batch normalization layers. This method is more principled and usually leads to better performance, but it does require to change the network architecture and is application dependent.
+    \item[Weight initialization] We will analyze a complementary approach, \emph{weight initialization}: choosing \say{good} initial values for the parameters can have a large impact on performance, and can be automatically implemented.
+\end{description}
+
+\subsubsection{Weights initialization}
+The intuitive idea is that the better the model is at initialization, the more changes we have to find good weights. We are not looking for the exact values of the parameters (this will be done automatically by the iterative gradient descent), but instead select an initial point that will lead to reasonable values of the weights.
+
+In the following, we consider a fully-connected neural network $g_\theta$ with $\ReLU$ as activation function. 
+
+What is the ideal initialization scheme? We would like to have values that are reasonable, that is:
+\begin{equation*}
+    \forall i\in\iset{i}{d^{(L)}}, \quad |g_\theta(x)_i| \simeq 1
+\end{equation*}
+We would also like to have gradients that are neither too large nor too small:
+\begin{equation*}
+    \forall i\in\iset{i}{p}, \quad \norm{\nabla\L_{x,y}(\theta)_i}\simeq 1
+\end{equation*}
+
+A simple solution is to set the biases $b^{(l)}=0$ and to sample the weights $W_{i,j}^{(l)}\sim\P$ i.i.d.~with expectation $0$ and variance $V^{(l)}$. We also choose $V^{(l)}$ so that the variance is constant across layers. Furthermore, we often choose a symmetric probability distribution with respect to 0, and such that the probability of 0 is null, to avoid ending up in a point where the gradient is null.
+
+\begin{lemma}[Intermediate results are symmetric w.r.t.~0]
+    Let $x\in\R^{d^(0)}$ be a fixed input and:
+    \begin{equation*}
+        \forall l\in\iset{1}{L}, \quad X^{(l)}=g_\theta^{(2l-1)}(x)
+    \end{equation*}
+\end{lemma}
 
 \subsection{Generalization beyond the training samples}
 
 \subsection{Robustness and adversarial attacks}
+
+\newpage
