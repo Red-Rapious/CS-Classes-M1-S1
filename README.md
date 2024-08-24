@@ -1,4 +1,4 @@
-# CS-Classes-L3-S2
+# CS-Classes-M1-S1
 The class notes of my computer science classes for the first semester of second year (M1) at ENS Ulm.
 
 ## Content
