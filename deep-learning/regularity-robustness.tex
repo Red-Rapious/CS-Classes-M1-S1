@@ -50,10 +50,80 @@ A simple solution is to set the biases $b^{(l)}=0$ and to sample the weights $W_
 
 \begin{lemma}[Intermediate results are symmetric w.r.t.~0]
     Let $x\in\R^{d^(0)}$ be a fixed input and:
-    \begin{equation*}
+    \begin{equation}
         \forall l\in\iset{1}{L}, \quad X^{(l)}=g_\theta^{(2l-1)}(x)
-    \end{equation*}
+    \end{equation}
+    Then, for any $l\in\iset{1}{L}$, the variables $\left(X_i^{(l)}\right)_{i\in\iset{1}{d^{(2l-1)}}}$ are identically distributed. Furthermore, the distribution of $X_i^{(l)}$ is symmetric with respect to 0, and thus $\E\left[X_j^{(l)}\right]=0$.
 \end{lemma}
+\begin{proof}
+    The proof follows a simple recurrence: $X_i^{(1)} = \sum_jW_{ij}^{(1)}x_j$ is identically distributed and symmetric; if the properties are verifies for $l$, then $X_i^{(l)} = \sum_jW_{ij}^{(l)}\ReLU(X_j^{(l-1)})$ which is identically distributed and symmetric.
+\end{proof}
+
+\begin{property}[Variance of the intermediate outputs]
+    If $V^{(l)}=2/d^{(l-1)}$, the variance is constant across layers and:
+    \begin{equation*}
+        \V(g_\theta(x)_i) = \frac{2\norm{x}_2^2}{d^{(0)}}
+    \end{equation*}
+\end{property}
+\begin{proof}
+    For any $l\in\iset{2}{L}$ and $i\in\iset{1}{d^{(2l-1)}}$, we have:
+    \begin{equation*}
+        \begin{aligned}
+            \V(X_i ^{(l)}) &= \V\left(\sum_jW_{ij}^{(l)}\ReLU\left(X_j^{(l-1)}\right)\right)\\
+            &= \sum_j\V\left( W_{ij}^{(l)} \ReLU\left(X_j^{(l-1)}\right) \right)\\
+            &= \V\left(W_{ij}^{(l)}\right) \cdot \E\left[\ReLU\left(X_j^{(l-1)}\right)^2\right] \cdot d^{(l-1)}\\
+            &= V^{(l)} \cdot \E\left[X_j^{(l-1)^2} \cdot \ind_{X_j^{(l-1)}>0}\right] \cdot d^{(l-1)}\\
+            &= V^{(l)} \cdot \frac{\V(X_j^{(l-1)})}{2} \cdot d^{(l-1)}
+        \end{aligned}
+    \end{equation*}
+\end{proof}
+
+\begin{property}[Variance of the intermediate gradients]
+    Let $x\in\R^{d^{(0)}}$ be a fixed input and:
+    \begin{equation}
+        \forall l\in\iset{0}{2L-1}, \quad Y^{(l)}=J_{g_\theta^{(2l-1)}}(x)
+    \end{equation}
+    Then for any $l\in\iset{2}{L}$ and $i\in\iset{1}{d^{(2l-1)}}$, we have $Y^{(l)} = W^{(l)}D^{(l-1)}Y^{(l-1)}$. Furthermore, if $V^{l}=2/d^{(l-1)}$, the variance is constant across layers and:
+    \begin{equation*}
+        \V(J_{g_\theta}(x)_{ij}) = \frac{2}{d^{(0)}}
+    \end{equation*}
+\end{property}
+\begin{proof}
+    \begin{equation*}
+        \begin{aligned}
+            \V\left(Y_{ij}^{(l)}\right) &= \V\left(\sum_kW_{ik}^{(l)}\ReLU'\left(X_k^{(l-1)}\right) Y_{kj}^{(l-1)}\right)\\
+            &= \sum_k \V\left(W_{ik}^{(l)} \ReLU'\left(X_k^{(l-1)}\right) Y_{kj}^{(l-1)}\right)\\
+            &= d^{(l-1)} \cdot V^{(l)}\cdot \E\left[\ind_{X_k^{(l-1)}>0}\cdot Y_{kj}^{(l-1)^2}\right]\\
+            &= d^{(l-1)} \cdot V^{(l)}\cdot \frac{\V\left(Y_{kj}^{(l-1)}\right)}{2}\\
+        \end{aligned}
+    \end{equation*}
+\end{proof}
+
+\subsubsection{Different initializations}
+\paragraph*{Gaussian initialization} The previous assumptions are satisfied if we use Gaussian weights:
+\begin{equation*}
+    W_{ij}^{(l)} \sim \Nc\left(0, \frac{2}{d^{(l-1)}}\right)
+\end{equation*}
+
+\paragraph*{Uniform initialization}
+If we take uniform weights:
+\begin{equation*}
+    W_{ij} \sim \mathcal{U}([-r^{(l)}, r^{(l)}])
+\end{equation*}
+then $V^{(l)}=r^2/3$ and $r^{(l)}=\sqrt{6/d^{(l-1)}}$.
+
+ However, the gradient $\nabla\L_{x,y}(\theta)_i = \sum_iJ_{g_\theta}(x)_{ij}\nabla_x\ell(g_\theta(x),y)_j$ is a sum over $j\in\iset{1}{d^{(L)}}$. We thus prefere to set $V^{(l)}=2/d^{(l)}$ and have $\V(J_{g_\theta}(x)_{ij})=2/d^{(L)}$. In order to have both the variance of gradients and of values constant, we thus need $V^{(l)}=2/d^{(l)}=2/d^{(l-1)}$. A reasonable heuristic consists in taking the average:
+\begin{equation*}
+    V^{(l)} = \frac{4}{d^{(l)}+d^{(l-1)}}
+\end{equation*}
+
+\paragraph*{Xaxier initialization} Let $c>0$ be a hyperparameter. The weights are initialized using the heuristic:
+\begin{equation*}
+    W_{ij} \sim \mathcal{U}([-r^{(l)}, r^{(l)}]) \quad \textnormal{and} \quad r^{(l)}=\sqrt{\frac{6c^2}{d^{(l)}+d^{(l-1)}}}
+\end{equation*}
+
+\subsubsection{Batch normalization}
+Another approach frequently used to increase stability during training is \emph{batch normalization}, previously discussed in the chapter about convolutional neural networks. Please refer to \autoref{subseq:normalization} for more information.
 
 \subsection{Generalization beyond the training samples}
 
