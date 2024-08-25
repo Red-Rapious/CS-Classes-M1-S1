@@ -166,5 +166,37 @@ Unfortunately, $\htheta_n$ depends on the distribution $\hat{\D}_n$; therefore, 
 
 
 \subsection{Robustness and adversarial attacks}
+\subsubsection{Adversarial attacks}
+Consider a pre-trained model, achieving good results for a specific task, such as image classification. The idea of \emph{adversarial attacks} is to add small, invisible noise to an image to try to make the prediction of the model change.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.8\textwidth]{regularity-robustness/panda-attacks.png}
+\end{figure}
+In general, vision models are robust to random input noise: if an image of random noise is generated, the confidence score of the classification will be low. Nevertheless, most vision models are also extremely fragile to well-crafted input noise: that is, noise specifically designed (using for instance an optimization algorithm) to have a high confidence score for a specific class.
+
+There are multiple types of adversarial attacks. White-box attacks use the knowledge of the model (such as its weights, for instance) to create the perturbation; it generally uses gradient descent on an objective different from the training objective: for instance, we might want to optimize the fact that this image is classified as a specific class. Black-box attacks do not have access to the parameters of the model; a frequently used technique is to create a white-box attack on a similar model, hoping that the optimization result will also work for the original model.
+
+A model can be protected from attacks to some extent. A wide-spread approach is to augment the dataset with adversarial attacks; the model having seen a larger number of examples, some of which being attacked, it becomes more robust to later attacks. Another approach is to control the robustness, or smoothness, of the model. 
+
+\subsubsection{Robustness of neural networks}
+Protecting models from such attacks is vital for practical applications in engineering or medicine. If the model acts as a black-box, then trusting the model requires hard constraints. Intuitively, a robust model is such that a small input perturbation leads to a small output perturbation.
+
+Formally, we can write a first order approximation of our model $g_\theta$:
+\begin{equation*}
+    g_\theta(x+\epsilon)-g_\theta(x) = J_{g,x}(x,\theta)\cdot\epsilon+o(\norm{\epsilon})
+\end{equation*}
+Control on the operator norm of the model,
+\begin{equation*}
+    \norm{J_{g_\theta}(x)} := \max_{u\neq0}\frac{\norm{J_{g_\theta}(x)u}_2}{\norm{u}_2}
+\end{equation*}
+leads to robustness. If we introduce the Lipschitz constant $L_{g_\theta}$ of the model:
+\begin{equation*}
+    L_{g_\theta} := \sup_x \norm{J_{g_\theta}(x)}
+\end{equation*}
+then maintaining a \say{small} Lipschitz constant guarantees small input perturbations to have limited output perturbations. For piece-wise linear interpolation, the Lipschitz constant is smaller than the target function. Nevertheless, for neural networks, we have:
+\begin{equation*}
+    L_{g_\theta} \leq\prod_lL_{f^{(l)}}
+\end{equation*}
+and can be exponential in the number of layers.
 
 \newpage
