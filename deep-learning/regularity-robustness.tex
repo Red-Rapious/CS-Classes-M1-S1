@@ -163,7 +163,26 @@ If $\theta\in\R^d$ is independent of the training samples, then, with probabilit
 Unfortunately, $\htheta_n$ depends on the distribution $\hat{\D}_n$; therefore, we cannot apply the above majoration to $\theta=\htheta_n$.
 
 \subsubsection{Decomposition of the error}
+\begin{property}[Decomposition of the error]
+    Let $\htheta_{n,t}$ be the parameters after $t$ training steps and $\theta^*\in\argmin_\theta\L_\D(\theta)$. Then:
+    \begin{equation*}
+        \L_\D(\htheta_{n,t})=
+        \underbrace{\L_\D(\htheta_{n,t}) - \L_{\hat{\D}_n}(\htheta_{n,t})}_{\textnormal{Generalization error}}
+        + \underbrace{\L_{\hat{\D}_n}(\htheta_{n,t}) - \L_{\hat{\D}_n}(\theta^*)}_{\textnormal{Optimization error}} 
+        + \underbrace{\L_{\hat{\D}_n}(\theta^*) - \L_\D(\theta^*)}_{\textnormal{Statistical error}}
+        + \underbrace{\L_\D(\theta^*)}_{\textnormal{Approximation error}}
+    \end{equation*}    
+\end{property}
+\begin{description}
+    \item[Approximation error] This is the error due to the lack of expressivity of the model, i.e.~the minimum loss that is achievable with this architecture. By the universality of MLPs, this error can be arbitrarily small.
+    \item[Optimization error] This is the error caused by the fact that $\htheta_{n,t}\neq\theta^*$, i.e.~because the optimization did not find the exact minimal point. If the loss is sufficiently regular, and a proper optimization algorithm is chosen, this can also be arbitrarily small.
+    \item[Statistical error] This is the error due to the difference of the empirical and true data distribution, which can be arbitrarily reduced by increasing the number of examples $n$. The convergence is in $O(1/\sqrt{n})$ by Tchebyshev concentration.
+    \item[Generalization error] This is the difficult part, which depends on both the model and the optimization process. It increases as the size of the model and the optimization steps increase, and decreases when the number of examples increase.
+\end{description}
 
+Longer training time (more optmization iterations) generally decreases the optimization error, but also increases the generalization error: this is called \emph{overfitting}. There is a trade-off to find to have a performant model on the training distribution (low optimization error), while making it generalize well (avoid learning each example specifically).
+
+Usual mitigation stategies for overfitting include early stopping, hyperparameters selection via cross-validation, and regularization: adding a small term such as $\gamma\norm{\theta}_2^2$ to the loss, to benefit smooth models. Over-parametrization also tends to create implicit regularization: after a certain model size, the test error starts decreasing again.
 
 \subsection{Robustness and adversarial attacks}
 \subsubsection{Adversarial attacks}
