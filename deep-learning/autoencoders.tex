@@ -49,7 +49,52 @@ as a loss function, and minimize it using gradient descent. In most practical ap
 \subsubsection{Explicit density estimation using a regressive model}
 The specificity of autoregressive models is to assume that each training sample $x^{(i)}$ consists of multiple subparts $(x_1^{(i)}, x_2^{(i)}, \dots, x_T^{(i)})$. For instance, in the case of images, each subpart can be a specific pixel.
 
-We can break down the probability of observing a specific input by 
+We can break down the probability of observing a specific input by using the probability chain rule:
+\begin{equation*}
+    \begin{aligned}
+        \P(x) &= \P(x_1, x_2, \dots, x_T)\\
+        &= \P(x_1) \cdot \P(x_2|x_1) \cdot \P(x_3|x_1, x_2)\cdot \dots\\
+        &= \prod_{t=1}^T \P(x_t|x_1, \dots, x_{t-1})
+    \end{aligned}
+\end{equation*}
+This type of dependency is extremely similar to the problem solved by recurrent neural network: we want each prediction $\P(x_t|x_1, \dots, x_{t-1})$ to be conditioned on the previous time steps $x_1, \dots, x_{t-1}$. Therefore, we can train a recurrent neural network to output the successive probabilities $\P(x_t|x_1, \dots, x_{t-1})$ in a meaningful order, which can then be multiplied to obtain $\P(x)$.
+
+\subsubsection{PixelRNN}
+This is the idea of a PixelRNN: a generative model with an explicit and tractable density function, that predicts pixel values one at a time.
+
+For each pixel, we compute a hidden state of the RNN, that depends on the hidden states and RGB values of pixels left and above:
+\begin{equation*}
+    h_{x,y} = f_\theta(h_{x-1,y}, h_{x, y-1})
+\end{equation*}
+That way, each pixel depends implicitly on all pixels left and above.
+At each pixel, we can then predict the red, green, and blue values, by computing a probability distribution over $\iset{0}{255}$. 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.4\textwidth]{autoencoders/pixelrnn.png} 
+    \caption{Dependency of pixels in PixelRNN.}
+\end{figure}
+
+The major issue of this generative approach is that is it very slow both during training and testing.
+
+\subsubsection{PixelCNN}
+To overcome the performance issues of PixelRNN, another architecture called PixelCNN has been introduced: it still generates pixels from the top-left corner, but the dependency on each pixel is now modeled using a masked convolution over previously computed regions.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.5\textwidth]{autoencoders/pixelcnn.png} 
+    \caption{Dependency of pixels in PixelCNN.}
+\end{figure}
+This approach allows for parallel computations of dependencies over previous pixels, making it much faster to train. It remains quite slow, because the generation must still proceed sequentially.
+
+Generated result show that the model learned the high-level structure of the input images, by providing features such as edges and flat color shapes, but the images do not represent anything real when looked closely.\begin{figure}[H]
+    \centering
+    \includegraphics[width=.8\textwidth]{autoencoders/pixelcnn-results.png} 
+    \caption{Results of PixelCNN.}
+\end{figure}
+
+\subsubsection{Beyond autoregressive models}
+Autoregressive models have the benefit of explicitly computing the likelihood $\P(x)$, making them very easy to evaluate. Nevertheless, they require a sequential generation, making the sampling process slow.
+
+The performance of PixelCNN can be improved with tricks in practice, such as the use of multiscale generation, gated convolutional layers or shortcut connections. 
 
 \newpage
 \section{Autoencoders}
