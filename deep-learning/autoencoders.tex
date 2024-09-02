@@ -100,4 +100,22 @@ The performance of PixelCNN can be improved with tricks in practice, such as the
 \section{Autoencoders}
 An \emph{autoencoder} is a type of neural network used to solve unsupervised learning problems. The main idea of an autoencoder is to learn an efficient representation of the input data, usually of the form of a hidden layer of size smaller than the input size. It can be useful in dimensionality reduction, but the mostly used variant is the \emph{variational autoencoder}, a certain type of generative model.
 
+\subsection{Regular Autoencoders}
+Autoencoders are designed to learn feature vectors from raw data, without any labels. Features should extract useful information, that we can use for other tasks. The main challenge is to learn this feature transform from raw data, without any idea of the form that this feature vector should take. Therefore, the idea of autoencoders is to ask the model to use these features to reconstruct the raw data; this way, the model will keep the features that help it reconstruct the data, which can be intuitively considered as the \say{best} features.
+
+An autoencoder consists of two parts: an encoder, taking into input the raw data and outputing the feature vector; and a decoder, taking the feature vector as input and outputing the reconstructing input data. Both the encoder and the decoder are updated during training; the name \emph{autoencoder} shows that the model chooses its own code.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.6\textwidth]{autoencoders/encoder-decoder.png}
+    \caption{The encoder-decoder architecture of an autoencoder.}
+\end{figure}
+Since the goal of the decoder is to reconstruct the input data as well as possible, our loss function will be the difference between the input and the output data:
+\begin{equation*}
+    \L(x) = \norm{f_\theta(x)-x}_2^2
+\end{equation*}
+
+In general, learning the identity function is not especially usefull and can be easily learned by a simple neural network. Therefore, features need to have a low dimension compared to the data. If the model approximates the identity function well, it means that the latent code (the feature vector) is an efficient way to represent the input data.
+
+
+
 \newpage
