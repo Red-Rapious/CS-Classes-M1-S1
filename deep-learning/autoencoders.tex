@@ -101,9 +101,10 @@ The performance of PixelCNN can be improved with tricks in practice, such as the
 An \emph{autoencoder} is a type of neural network used to solve unsupervised learning problems. The main idea of an autoencoder is to learn an efficient representation of the input data, usually of the form of a hidden layer of size smaller than the input size. It can be useful in dimensionality reduction, but the mostly used variant is the \emph{variational autoencoder}, a certain type of generative model.
 
 \subsection{Regular Autoencoders}
-Autoencoders are designed to learn feature vectors from raw data, without any labels. Features should extract useful information, that we can use for other tasks. The main challenge is to learn this feature transform from raw data, without any idea of the form that this feature vector should take. Therefore, the idea of autoencoders is to ask the model to use these features to reconstruct the raw data; this way, the model will keep the features that help it reconstruct the data, which can be intuitively considered as the \say{best} features.
+\subsubsection{Principle}
+Autoencoders are designed to learn feature vectors from raw data, without any labels. Features should extract useful information, that we can use for other tasks. The main challenge is to learn this feature transform from raw data, without any idea of the form that this feature vector should take. Therefore, the idea of autoencoders is to ask the model to use these features to estimate the raw data; this way, the model will keep the features that will help it reconstruct the data, which can be intuitively considered as the \say{best} features.
 
-An autoencoder consists of two parts: an encoder, taking into input the raw data and outputing the feature vector; and a decoder, taking the feature vector as input and outputing the reconstructing input data. Both the encoder and the decoder are updated during training; the name \emph{autoencoder} shows that the model chooses its own code.
+An autoencoder consists of two parts: an encoder, taking into input the raw data $x$ and outputing the feature vector $z$; and a decoder, taking the feature vector $z$ as input and outputing the reconstructing input data $\hat{x}$. Both the encoder and the decoder are updated during training; the name \emph{autoencoder} shows that the model chooses its own code.
 \begin{figure}[H]
     \centering
     \includegraphics[width=.6\textwidth]{autoencoders/encoder-decoder.png}
@@ -111,11 +112,72 @@ An autoencoder consists of two parts: an encoder, taking into input the raw data
 \end{figure}
 Since the goal of the decoder is to reconstruct the input data as well as possible, our loss function will be the difference between the input and the output data:
 \begin{equation*}
-    \L(x) = \norm{f_\theta(x)-x}_2^2
+    \L(x) = \norm{\hat{x}-x}_2^2 = \norm{f_\theta(x)-x}_2^2
 \end{equation*}
 
-In general, learning the identity function is not especially usefull and can be easily learned by a simple neural network. Therefore, features need to have a low dimension compared to the data. If the model approximates the identity function well, it means that the latent code (the feature vector) is an efficient way to represent the input data.
+In general, learning the identity function is not especially usefull and can be easily learned by a simple neural network. Therefore, features need to have a low dimension compared to the data, and act as a bottleneck. If the model approximates the identity function well, it means that the latent code (the feature vector) is an efficient way to represent the input data.
 
+\subsubsection{Applications}
+Once trained, the encoder part can be extracted and added upstream of another supervised model to solve other problems: for instance, we might add a classifier downstream and fine-tune the encoder and the classifier together.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.6\textwidth]{autoencoders/encoder-classifier.png}
+    \caption{Use of the trained encoder for a downstream classification task.}
+\end{figure}
+One could think that we could directly train the encoder from scratch along with the classifier. In practice, training an encoder inside an autoencoder produces better results: since the autoencoder does not need labeled data, it is very simple to train on a huge amount of unlabeled inputs, producing a more robust and performant encoder.
 
+\subsection{Variational Autoencoders}
+\subsubsection{Probabilistic modelling}
+We would like to adapt the autoencoder formalism to generate new inputs. Regular autoencoders are not probabilistic, and can only be used to generate the latent features $z$ of an input $x$. Instead, \emph{variational autoencoders} will be used to learn a probability distribution, from which we can sample new data.
+
+Formally, we assume that our training data $(x^{(i)})_{i\in\iset{1}{N}}$ is generated from a latent representation $z$, to which we do not have access to. After training, the variational autoencoder will proceed in two steps to output a probability distribution over new inputs. First, it will sample a certain feature vector $z$ from some learned prior distribution $\P_{\theta^*}(z)$. Then, it will use this generated latent representation to output the conditional probability distribution $\P_{\theta^*}(x|z)$.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.4\textwidth]{autoencoders/variational-principle.png}
+\end{figure}
+
+The prior distribution $\P_{\theta^*}(z)$ can be assumed to be very simple, such as a Gaussian distribution over $\R^d$. The conditional distribution $\P_{\theta^*}(x|z)$ will be represented with a neural network, similar to the decoder of an autoencoder. To do so, we will output the parameters of a parametrized output distribution. For instance, we can output a vector $\mu_{x|z}$ and a diagonal matrix $\Sigma_{x|z}$, and say that the associated distribution is the Gaussian distribution over $\R^d$ of mean $\mu_{x|z}$ and covariance matrix $\Sigma_{x|z}$.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.4\textwidth]{autoencoders/gaussian-parameters.png}
+\end{figure}
+
+\subsubsection{Variational lower bound}
+To train the variational autoencoder, we maximize the likelihood of the data. Given the latent vectors $(z^{(i)})_{i\in\iset{1}{N}}$, we could train the conditional generative model part directly, but we do not have access to $z$. Therefore, we will jointly train two parts, just like for regular autoencoders: an encoder that inputs data $x$, and outputs a distribution over the latent codes $z$, and a decoder that inputs a latent code $z$ and outputs a distribution over the data $x$.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.5\textwidth]{autoencoders/variational-encoder-decoder.png}
+\end{figure}
+
+Note that according to Bayes' rule:
+\begin{equation*}
+    \P_\theta(x) = \frac{\P_\theta(x|z)\cdot \P_\theta(z)}{\P_\theta(z|x)}
+\end{equation*}
+The probability $p_\theta(x|z)$ is computed by the network taking into input $z$ and outputing the Gaussian parameters. We assumed $z$ to be sampled from a Gaussian distribution, we therefore know $\P_\theta(z)$. Finally, $\P_\theta(z|x)$ is estimated by the encoder.
+
+\begin{property}[Variational lower bound]
+    The following inequality holds for any distributions $p_\theta$ and $q_\varphi$:
+    \begin{equation}
+        \label{eq:variational-lower-bound}
+        \log p_\theta(x) \geq \E_{z\sim q_\varphi(z|x)}\left[\log p_\theta(x|z)\right] - \KL\left(q_\varphi(z|x), p_\theta(x)\right)
+    \end{equation}
+    where $\KL$ denotes the Kullback-Leibler divergence.
+\end{property}
+\begin{proof}
+    \begin{align*}
+        \log p_\theta(x) &= \log\frac{p_\theta(x|z)\cdot p(z)}{p_\theta(z|x)} && \text{(Bayes' rule)} \\
+        &= \log\frac{p_\theta(x|z)\cdot p(z)\cdot q_\varphi(z|x)}{p_\theta(z|x)\cdot q_\varphi(z|x)} \\
+        &= \log p_\theta(x|z) - \log\frac{q_\varphi(z|x)}{p(z)} + \log\frac{q_\varphi(z|x)}{p_\theta(z|x)} \\
+        &= \E_{z\sim q_\varphi(z|x)}\left[\log p_\theta(x|z)\right] - \E_{z\sim q_\varphi(z|x)}\left[\log\frac{q_\varphi(z|x)}{p(z)}\right] + \E_{z\sim q_\varphi(z|x)}\left[\log\frac{q_\varphi(z|x)}{p_\theta(z|x)}\right] \\
+        &= \E_{z\sim q_\varphi(z|x)}\left[\log p_\theta(x|z)\right] - \KL\left(q_\varphi(z|x), p(z)\right) + \KL\left(q_\varphi(z|x), p_\theta(z|x)\right)
+    \end{align*}
+    Since the Kullback-Leibler divergence is always positive, we can ommit the rightmost term and obtain:
+    \begin{equation*}
+        \log p_\theta(x) \geq \E_{z\sim q_\varphi(z|x)}\left[\log p_\theta(x|z)\right] - \KL\left(q_\varphi(z|x), p_\theta(x)\right)
+    \end{equation*}
+\end{proof}
+
+We will train the encoder and decoder of the variational autoencoder by maximizing the lower bound \autoref{eq:variational-lower-bound}.  
 
 \newpage
