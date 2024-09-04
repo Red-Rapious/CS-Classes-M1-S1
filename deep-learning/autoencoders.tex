@@ -128,18 +128,18 @@ One could think that we could directly train the encoder from scratch along with
 
 \subsection{Variational Autoencoders}
 \subsubsection{Probabilistic modelling}
-We would like to adapt the autoencoder formalism to generate new inputs. Regular autoencoders are not probabilistic, and can only be used to generate the latent features $z$ of an input $x$. Instead, \emph{variational autoencoders} will be used to learn a probability distribution, from which we can sample new data.
+We would like to adapt the autoencoder formalism to generate new inputs. Regular autoencoders are not probabilistic, and can only be used to generate the latent features $z$ of an input $x$. Instead, \emph{Variational Autoencoders} (VAEs) will be used to learn a probability distribution, from which we can sample new data.
 
 Formally, we assume that our training data $(x^{(i)})_{i\in\iset{1}{N}}$ is generated from a latent representation $z$, to which we do not have access to. After training, the variational autoencoder will proceed in two steps to output a probability distribution over new inputs. First, it will sample a certain feature vector $z$ from some learned prior distribution $\P_{\theta^*}(z)$. Then, it will use this generated latent representation to output the conditional probability distribution $\P_{\theta^*}(x|z)$.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.4\textwidth]{autoencoders/variational-principle.png}
+    \includegraphics[width=.5\textwidth]{autoencoders/variational-principle.png}
 \end{figure}
 
 The prior distribution $\P_{\theta^*}(z)$ can be assumed to be very simple, such as a Gaussian distribution over $\R^d$. The conditional distribution $\P_{\theta^*}(x|z)$ will be represented with a neural network, similar to the decoder of an autoencoder. To do so, we will output the parameters of a parametrized output distribution. For instance, we can output a vector $\mu_{x|z}$ and a diagonal matrix $\Sigma_{x|z}$, and say that the associated distribution is the Gaussian distribution over $\R^d$ of mean $\mu_{x|z}$ and covariance matrix $\Sigma_{x|z}$.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.4\textwidth]{autoencoders/gaussian-parameters.png}
+    \includegraphics[width=.5\textwidth]{autoencoders/gaussian-parameters.png}
 \end{figure}
 
 \subsubsection{Variational lower bound}
@@ -147,7 +147,7 @@ To train the variational autoencoder, we maximize the likelihood of the data. Gi
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.5\textwidth]{autoencoders/variational-encoder-decoder.png}
+    \includegraphics[width=.6\textwidth]{autoencoders/variational-encoder-decoder.png}
 \end{figure}
 
 Note that according to Bayes' rule:
@@ -160,24 +160,67 @@ The probability $p_\theta(x|z)$ is computed by the network taking into input $z$
     The following inequality holds for any distributions $p_\theta$ and $q_\varphi$:
     \begin{equation}
         \label{eq:variational-lower-bound}
-        \log p_\theta(x) \geq \E_{z\sim q_\varphi(z|x)}\left[\log p_\theta(x|z)\right] - \KL\left(q_\varphi(z|x), p_\theta(x)\right)
+        \log p_\theta(x) \geq \E_{z\sim q_\varphi(z|x)}\left[\log p_\theta(x|z)\right] - \KL\left(q_\varphi(z|x)\parallel p_\theta(x)\right)
     \end{equation}
     where $\KL$ denotes the Kullback-Leibler divergence.
 \end{property}
 \begin{proof}
+    We decompose $p_\theta(x)$:
     \begin{align*}
         \log p_\theta(x) &= \log\frac{p_\theta(x|z)\cdot p(z)}{p_\theta(z|x)} && \text{(Bayes' rule)} \\
         &= \log\frac{p_\theta(x|z)\cdot p(z)\cdot q_\varphi(z|x)}{p_\theta(z|x)\cdot q_\varphi(z|x)} \\
         &= \log p_\theta(x|z) - \log\frac{q_\varphi(z|x)}{p(z)} + \log\frac{q_\varphi(z|x)}{p_\theta(z|x)} \\
         &= \E_{z\sim q_\varphi(z|x)}\left[\log p_\theta(x|z)\right] - \E_{z\sim q_\varphi(z|x)}\left[\log\frac{q_\varphi(z|x)}{p(z)}\right] + \E_{z\sim q_\varphi(z|x)}\left[\log\frac{q_\varphi(z|x)}{p_\theta(z|x)}\right] \\
-        &= \E_{z\sim q_\varphi(z|x)}\left[\log p_\theta(x|z)\right] - \KL\left(q_\varphi(z|x), p(z)\right) + \KL\left(q_\varphi(z|x), p_\theta(z|x)\right)
+        &= \E_{z\sim q_\varphi(z|x)}\left[\log p_\theta(x|z)\right] - \KL\left(q_\varphi(z|x)\parallel p(z)\right) + \KL\left(q_\varphi(z|x)\parallel p_\theta(z|x)\right)
     \end{align*}
     Since the Kullback-Leibler divergence is always positive, we can ommit the rightmost term and obtain:
     \begin{equation*}
-        \log p_\theta(x) \geq \E_{z\sim q_\varphi(z|x)}\left[\log p_\theta(x|z)\right] - \KL\left(q_\varphi(z|x), p_\theta(x)\right)
+        \log p_\theta(x) \geq \E_{z\sim q_\varphi(z|x)}\left[\log p_\theta(x|z)\right] - \KL\left(q_\varphi(z|x)\parallel p_\theta(x)\right)
     \end{equation*}
 \end{proof}
 
-We will train the encoder and decoder of the variational autoencoder by maximizing the lower bound \autoref{eq:variational-lower-bound}.  
+We will train the encoder and decoder of the variational autoencoder by maximizing the \emph{Evidence Lower Bound} \autoref{eq:variational-lower-bound}.  
+
+% TODO: move this subsubsection and the next one before variational lower bound?
+\subsubsection{Example: Fully-connected Variational Autoencoder}
+To give a concrete example, let's imagine that we want to train a variational autoencoder on the MNIST dataset to generate new images. The input data $x$ is a flatted $28\times28$ image, therefore $x\in\R^{784}$; we choose the latent space to be $z\in\R^{20}$. We choose both the encoder and the decoder network to be fully-connected networks as described in \autoref{fig:fully-connected-vae}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.8\textwidth]{autoencoders/fully-connected-vae.png}
+    \caption{A fully-connected variational autoencoder.}
+    \label{fig:fully-connected-vae}
+\end{figure}
+
+\subsubsection{Forward pass during training}
+The forward pass of a variational autoencoder is very similar to the one of a regular autoencoder, except that both the encoder and the decoder output Gaussian parameters. Therefore, we can compute the output data distribution in three simple steps:
+\begin{itemize}
+    \item First, we feed the input data $x$ to the encoder, which outputs the mean $\mu_{z|x}$ and the diagonal covariance matrix $\Sigma_{z|x}$ of the latent distribution. 
+    \item Then, we sample a latent vector $z$ from this distribution $\Nc(\mu_{z|x}, \Sigma_{z|x})$. 
+    \item Finally, we feed this latent vector to the decoder, which outputs the mean $\mu_{x|z}$ and the diagonal covariance matrix $\Sigma_{x|z}$ of the output distribution.
+\end{itemize}
+We can then sample a new data point $\hat{x}$ from this distribution $\Nc(\mu_{x|z}, \Sigma_{x|z})$.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.55\textwidth]{autoencoders/vae-training.png}
+    \caption{The successive steps of a forward pass of a VAE during training.}
+\end{figure}
+
+
+\subsubsection{Loss computation during training}
+Recall that to train the model, we will maximize the lower bound of the probability:
+\begin{equation*}
+    \L(x) = \E_{z\sim q_\varphi(z|x)}\left[\log p_\theta(x|z)\right] - \KL\left(q_\varphi(z|x)\parallel p_\theta(x)\right)
+\end{equation*}
+The two terms of this loss function can be computed during the forward pass of the model. Given the distribution over $z$, the Kullback-Leibler divergence term can be computed analytically, since we assumed a simple form for the prior distribution -- a unit Gaussian. The first term -- the expectation -- can be computed by sampling $z$ and computing the $\log$-likelihood of the output data given this latent vector.
+
+More specifically, the KL term can be computed as:
+\begin{equation*}
+    \begin{aligned}
+        -\KL\left(q_\varphi(z|x)\parallel p(z)\right) &= \int_z q_\varphi(z|x)\cdot\log\frac{p(z)}{q_\varphi(z|x)}\dd z\\
+        &= \int_z N(z; \mu_{z|x}, \Sigma_{z|x})\cdot\log\frac{N(z; 0, I_d)}{N(z; \mu_{z|x}, \Sigma_{z|x})}\dd z\\
+        &= \frac{1}{2}\sum_{k=1}^d \left(1 + \log\left(\Sigma_{z|x}\right)^2_j - \left(\mu_{z|x}\right)^2_j - \left(\Sigma_{z|x}\right)^2_j\right)
+    \end{aligned}
+\end{equation*}
+where $N$ is the probability density of the Gaussian distribution\footnote{That is $N(z; \mu, \Sigma) = \frac{1}{(2\pi)^{d/2}|\Sigma|^{1/2}}\cdot\exp\left[-\frac{1}{2}(x-\mu)^\tp\Sigma^{-1}(x-\mu)\right]$}.
 
 \newpage
