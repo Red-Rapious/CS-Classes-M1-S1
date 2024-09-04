@@ -34,7 +34,7 @@ which we will try to minimize.
 \subsubsection{Gradient descent}
 The idea behind gradient descent is therefore to be able to compute the gradient of $\L$ with respect to the paramters $\theta$ for each point of the dataset:
 \begin{figure}[H]
-    \centering 
+    \centering
     \begin{minipage}{0.4\textwidth}
     \begin{minted}[escapeinside=||, mathescape=true]{python}
 for epoch in range(EPOCHS):
@@ -67,7 +67,7 @@ for some small number $h$. However, this approach does not work well in practice
 \subsubsection{Symbolic differentiation}
 To avoid round-off errors, another approach could be to use symbolic differentiation: the idea is to formally compute the expression of the derivative and then to evaluate it numerically. The issue with symbolic differentiation is its scalability: without optimization of the computation, it can produce exponentially large expressions that take a long time to symbolically compute and numerically evaluate. To maintain reasonable expression sizes, one needs to apply simplification operations between each step, resulting in a heavy computational cost.
 
-Hopefully, we do not need all the expressivity that symbolic differentiation has: we are only interested in the numerical evaluation of the derivative; we do not need to keep the formal expression, only the numerical evaluation. 
+Hopefully, we do not need all the expressivity that symbolic differentiation has: we are only interested in the numerical evaluation of the derivative; we do not need to keep the formal expression, only the numerical evaluation.
 
 This is the idea of \emph{automatic differentiation} with accumulation: we will keep the idea of symbolic differentiation by computing the derivative as an operation level, but reduce the size of intermediate computations by only keeping the numerical values.
 
@@ -117,9 +117,9 @@ The backward pass allows us to compute the derivatives, in our case $\partfrac{f
 \end{itemize}
 
 \subsubsection{Modularity}
-A benefit of backpropagation is its modularity: the gradient computation can be broke down into the computation of the downstream gradient knowing the upstream gradient and the local gradient of the node. 
+A benefit of backpropagation is its modularity: the gradient computation can be broke down into the computation of the downstream gradient knowing the upstream gradient and the local gradient of the node.
 
-Consider for instance a function $f$ taking $x$ and $y$ as inputs, and producing an output $z$. This function is a node somewhere in a possibly very complex computational graph, but we do not need the whole information about the rest of the computation: to compute the downstream gradient, we only need local information, that is upstream and local gradients. 
+Consider for instance a function $f$ taking $x$ and $y$ as inputs, and producing an output $z$. This function is a node somewhere in a possibly very complex computational graph, but we do not need the whole information about the rest of the computation: to compute the downstream gradient, we only need local information, that is upstream and local gradients.
 
 We are given the upstream gradient of the loss that we want to compute with respect to our output, $\partfrac{\L}{z}$. Our goal is now simply to propagate the gradient computation by providing the downstream derivatives, that is $\partfrac{\L}{x}$ and $\partfrac{\L}{y}$. Since we know the expression of $f$, we are able to compute the local derivatives $\partfrac{z}{x}$ and $\partfrac{z}{y}$; using chain rule, we can therefore provide the downstream gradient.
 \begin{figure}[H]
@@ -153,11 +153,11 @@ The $i$-coordinate of the gradient is the partial derivative of $f$ with respect
 
 Finally, for a differentiable function taking a vector and returning another vector, that is $f:\R^n\longrightarrow\R^m$, its derivative is its \emph{Jacobian}, that is:
 \begin{equation*}
-    J_f 
-    = \begin{bmatrix} \partfrac{f}{x_1} & \dots & \partfrac{f}{x_n}\end{bmatrix} 
-    = \begin{bmatrix} 
-        \nabla^\tp f_1\\ 
-        \vdots\\ 
+    J_f
+    = \begin{bmatrix} \partfrac{f}{x_1} & \dots & \partfrac{f}{x_n}\end{bmatrix}
+    = \begin{bmatrix}
+        \nabla^\tp f_1\\
+        \vdots\\
         \nabla^\tp f_m
     \end{bmatrix}
     = \begin{bmatrix}

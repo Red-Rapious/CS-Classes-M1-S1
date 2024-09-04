@@ -13,12 +13,12 @@
         \matrix [
             matrix of math nodes,
             nodes={
-                minimum size=1em, 
+                minimum size=1em,
                 outer sep=0pt,
                 inner sep=0,line
                 width=0.5pt,
                 append after command={
-                    \pgfextra{\draw[thick] 
+                    \pgfextra{\draw[thick]
                     ($(\tikzlastnode.north west)+(-0.4em,+0.4em)$)
                     rectangle ($(\tikzlastnode.south east)+(0.4em,-0.4em)$);}
                 }
@@ -92,7 +92,7 @@ The convolutional layer itself consists of small kernels (also called filters) u
 \end{definition}
 
 \begin{definition}[Kernel convolution]
-    An input of shape $C\times H\times W$ can be processed by a kernel of shape $C\times K\times K$ by computing at each possible spatial position the convolution between the kernel and the submatrix of the input. 
+    An input of shape $C\times H\times W$ can be processed by a kernel of shape $C\times K\times K$ by computing at each possible spatial position the convolution between the kernel and the submatrix of the input.
     \begin{figure}[H]
         \centering
         \begin{tikzpicture}[scale=.5]
@@ -124,7 +124,7 @@ The convolutional layer itself consists of small kernels (also called filters) u
         \end{tikzpicture}
         \caption{Kernel convolution}
     \end{figure}
-    
+
     The output of this operation in an \emph{activation map} of dimension $1\times (H - K + 1) \times (W - K + 1)$ representing for each pixel the convolution between the kernel and the corresponding chunk of the image.
     \begin{figure}[H]
         \centering
@@ -178,7 +178,7 @@ Intuitively, the result of the kernel convolution tells us for each pixel \emph{
 
     \begin{figure}[H]
         \centering
-    
+
         \begin{minipage}{0.4\textwidth}
             \centering
             \caption*{Input image}
@@ -189,7 +189,7 @@ Intuitively, the result of the kernel convolution tells us for each pixel \emph{
             \caption*{Sobel operator applied to the image}
             \includegraphics[width=.9\textwidth]{cnn/post-sobel.png}
         \end{minipage}
-        
+
         \caption{Effect of the Sobel operator on an image}
     \end{figure}
 \end{example}
@@ -316,7 +316,7 @@ However, stacking two convolution layers next to each other produces another con
 \end{figure}
 
 \subsubsection{Spatial dimensions and Padding}
-As stated previously, using an input of width $W$ with a filter of kernel size $K$, the output width is $W-K+1$. A problem with the approach is that features maps decrease in size with each layer. This creates an upper bound on the maximum number of layers that we can use for our model. 
+As stated previously, using an input of width $W$ with a filter of kernel size $K$, the output width is $W-K+1$. A problem with the approach is that features maps decrease in size with each layer. This creates an upper bound on the maximum number of layers that we can use for our model.
 
 A solution to this is to introduce \emph{padding} by adding zeros around the border of the input. When the kernel will slide around the edges of the input, a part of the coefficients that it will consider in its convolution will be zeros.
 \begin{figure}[H]
@@ -333,7 +333,7 @@ A solution to this is to introduce \emph{padding} by adding zeros around the bor
         \tikzstyle{number matrix}=[
             matrix of math nodes,
             nodes={
-                minimum size=1em, 
+                minimum size=1em,
                 outer sep=0pt,
                 inner sep=0,line
                 width=0.5pt,
@@ -342,7 +342,7 @@ A solution to this is to introduce \emph{padding} by adding zeros around the bor
             column sep=-0.5pt,
             row sep=-0.5pt
         ]
-        
+
         \matrix [number matrix, nodes={
             append after command={
                 \pgfextra{\draw[thick, dashed]
@@ -437,7 +437,7 @@ A solution to this is to introduce \emph{padding} by adding zeros around the bor
     Even though we might imagine different padding strategies instead of always padding with zeros (for instance, nearest-neightbour padding, circular padding, random padding\dots), zero-padding seems to be both simple and effective in practice, and is the most commonly used strategy.
 \end{remark}
 
-Padding introduces an additional hyperparameter to the layer, $P$. 
+Padding introduces an additional hyperparameter to the layer, $P$.
 Using padding, the width of the output of the layer becomes:
 \begin{equation}
     \label{eq:output-padding}
@@ -452,7 +452,7 @@ A common way to set the value of $P$ is to choose it such as the output have the
 
 By essence, Fully-connected layers have a trivial notion of receptive field: an output neuron is connected to each input neuron, its receptive field is therefore the entire input.
 
-Convolution layers are build in such a way that each element in the output simply depends on a receptive field of size $K$ (that is a square of area $K\times K$) in the input. As we stack convolutional layers after the others, each successive convolution adds $K-1$ to the receptive field size. After $L$ layers, the receptive field size is $1+L\times(K-1)$. 
+Convolution layers are build in such a way that each element in the output simply depends on a receptive field of size $K$ (that is a square of area $K\times K$) in the input. As we stack convolutional layers after the others, each successive convolution adds $K-1$ to the receptive field size. After $L$ layers, the receptive field size is $1+L\times(K-1)$.
 
 \begin{figure}[H]
     \centering
@@ -519,12 +519,12 @@ A solution to this problem is to downsample the image size inside the network. T
         \matrix [
             matrix of math nodes,
             nodes={
-                minimum size=1em, 
+                minimum size=1em,
                 outer sep=0pt,
                 inner sep=0,line
                 width=0.5pt,
                 append after command={
-                    \pgfextra{\draw[thick] 
+                    \pgfextra{\draw[thick]
                     ($(\tikzlastnode.north west)+(-0.3em,+0.3em)$)
                     rectangle ($(\tikzlastnode.south east)+(0.3em,-0.3em)$);}
                 }
@@ -580,13 +580,13 @@ Pooling layers work similarly to convolutional layers, using a mechanism of kern
         \draw[thick, ->] (1.5, -1.2) -- ++(2.2, 0) node[pos=.5, above] {Pooling};
         % Downsampling arrow
         \draw[thick, ->] (0.2, -6.5) -- ++(4.3, 0) node[pos=.5, above] {Downsampling};
-        
+
         % Left image
         \draw[thick, ->] (-1.5, -3.8) -- ++(0,-1);
         \node at (-1.5, -6.5) {\includegraphics[width=80pt]{cnn/plante.jpg}};
         \node at (-3.3, -6.5) {$224$};
         \node at (-1.5, -8.2) {$224$};
-        
+
         % Right image
         \draw[thick, <-] (5.5, -2.8) -- ++(0,-2.8);
         \node at (5.5, -6.5) {\includegraphics[width=40pt]{cnn/plante.jpg}};
@@ -682,7 +682,7 @@ Hence, at test time, the normalization layer performs the following operation:
 \begin{equation*}
     y = \gamma\cdot\frac{x-\mu}{\sigma}+\beta
 \end{equation*}
-Another interesting property of this method is that during testing, the batch normalization layer becomes a linear operator. Therefore, it can be fused with the previous fully-connected or convolutional layer. For instance, if the previous layer is a fully-connected, its weight matrix and bias vector can be modified using the four parameters of the normalization layer (learned mean and variance, and empirical mean and variance). Performing this operation guarantees that the batch normalization layer does not add any inference time. 
+Another interesting property of this method is that during testing, the batch normalization layer becomes a linear operator. Therefore, it can be fused with the previous fully-connected or convolutional layer. For instance, if the previous layer is a fully-connected, its weight matrix and bias vector can be modified using the four parameters of the normalization layer (learned mean and variance, and empirical mean and variance). Performing this operation guarantees that the batch normalization layer does not add any inference time.
 
 \subsubsection{Batch Normalization for Convolutional Networks}
 For fully-connected layers, the batch dimension is:
@@ -715,7 +715,7 @@ As stated previously, adding batch normalization in neural networks allows for m
 
 Not only the models converge quicker at fixed learning rate, but it also stabilizes the model even with higher learning rates, allowing shorter training times without the risk of divergence.
 
-While they are widely used in practice, normalization layers also come with downsides: the reason of the effectiveness of batch normalization is not well-understood theoretically, and it introduces complex code because of the distinction between training and testing. This is actually a very common source of bugs in projects: one have to remember to change the mode from training to testing. 
+While they are widely used in practice, normalization layers also come with downsides: the reason of the effectiveness of batch normalization is not well-understood theoretically, and it introduces complex code because of the distinction between training and testing. This is actually a very common source of bugs in projects: one have to remember to change the mode from training to testing.
 
 Finally, batch normalization is not always appropriate: some very unbalanced data sets might not fit appropriately with batch normalization, and this can reduce the performance of the model. This depends highly on the application: for computer vision, batch normalization is most of the time suitable.
 
@@ -762,7 +762,7 @@ the layer normalization parameters become:
         \node[rotate=90] at (8-1.2,0.1) {H, W};
         \node at (8+0,-1.2) {C};
         \node at (8+1.7,-0.7) {N};
-        
+
 
         \foreach\x in {0, 0.35, ..., 2.1} {
         \foreach\y in {0, 0.35, ..., 2.1} {

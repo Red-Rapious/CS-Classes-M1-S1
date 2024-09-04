@@ -3,7 +3,7 @@
 \section{Generative and Autoregressive Models}
 \subsection{Generative Models}
 \subsubsection{Discriminative vs Generative models}
-A \emph{discriminative model} is the most common type of supervised learning model: for any input $x$, it predicts its label $y$. Probabilistically speaking, a dscriminative model learns the conditional probability distribution $\P(y|x)$, that is the probability for each label to correspond to the input. 
+A \emph{discriminative model} is the most common type of supervised learning model: for any input $x$, it predicts its label $y$. Probabilistically speaking, a dscriminative model learns the conditional probability distribution $\P(y|x)$, that is the probability for each label to correspond to the input.
 
 A \emph{generative model} learns the probability distribution $\P(x)$, or in the case of a \emph{conditional generative model}, the conditional distribution $\P(x|y)$, which present a huge mathematical and practical distinction with discriminative models.
 
@@ -21,10 +21,10 @@ Generative models can be used for a variety of tasks, including the detection of
 Various types of generative models have emerged. The main distinctions can be made between models that can compute $\P(x)$ (explicit density models) and models that can only sample from it (implicit density models).
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.75\textwidth]{autoencoders/taxonomy-generative.png} 
+    \includegraphics[width=.75\textwidth]{autoencoders/taxonomy-generative.png}
     \caption{Taxonomy of generative models}
 \end{figure}
-In this chapter, we will study an explicit and tractable density model family, the autoregressive models. In the next chapters, we will introduce Variational Autoencoders and Generative Adversarial Networks. 
+In this chapter, we will study an explicit and tractable density model family, the autoregressive models. In the next chapters, we will introduce Variational Autoencoders and Generative Adversarial Networks.
 
 \subsection{Autoregressive Models}
 \subsubsection{Explicit density estimation}
@@ -67,10 +67,10 @@ For each pixel, we compute a hidden state of the RNN, that depends on the hidden
     h_{x,y} = f_\theta(h_{x-1,y}, h_{x, y-1})
 \end{equation*}
 That way, each pixel depends implicitly on all pixels left and above.
-At each pixel, we can then predict the red, green, and blue values, by computing a probability distribution over $\iset{0}{255}$. 
+At each pixel, we can then predict the red, green, and blue values, by computing a probability distribution over $\iset{0}{255}$.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.4\textwidth]{autoencoders/pixelrnn.png} 
+    \includegraphics[width=.4\textwidth]{autoencoders/pixelrnn.png}
     \caption{Dependency of pixels in PixelRNN.}
 \end{figure}
 
@@ -80,7 +80,7 @@ The major issue of this generative approach is that is it very slow both during 
 To overcome the performance issues of PixelRNN, another architecture called PixelCNN has been introduced: it still generates pixels from the top-left corner, but the dependency on each pixel is now modeled using a masked convolution over previously computed regions.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.5\textwidth]{autoencoders/pixelcnn.png} 
+    \includegraphics[width=.5\textwidth]{autoencoders/pixelcnn.png}
     \caption{Dependency of pixels in PixelCNN.}
 \end{figure}
 This approach allows for parallel computations of dependencies over previous pixels, making it much faster to train. It remains quite slow, because the generation must still proceed sequentially.
@@ -94,7 +94,7 @@ Generated result show that the model learned the high-level structure of the inp
 \subsubsection{Beyond autoregressive models}
 Autoregressive models have the benefit of explicitly computing the likelihood $\P(x)$, making them very easy to evaluate. Nevertheless, they require a sequential generation, making the sampling process slow.
 
-The performance of PixelCNN can be improved with tricks in practice, such as the use of multiscale generation, gated convolutional layers or shortcut connections. 
+The performance of PixelCNN can be improved with tricks in practice, such as the use of multiscale generation, gated convolutional layers or shortcut connections.
 
 \newpage
 \section{Autoencoders}
@@ -179,7 +179,7 @@ The probability $p_\theta(x|z)$ is computed by the network taking into input $z$
     \end{equation*}
 \end{proof}
 
-We will train the encoder and decoder of the variational autoencoder by maximizing the \emph{Evidence Lower Bound} \autoref{eq:variational-lower-bound}.  
+We will train the encoder and decoder of the variational autoencoder by maximizing the \emph{Evidence Lower Bound} \autoref{eq:variational-lower-bound}.
 
 % TODO: move this subsubsection and the next one before variational lower bound?
 \subsubsection{Example: Fully-connected Variational Autoencoder}
@@ -194,8 +194,8 @@ To give a concrete example, let's imagine that we want to train a variational au
 \subsubsection{Forward pass during training}
 The forward pass of a variational autoencoder is very similar to the one of a regular autoencoder, except that both the encoder and the decoder output Gaussian parameters. Therefore, we can compute the output data distribution in three simple steps:
 \begin{itemize}
-    \item First, we feed the input data $x$ to the encoder, which outputs the mean $\mu_{z|x}$ and the diagonal covariance matrix $\Sigma_{z|x}$ of the latent distribution. 
-    \item Then, we sample a latent vector $z$ from this distribution $\Nc(\mu_{z|x}, \Sigma_{z|x})$. 
+    \item First, we feed the input data $x$ to the encoder, which outputs the mean $\mu_{z|x}$ and the diagonal covariance matrix $\Sigma_{z|x}$ of the latent distribution.
+    \item Then, we sample a latent vector $z$ from this distribution $\Nc(\mu_{z|x}, \Sigma_{z|x})$.
     \item Finally, we feed this latent vector to the decoder, which outputs the mean $\mu_{x|z}$ and the diagonal covariance matrix $\Sigma_{x|z}$ of the output distribution.
 \end{itemize}
 We can then sample a new data point $\hat{x}$ from this distribution $\Nc(\mu_{x|z}, \Sigma_{x|z})$.

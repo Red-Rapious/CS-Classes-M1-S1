@@ -1,6 +1,6 @@
 \section{Optimization and loss functions}
 \subsection{Tensors in \texttt{PyTorch}}
-A tensor is a $d$-dimensional array in \texttt{PyTorch}. Tensors are used in deep learning to represent all kind of data, from images to weight matrices. 
+A tensor is a $d$-dimensional array in \texttt{PyTorch}. Tensors are used in deep learning to represent all kind of data, from images to weight matrices.
 
 \paragraph*{Tensor creation}
 A tensor can be created from a list: \mintinline{python}{x = torch.Tensor([[1,0,2],[3,2,2]])}. By default, tensors are not deepcopied, but can be cloned: \mintinline{python}{x.clone()}. Each tensor has a data type, which can be specified at its creation: \mintinline{python}{x = torch.Tensor(..., dtype=torch.int64)}. In the case of data (for instance, training examples), the first dimension of a tensor is usually the samples: \mintinline{python}{x.shape[0]} is the batch size.
@@ -70,7 +70,7 @@ where $X_i$ are i.i.d.~and independent of $\theta$. Then, the likelihood for the
 \begin{equation*}
     \begin{aligned}
         \P_\theta((X_i,Y_i)_i) &= \prod_i\P(X_i)\cdot\P_\theta(Y_i|X_i)\\
-        &\propto\prod_i\frac{\exp(g_\theta(X_i)_{Y_i})}{\sum_k\exp(g_\theta(X_i)_k)}        
+        &\propto\prod_i\frac{\exp(g_\theta(X_i)_{Y_i})}{\sum_k\exp(g_\theta(X_i)_k)}
     \end{aligned}
 \end{equation*}
 
@@ -88,7 +88,7 @@ A standard approach to doing so is to use an iterative algorithm relying on the 
 \begin{figure}[H]
     \centering
     \includegraphics[width=.9\textwidth]{optimization-loss/distill-momentum.png}
-    \caption{Simulation of gradient descent from \href{https://distill.pub/2017/momentum/}{\nolinkurl{https://distill.pub/2017/momentum/}}.}  
+    \caption{Simulation of gradient descent from \href{https://distill.pub/2017/momentum/}{\nolinkurl{https://distill.pub/2017/momentum/}}.}
 \end{figure}
 
 \subsubsection{Gradient descent structure}
@@ -112,7 +112,7 @@ In practice, training deep neural network can become challenging because of nume
     \end{equation*}
     the optimization problem is fairly simple. Most theoretical results use this assumption in order to prove the convergence of the algorithm. In practice, this is often not the case, making the optimization problem very hard.
     \item[High dimensionality] The number of parameters $d$ can be huge: for instance, the VGG-16 network, a convolutional neural network trained on the ImageNet dataset, has $p=138\,357\,544$ parameters.
-    \item[Access to the gradient] The gradient of $\L$ is often too expensive to compute on the entire dataset. In practice, $\nabla\L(\theta_t)$ is replaced by a stochastic or mini-batch approximation $\tilde{\nabla}_t$. 
+    \item[Access to the gradient] The gradient of $\L$ is often too expensive to compute on the entire dataset. In practice, $\nabla\L(\theta_t)$ is replaced by a stochastic or mini-batch approximation $\tilde{\nabla}_t$.
 \end{description}
 
 \subsubsection{Gradient approximations}
@@ -139,7 +139,7 @@ In the following, $\eta>0$ denotes a \emph{learning rate} (or \emph{step-size}).
     \item[Mini-batch gradient descent] The gradient is approximated with multiple random samples:
     \begin{equation*}
         \theta_{t+1} = \theta_t-\eta\cdot\frac{1}{b}\sum_{i=1}^b\nabla\L_{i_{b,t}}(\theta)
-    \end{equation*} 
+    \end{equation*}
     where $b>0$ is the \emph{batch size}. This method is a good tradeoff between speed and convergence, with a parameter $b$ that can be adjusted to obtain the best results.
 \end{description}
 

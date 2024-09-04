@@ -20,7 +20,7 @@ where $f^{(l)}:\R\longrightarrow\R$, then:
 In this setup, if $f^{(l)'} \circ g^{(l-1)}(x) \simeq c$, then $g^{(L)'}(x) \simeq c^L$. Depending on the value of $c$, the gradient $g^{(L)'}(x)$ can become exponentially small w.r.t.~L (when $c<1$) or exponentially large (when $c>1$).
 
 \subsubsection{Mitigation techniques}
-We already explored diverse mitigation techniques to avoid these gradient problems. 
+We already explored diverse mitigation techniques to avoid these gradient problems.
 
 \begin{description}
     \item[Gradient clipping] The easiest method consists in limiting the gradient norm to a fixed value. It can be simply used in \texttt{PyTorch} with the following line:
@@ -35,7 +35,7 @@ We already explored diverse mitigation techniques to avoid these gradient proble
 \subsubsection{Weights initialization}
 The intuitive idea is that the better the model is at initialization, the more changes we have to find good weights. We are not looking for the exact values of the parameters (this will be done automatically by the iterative gradient descent), but instead select an initial point that will lead to reasonable values of the weights.
 
-In the following, we consider a fully-connected neural network $g_\theta$ with $\ReLU$ as activation function. 
+In the following, we consider a fully-connected neural network $g_\theta$ with $\ReLU$ as activation function.
 
 What is the ideal initialization scheme? We would like to have values that are reasonable, that is:
 \begin{equation*}
@@ -127,12 +127,12 @@ Another approach frequently used to increase stability during training is \emph{
 
 \subsection{Generalization beyond the training samples}
 \subsubsection{Introduction}
-A fundamental problem with every supervised learning approach is the distinction between training samples and the whole input space. While in practice, we solve the optimization problem of loss minimization on the training set, we would actually want our model to generalize beyond the training samples. 
+A fundamental problem with every supervised learning approach is the distinction between training samples and the whole input space. While in practice, we solve the optimization problem of loss minimization on the training set, we would actually want our model to generalize beyond the training samples.
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{regularity-robustness/generalization.png}
     \caption{Generalization for different model regularity.}
-    \label{fig:generalization}  
+    \label{fig:generalization}
 \end{figure}
 A good intuition is that the more regular the model is, the better it will generalize. In \autoref{fig:generalization}, the left model is more regular, and while performing worst on the training set, it performs better on the whole space.
 
@@ -168,10 +168,10 @@ Unfortunately, $\htheta_n$ depends on the distribution $\hat{\D}_n$; therefore, 
     \begin{equation*}
         \L_\D(\htheta_{n,t})=
         \underbrace{\L_\D(\htheta_{n,t}) - \L_{\hat{\D}_n}(\htheta_{n,t})}_{\textnormal{Generalization error}}
-        + \underbrace{\L_{\hat{\D}_n}(\htheta_{n,t}) - \L_{\hat{\D}_n}(\theta^*)}_{\textnormal{Optimization error}} 
+        + \underbrace{\L_{\hat{\D}_n}(\htheta_{n,t}) - \L_{\hat{\D}_n}(\theta^*)}_{\textnormal{Optimization error}}
         + \underbrace{\L_{\hat{\D}_n}(\theta^*) - \L_\D(\theta^*)}_{\textnormal{Statistical error}}
         + \underbrace{\L_\D(\theta^*)}_{\textnormal{Approximation error}}
-    \end{equation*}    
+    \end{equation*}
 \end{property}
 \begin{description}
     \item[Approximation error] This is the error due to the lack of expressivity of the model, i.e.~the minimum loss that is achievable with this architecture. By the universality of MLPs, this error can be arbitrarily small.
@@ -195,7 +195,7 @@ In general, vision models are robust to random input noise: if an image of rando
 
 There are multiple types of adversarial attacks. White-box attacks use the knowledge of the model (such as its weights, for instance) to create the perturbation; it generally uses gradient descent on an objective different from the training objective: for instance, we might want to optimize the fact that this image is classified as a specific class. Black-box attacks do not have access to the parameters of the model; a frequently used technique is to create a white-box attack on a similar model, hoping that the optimization result will also work for the original model.
 
-A model can be protected from attacks to some extent. A wide-spread approach is to augment the dataset with adversarial attacks; the model having seen a larger number of examples, some of which being attacked, it becomes more robust to later attacks. Another approach is to control the robustness, or smoothness, of the model. 
+A model can be protected from attacks to some extent. A wide-spread approach is to augment the dataset with adversarial attacks; the model having seen a larger number of examples, some of which being attacked, it becomes more robust to later attacks. Another approach is to control the robustness, or smoothness, of the model.
 
 \subsubsection{Robustness of neural networks}
 Protecting models from such attacks is vital for practical applications in engineering or medicine. If the model acts as a black-box, then trusting the model requires hard constraints. Intuitively, a robust model is such that a small input perturbation leads to a small output perturbation.

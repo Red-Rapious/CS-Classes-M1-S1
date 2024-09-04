@@ -18,7 +18,7 @@ When considering other applications, we would like more flexibility on the input
     \includegraphics[width=.2\textwidth]{rnn/vanilla-rnn.png}
     \caption{A simple RNN.}
 \end{wrapfigure}
-In its simplest form, a Recurrent Neural Network posesses an internal hidden state which is updated each time that it reads an input. The handling of a sequential input (for instance, a sentence) follows this update loop: a fixed-size bit of the input is fed into the network, and is combined with the internal hidden state to produce an output and update the state. The next bit of the input is then fed to the network, and so on. 
+In its simplest form, a Recurrent Neural Network posesses an internal hidden state which is updated each time that it reads an input. The handling of a sequential input (for instance, a sentence) follows this update loop: a fixed-size bit of the input is fed into the network, and is combined with the internal hidden state to produce an output and update the state. The next bit of the input is then fed to the network, and so on.
 
 Formally, this can be written as a recurrence relationship:
 \begin{equation*}
@@ -62,7 +62,7 @@ Each output $y_t$ produced can be fed into some loss, for instance by comparing 
 The previous examples involve a mechanism in which an output $y_t$ is produced for each input $x_t$. In the case of other types of models (many-to-one, one-to-many, mnay-to-many), we might produce no output for certain inputs, or outputs without inputs.
 
 \paragraph*{Many-to-one}
-In the many-to-one situation, we usually decide to produce an output only for the final input. The decision is therefore made based only on the final hidden state of the layer, $h_T$; the intuition behind this is that $h_T$ depends on all the previous hidden states $h_t$, and is therefore able to store the information used for the final decision. 
+In the many-to-one situation, we usually decide to produce an output only for the final input. The decision is therefore made based only on the final hidden state of the layer, $h_T$; the intuition behind this is that $h_T$ depends on all the previous hidden states $h_t$, and is therefore able to store the information used for the final decision.
 \begin{figure}[H]
     \centering
     \includegraphics[width=.7\textwidth]{rnn/rnn-many-to-one.png}
@@ -70,7 +70,7 @@ In the many-to-one situation, we usually decide to produce an output only for th
 \end{figure}
 
 \paragraph*{One-to-many}
-In the one-to-many situation, we typically feed the function with the input only once. After that, the model will keep producing outputs depending solely on the previous hiddens state. This generation process usually stops when a certain output is produced, corresponding to some end-of-file token. 
+In the one-to-many situation, we typically feed the function with the input only once. After that, the model will keep producing outputs depending solely on the previous hiddens state. This generation process usually stops when a certain output is produced, corresponding to some end-of-file token.
 \begin{figure}[H]
     \centering
     \includegraphics[width=.7\textwidth]{rnn/rnn-one-to-many.png}
@@ -87,7 +87,7 @@ While many-to-one and one-to-many situations are pretty straighforward, many-to-
 The encoder will receive the input and summarize it all into the final hidden state of this first many-to-one RNN. This final vector is used by the decoder, a one-to-many RNN, which will use the accumulated context to generate outputs.
 
 \subsubsection{Applications}
-Recurrent Neural Networks open the door to many useful and fun applications. 
+Recurrent Neural Networks open the door to many useful and fun applications.
 
 For instance, RNNs can be trained on corpuses of text to generate new sentences following the same style. A nice \texttt{NumPy} implementation of such a vanilla RNN by Andrej Karpathy is available \href{https://gist.github.com/karpathy/d4dee566867f8291f086}{here}\footnote{\href{https://gist.github.com/karpathy/d4dee566867f8291f086}{\nolinkurl{https://gist.github.com/karpathy/d4dee566867f8291f086}}}. When trained on large quantity of text such as Wikipedia, Shakespeare's work or the Linux kernel source code, it can produce new sentences following the style of the text corpus.
 
