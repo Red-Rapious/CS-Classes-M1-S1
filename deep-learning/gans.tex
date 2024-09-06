@@ -6,7 +6,7 @@ So far, we have seen two generative models, autoregressive models and variationa
 \end{equation*}
 while variational autoencoders maximize the evidence lower bound:
 \begin{equation*}
-    \log p_\theta(x) \geq \E_{z\sim q_\varphi(z|x)}\left[\log p_\theta(x|z)\right] - \KL\left(q_\varphi(z|x)\parallel p(z)\right)
+    \log p_\theta(x) \geq \E_{z\sim q_\varphi(z|x)}\left[\log p_\theta(x|z)\right] - \KL\left(q_\varphi(z|x)\;\middle\|\; p(z)\right)
 \end{equation*}
 Both of these models have their limitations; autoregressive models are slow to sample from, and variational autoencoders can have blurry samples. Generative adversarial networks (GANs) are a third approach to generative modeling that can generate high-quality samples quickly, by focusing on the problem of generating samples from a distribution instead of trying to explicitly model the distribution.
 
@@ -91,11 +91,11 @@ To obtain a simpler expression, we multiply by a factor $2$ to make the Kullback
         \left( \E_{x\sim p_{\text{data}}}\left[\log\frac{2\cdot p_{\text{data}}(x)}{p_{\text{data}}(x) + p_G(x)}\right] + \E_{x\sim p_G}\left[\log \frac{2\cdot p_{\text{data}}(x)}{p_{\text{data}}(x) + p_G(x)}\right]\right) - \log4 \\
     &= \min_G
         \left(\KL\left(
-            p_{\text{data}}\parallel\frac{p_{\text{data}}+p_G}{2}
+            p_{\text{data}}\;\middle\|\;\frac{p_{\text{data}}+p_G}{2}
         \right) + \KL\left(
-            p_G\parallel\frac{p_{\text{data}}+p_G}{2}
+            p_G\;\middle\|\;\frac{p_{\text{data}}+p_G}{2}
         \right)\right) - \log4 \\
-    &= 2\times\min_G \JSD(p_{\text{data}}\parallel p_G) - \log4 \\
+    &= 2\times\min_G \JSD\left(p_{\text{data}}\;\middle\|\; p_G\right) - \log4 \\
 \end{align*}
 Hence, since the Jensen-Shannon divergence is always non-negative, and zero if and only if the two distributions are equal, $p_{\text{data}} = p_G$. Therefore, the optimal generator for the optimal $D$ is the data distribution itself.
 
