@@ -80,7 +80,29 @@ We can continue the computation to find the optimal generator $G^*$. We have:
     = &\min_G
         \int_X \left( p_{\text{data}}(x)\cdot\log\left(\frac{p_{\text{data}}(x)}{p_{\text{data}}(x) + p_G(x)}\right) + p_G(x)\cdot\log\left(1-\frac{p_{\text{data}}(x)}{p_{\text{data}}(x) + p_G(x)}\right) \right) \dd x \\
     = &\min_G
-        \left( \E_{x\sim p_{\text{data}}}\left[\log\frac{p_{\text{data}}(x)}{p_{\text{data}}(x) + p_G(x)}\right] + \E_{x\sim p_G}\left[\log \frac{p_{\text{data}}(x)}{p_{\text{data}}(x) + p_G(x)}\right] \right) \dd x \\
+        \left( \E_{x\sim p_{\text{data}}}\left[\log\frac{p_{\text{data}}(x)}{p_{\text{data}}(x) + p_G(x)}\right] + \E_{x\sim p_G}\left[\log \frac{p_{\text{data}}(x)}{p_{\text{data}}(x) + p_G(x)}\right] \right) \\
 \end{align*}
+To obtain a simpler expression, we multiply by a factor $2$ to make the Kullback-Leibler divergence appear:
+\begin{align*}
+    &\phantom{=}\min_G\max_D \left(
+        \E_{x\sim p_{\text{data}}}\left[\log D(x)\right] + \E_{z\sim p(z)}\left[\log\left(1-D\left(G(z)\right)\right)\right]
+    \right) \\
+    &=\min_G
+        \left( \E_{x\sim p_{\text{data}}}\left[\log\frac{2\cdot p_{\text{data}}(x)}{p_{\text{data}}(x) + p_G(x)}\right] + \E_{x\sim p_G}\left[\log \frac{2\cdot p_{\text{data}}(x)}{p_{\text{data}}(x) + p_G(x)}\right]\right) - \log4 \\
+    &= \min_G
+        \left(\KL\left(
+            p_{\text{data}}\parallel\frac{p_{\text{data}}+p_G}{2}
+        \right) + \KL\left(
+            p_G\parallel\frac{p_{\text{data}}+p_G}{2}
+        \right)\right) - \log4 \\
+    &= 2\times\min_G \JSD(p_{\text{data}}\parallel p_G) - \log4 \\
+\end{align*}
+Hence, since the Jensen-Shannon divergence is always non-negative, and zero if and only if the two distributions are equal, $p_{\text{data}} = p_G$. Therefore, the optimal generator for the optimal $D$ is the data distribution itself.
+
+Even though we have no guarantee that we can actually represent the optimal $D$ and $G$, this shows that the GAN training objective is well-posed and can converge to the optimal solution if the networks are expressive enough.
+
+\subsection{Results}
+
+\subsection*{Generative Adversarial Networks: Summary}
 
 \newpage
