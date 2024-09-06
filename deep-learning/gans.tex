@@ -39,6 +39,48 @@ Note that we are not minimizing any overall loss; the generator and the discrimi
 In practice, at the start of training, the generator performs quite poorly while the dicriminator can easily tell apart real and fake data, making $D(G(z))$ very close to $0$. This usually leads to a vanishing gradient for $G$. To avoid this, instead of training $G$ to minimize $\log\left(1-D(G(z))\right)$, we train it to minimize $-\log D(G(z))$.
 
 \subsection{Optimality}
+We hope that jointly training $G$ and $D$ will make the generator's distribution $p_G$ converge to $p_{\text{data}}$. We will analytically derive the optimal discriminator and generator to show that this is the case.
 
+First, note that:
+\begin{align*}
+    &\min_G\max_D \left(
+        \E_{x\sim p_{\text{data}}}\left[\log D(x)\right] + \E_{z\sim p(z)}\left[\log\left(1-D\left(G(z)\right)\right)\right]
+    \right) \\
+    = &\min_G\max_D \left(
+        \E_{x\sim p_{\text{data}}}\left[\log D(x)\right] + \E_{x\sim p_G}\left[\log\left(1-D(x)\right)\right]
+    \right) && \text{(change of variables)} \\
+    = &\min_G\max_D
+        \int_X \left( p_{\text{data}}(x)\cdot\log D(x) + p_G(x)\cdot\log\left(1-D(x)\right) \right) \dd x
+     && \text{(definition of $\E$)} \\
+    = &\min_G
+        \int_X \max_D \left[ p_{\text{data}}(x)\cdot\log D(x) + p_G(x)\cdot\log\left(1-D(x)\right) \right] \dd x
+     && \text{(functions are well-behaved)} \\
+\end{align*}
+
+We can now derive the optimal discriminator $D_G^*$. Note that the quantity inside the $\max_D$,
+\begin{equation*}
+    p_{\text{data}}(x)\cdot\log D(x) + p_G(x)\cdot\log\left(1-D(x)\right)
+\end{equation*}
+is of the form:
+\begin{equation*}
+    f(y) = a\cdot\log y + b\cdot\log(1-y)
+\end{equation*}
+We have that $f'(y) = \frac{a}{y} - \frac{b}{1-y} = 0$ when $y = \frac{a}{a+b}$. Therefore, the optimal discriminator is:
+\begin{equation*}
+    D_G^*(x) = \frac{p_{\text{data}}(x)}{p_{\text{data}}(x) + p_G(x)}
+\end{equation*}
+
+We can continue the computation to find the optimal generator $G^*$. We have:
+\begin{align*}
+    &\min_G\max_D \left(
+        \E_{x\sim p_{\text{data}}}\left[\log D(x)\right] + \E_{z\sim p(z)}\left[\log\left(1-D\left(G(z)\right)\right)\right]
+    \right) \\
+    = &\min_G
+        \int_X \left( p_{\text{data}}(x)\cdot\log D^*_G(x) + p_G(x)\cdot\log\left(1-D^*_G(x)\right) \right) \dd x \\
+    = &\min_G
+        \int_X \left( p_{\text{data}}(x)\cdot\log\left(\frac{p_{\text{data}}(x)}{p_{\text{data}}(x) + p_G(x)}\right) + p_G(x)\cdot\log\left(1-\frac{p_{\text{data}}(x)}{p_{\text{data}}(x) + p_G(x)}\right) \right) \dd x \\
+    = &\min_G
+        \left( \E_{x\sim p_{\text{data}}}\left[\log\frac{p_{\text{data}}(x)}{p_{\text{data}}(x) + p_G(x)}\right] + \E_{x\sim p_G}\left[\log \frac{p_{\text{data}}(x)}{p_{\text{data}}(x) + p_G(x)}\right] \right) \dd x \\
+\end{align*}
 
 \newpage
