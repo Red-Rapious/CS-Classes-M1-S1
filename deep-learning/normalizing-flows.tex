@@ -25,6 +25,7 @@ Since the first $d$ components remained unchanged, iterating the same coupling l
     \includegraphics[width=0.7\textwidth]{normalizing-flows/realnvp.png}
     \caption{RealNVP architecture.}
 \end{figure}
+% TODO: binary masks for shuffling
 
 \subsubsection{Inversion}
 Note that all the operations we applied to the input are invertible: both scaling and translation are invertible, and the shuffling operation is also invertible if we keep in memory the permutation used. Therefore, the RealNVP architecture is invertible, and we can compute the inverse transformation by simply inverting the operations.
@@ -52,7 +53,7 @@ In the case of normalizing flows, we can compute the likelihood exactly. Given a
 \end{equation*}
 where $J_f(x)$ is the Jacobian of the transformation $f$ at $x$. 
 
-Therefore, we can traing the normalizing flow by optimizing:
+Therefore, we can train the normalizing flow by optimizing:
 \begin{equation*}
     \max_\theta\sum_{i=1}^n \log p_\theta(x_i) = \max_\theta\sum_{i=1}^n \left(\log p_\theta(f(x_i)) + \log\left|\det J_f(x_i)\right|\right)
 \end{equation*}
@@ -69,7 +70,19 @@ The logarithm of the determinant of this matrix can be computed as:
     \log\left|\det J_f(x)\right| = \log\prod_{j=1}^{D-d}\exp\left[s(x_{1:d})\right]_j = \sum_{j=1}^{D-d} \left[s(x_{1:d})\right]_j
 \end{equation*}
 
-\subsection{Training process}
+Finally, the loss function of RealNVP for the data $x^{(i)}$ is:
+\begin{equation*}
+    \hat{\L}_i(\theta) = \log p_z(f_\theta(x^{(i)})) + \log\left|\det J_{f_\theta}(x^{(i)})\right| = \norm{f_\theta(x^{(i)})}_2^2 + \sum_{j=1}^{D-d} \left[s(x_{1:d}^{(i)})\right]_j
+\end{equation*}
+The loss function for the whole dataset is then:
+\begin{equation*}
+    \hat{\L}(\theta) = \sum_{i=1}^n \hat{\L}_i(\theta)
+\end{equation*}
 
 \subsection{Example}
-
+In the example below, the normalizing flow is trained on a 2D dataset. The latent space is a 2D Gaussian distribution, and the normalizing flow is trained to transform the data to the latent space. The normalizing flow is then able to generate new data by sampling from the latent space and transforming it back to the data space.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.9\textwidth]{normalizing-flows/example.png}
+    \caption{Example of invertible space transformation.}
+\end{figure}
