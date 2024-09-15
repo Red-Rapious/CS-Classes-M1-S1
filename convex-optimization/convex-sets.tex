@@ -119,14 +119,125 @@ In many cases, we will use proper (i.e. non-empty) convex sets, and closed conve
     \end{figure}
 \end{definition}
 
+In the followings, we will denote by:
+\begin{itemize}
+    \item $\Sb^n\subset\R^{n\times n}$ the set of symmetric matrices of size $n$
+    \item $\Sb^n_+$ the set of positive semidefinite matrices of size $n$, that is matrices verifying:
+    \begin{equation*}
+        \forall z\in\R^n, z^\tp Xz\geq 0
+    \end{equation*}
+    also denoted $X\succcurlyeq 0$.
+    \item $\Sb^n_{++}$ the set of positive definite matrices of size $n$, that is matrices verifying:
+    \begin{equation*}
+        \forall z\in\R^n, z^\tp Xz > 0
+    \end{equation*}
+    also denoted $X\succ 0$.
+\end{itemize}
+$\Sb^n_+$ and $\Sb^n_{++}$ are convex cones.
+
 Special cases of cones include:
 \begin{description}
     \item[Positive orthant] $K = \R_+^n = \set{x\in\R^n}{x_i\geq 0, \forall i}$
     \item[Norm cones] $K = \set{(x, t)\in\R^n\times\R}{\norm{x}\leq t}$. A particular case is the second-order cone (SOC), based on the $\ell_2$ norm.
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=.4\textwidth]{convex-sets/soc.png}
+    \end{figure}
     \item[Positive polynomials] $K_n = \set{x\in\R^{n+1}}{\forall t\in\R, \sum_{i=0}^n x_i t^i \geq 0}$
     \item[Positive semidefinite cone] $\Sb^n_+ = \set{X\in\Sb^n}{\forall z\in\R^n, z^\tp Xz\geq0}$ 
     \item[Co-positive cone] $\Sb^n_+ = \set{X\in\Sb^n}{\forall z\in\R^n_+, z^\tp Xz\geq0}$ 
     \item[Exponential cone] $\set{(x,y,z)\in\R\times\R_+^*\times\R}{z\geq ye^{x/y}}$ 
 \end{description}
 
+\begin{definition}[Dual cones]
+    The \emph{dual cone} to a convex cone $K$ is the set:
+    \begin{equation*}
+        K^* = \set{y}{\forall x\in K,\quad y^\tp x\geq 0}
+    \end{equation*}
+    Convex cones and their duals are particularly useful for convex duality. A convex cone that satisfies $K=K^*$ is called \emph{self-dual}.
+\end{definition}
+
+\begin{definition}[Polar cones]
+    The \emph{polar cone} to a convex cone $K$ is the set:
+    \begin{equation*}
+        K^\diamond = \set{y}{\forall x\in K,\quad y^\tp x\leq 0}
+    \end{equation*}
+    We have the identity $K^\diamond = -K^*$.
+\end{definition}
+
 \subsection{Convexity-preserving operations}
+To establish the convexity of a set $C$, the most basic approach is to apply the definition by proving that every segment that connects two points in $C$ is in $C$. However, this can be tedious in practice. Instead, we can use operations that preserve convexity.
+
+\subsubsection{Intersection and union}
+\begin{property}[Convexity is preserved by intersection]
+    For any convex sets $C_1$ and $C_2$, the intersection $C_1\cap C_2$ is convex.
+\end{property}
+Likewise, the intersection of an arbitrary number of convex sets is convex.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.6\textwidth]{convex-sets/union-intersection.png}
+\end{figure}
+
+\begin{remark}
+    The union of convex sets is not necessarily convex. For instance in $\R$, both $[0, 1]$ and $[2, 3]$ are convex, but their union $[0, 1]\cup[2, 3]$ is not.
+\end{remark}
+
+\begin{definition}[Polyhedron]
+    A \emph{polyhedron} is the solution set of finitely many linear inequalities and equalities:
+    \begin{equation*}
+        S = \set{x\in\R^n}{Ax\leq b, Cx=d}
+    \end{equation*}
+    for $A\in\mathscr{M}_{m,n}(\R)$ and $C\in\mathscr{M}_{p,n}(\R)$. Polyhedra are convex, since they are the intersection of halfspaces and hyperplanes which are convex.
+\end{definition}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.4\textwidth]{convex-sets/polyhedron.png}
+\end{figure}
+
+\begin{example}
+    Let:
+    \begin{equation*}
+        S = \set{x\in\R^m}{\forall t\in\R, \quad |t|\leq\frac{\pi}{3} \implies \left|\sum_{k=1}^m x_k\cos(kt)\right|\leq 1}
+    \end{equation*}
+    $S$ is convex, since it can be written as the intersection of convex sets.
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=.7\textwidth]{convex-sets/examples-cos.png}
+    \end{figure}
+\end{example}
+
+\begin{example}
+    $\Sb^n_+$ is convex since it is the intersection of convex sets:
+    \begin{equation*}
+        \Sb^n_+ = \set{X\in\Sb^n}{\forall z\in\R^n, z^\tp Xz\geq 0} = \Sb^n \cap \bigcap_{z\in\R^n} \set{X\in\mathscr{M}_n(\R)}{z^\tp Xz\geq 0}
+    \end{equation*}
+    Each set $\set{X\in\mathscr{M}_n(\R)}{z^\tp Xz\geq 0}$ being convex, their intersection is convex. In particular, it doesn't matter if the number of sets is finite, countable or uncountable.
+\end{example}
+
+\subsubsection{Affine functions}
+\begin{property}[The image of a convex set by an affine function is convex]
+    If $L:\R^n\to\R^m$ is an affine function, then if $C$ is convex, $L(C)$ is convex.
+\end{property}
+
+More explicitly, let $A\in\mathscr{M}_{m,n}(\R)$ and $b\in\R^m$. The affine function $L(x) = Ax + b$ maps $C$ to $L(C) = \set{y\in\R^m}{\exists x\in C, y = Ax + b}$, which is convex if $C$ is convex.
+
+\begin{property}[The pre-image of a convex set by an affine function is convex]
+    If $L:\R^n\to\R^m$ is an affine function, then $L^{-1}(C)$, the pre-image of $C$ by $L$ defined by:
+    \begin{equation*}
+        L^{-1}(C) = \set{x\in\R^n}{L(x)\in C}
+    \end{equation*}
+    is convex if $C$ is convex.
+\end{property}
+
+\begin{example}[Linear matrix inequalities]
+    Let $A_1, \dots, A_m\in\Sb^n(\R)$. The set:
+    \begin{equation*}
+        \set{x\in\R^m}{\sum_{i=1}^m x_iA_i\succcurlyeq 0}
+    \end{equation*}
+    is an affine pre-image of $\Sb_+^n$ for the mapping $L:\R^m\to\Sb^n$ defined by:
+    \begin{equation*}
+        L(x) = \sum_{i=1}^m x_iA_i
+    \end{equation*}
+    $\Sb_+^n$ being convex, the set is convex. $\sum_{i=1}^m x_iA_i\succcurlyeq 0$ is called a \emph{linear matrix inequality}.
+\end{example}
