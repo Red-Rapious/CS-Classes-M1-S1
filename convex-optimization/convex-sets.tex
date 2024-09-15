@@ -241,3 +241,78 @@ More explicitly, let $A\in\mathscr{M}_{m,n}(\R)$ and $b\in\R^m$. The affine func
     \end{equation*}
     $\Sb_+^n$ being convex, the set is convex. $\sum_{i=1}^m x_iA_i\succcurlyeq 0$ is called a \emph{linear matrix inequality}.
 \end{example}
+
+\subsection{Geometric elements}
+\subsubsection{Separating and supporting hyperplanes}
+\begin{property}[Separating hyperplanes]
+    Soppose that $C, D\subseteq\R^n$ are two non-intersecting convex sets (that is $C\cap D = \emptyset$). Then there exists a hyperplane that separates $C$ and $D$, that is:
+    \begin{equation*}
+        \exists s\in\R^n\setminus\{0\}, \exists r\in\R, \quad \forall x\in C, s^\tp x\leq r \quad \text{and} \quad \forall x\in D, s^\tp x\geq r
+    \end{equation*}
+    where $\set{x\in\R^n}{s^\tp x = t}$ is called the \emph{separating hyperplane}.
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=.6\textwidth]{convex-sets/separating-hyperplane.png}
+    \end{figure}
+\end{property}
+
+\begin{property}[Strict separating hyperplanes]
+    Suppose that $C, D\subseteq\R^n$ are two non-intersecting \textbf{closed} convex sets, and that one of them is compact (closed and bounded in finite dimension). Then there exists a hyperplane that strictly separates $C$ and $D$, that is:
+    \begin{equation*}
+        \exists s\in\R^n\setminus\{0\}, \exists r\in\R, \quad \forall x\in C, s^\tp x< r \quad \text{and} \quad \forall x\in D, s^\tp x> r
+    \end{equation*}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=.6\textwidth]{convex-sets/strict-separation.png}
+    \end{figure}
+\end{property}
+
+Note that a closed convex set $C$ is the intersection of all halfspaces that contain it.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.6\textwidth]{convex-sets/closed-intersection.png}
+\end{figure}
+
+\begin{definition}[Supporting hyperplanes]
+    Supporting hyperplanes touch the boundary of a convex set, and have the entire set on one side. Formally, a hyperplane $H = \set{y}{s^\tp y=r}$ is a \emph{supporting hyperplane} to a convex set $C$ at a point $x\in\partial C$ if:
+    \begin{equation*}
+        x^\tp x = r \qquad \text{and} \qquad \forall y\in C, \quad a^\tp y\leq r = s^\tp x
+    \end{equation*}
+    We also say that $H$ \emph{supports} $C$ at $x$.
+\end{definition}
+
+\begin{property}
+    Let $C\subseteq\R^n$ be a non-empty convex set, and let $x\in\partial C$. Then there exists a supporting hyperplane to $C$ at $x$.
+\end{property}
+
+\subsubsection{Cone operators}
+\begin{definition}[Normal cone operator]
+    The \emph{normal cone operator} to a set $C$ at a point $x$ is the set:
+    \begin{equation*}
+        N_C(x) = \begin{cases*}
+            \set{g\in\R^n}{\forall y\in C, \quad g^\tp(y - x)\leq 0} & if $x\in C$\\
+            \emptyset & if $x\notin C$
+        \end{cases*}
+    \end{equation*}
+    Intuitively, it is the set of vectors $g$ that form obtuse angles for all $y-x$ with $y\in C$.
+\end{definition}
+
+For $x\in \mathring{C}$, we have $N_c(x)=\{0\}$. For $x\in\partial C$, $N_C(x)$ is the set of the normal vectors to the supporting hyperplanes to $C$ at $x$. If $x\notin C$, $N_C(x)$ is empty.
+
+\begin{definition}[Tangent vector]
+    Let $C\subseteq\R^n$ be a convex set. A vector $d\in\R^n$ is tangent to $C$ at $x$ if:
+    \begin{equation*}
+        \exists \{x_k\}_k\subseteq C, \exists \{\lambda_k\}_k\subset\R_+, \quad \lim_{k\to+\infty} \lambda_k (x_k-x) = d
+    \end{equation*}
+\end{definition}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.4\textwidth]{convex-sets/tangent-cone.png}
+\end{figure}
+
+\begin{definition}[Tangent cone]
+    The tangent cone of a convex set $C$ at $x$ is:
+    \begin{equation*}
+        T_C(x) = N_C^\diamond(x)
+    \end{equation*}
+\end{definition}
