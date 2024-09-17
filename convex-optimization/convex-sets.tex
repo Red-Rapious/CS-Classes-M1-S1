@@ -279,6 +279,10 @@ Note that a closed convex set $C$ is the intersection of all halfspaces that con
         x^\tp x = r \qquad \text{and} \qquad \forall y\in C, \quad a^\tp y\leq r = s^\tp x
     \end{equation*}
     We also say that $H$ \emph{supports} $C$ at $x$.
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=.4\textwidth]{convex-sets/supporting-hyperplane.png}
+    \end{figure}
 \end{definition}
 
 \begin{property}
@@ -304,11 +308,11 @@ For $x\in \mathring{C}$, we have $N_c(x)=\{0\}$. For $x\in\partial C$, $N_C(x)$ 
     \begin{equation*}
         \exists \{x_k\}_k\subseteq C, \exists \{\lambda_k\}_k\subset\R_+, \quad \lim_{k\to+\infty} \lambda_k (x_k-x) = d
     \end{equation*}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=.4\textwidth]{convex-sets/tangent-cone.png}
+    \end{figure}
 \end{definition}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=.4\textwidth]{convex-sets/tangent-cone.png}
-\end{figure}
 
 \begin{definition}[Tangent cone]
     The tangent cone of a convex set $C$ at $x$ is:
