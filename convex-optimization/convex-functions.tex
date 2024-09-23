@@ -279,3 +279,74 @@ According to the Cauchy-Schwarz inequality applied to $\sqrt{z_i}\times\sqrt{z_i
     \left(\sum_{i=1}^n z_i v_i\right)^2 \leq \sum_{i=1}^n z_i \sum_{i=1}^n z_i v_i^2 = \sum_{i=1}^n z_i v_i^2
 \end{equation*}
 Therefore, $v^\tp\nabla^2 f(x)v \geq 0$, and $f$ is convex.
+
+\subsection{Convexity-preserving operations}
+\subsubsection{Nonnegative weighted sum}
+\begin{property}[Nonnegative scaling]
+    Let $f:\R^n\longrightarrow\bar{\R}$ be a convex function, and $\alpha>0$. Then, $\alpha f$ is convex.
+\end{property}
+
+\begin{property}[Sum]
+    Let $f_1, f_2:\R^n\longrightarrow\bar{\R}$ be convex functions. Then, $f_1+f_2$ is convex; this extends to infinite sums and integrals.
+\end{property}
+
+\begin{property}[Nonnegative weighted sum]
+    Let $f_1, f_2:\R^n\longrightarrow\bar{\R}$ be convex functions, and $\alpha_1,\alpha_2>0$. Then, $\alpha_1f_1+\alpha_2f_2$ is convex; this extends to infinite sums and integrals.
+\end{property}
+
+\subsubsection{Compositions by an affine function}
+\begin{property}[Composition by an affine function]
+    Let $f:\R^n\longrightarrow\bar{R}$ be a convex function and let $A\in\mathcal{M}_{m,}(\R)$, $b\in\R^m$. Then:
+    \begin{equation*}
+        x\longmapsto f(Ax+b) \text{ is convex}
+    \end{equation*}
+\end{property}
+
+\begin{example}
+    The log barrier function for linear inequalities:
+    \begin{equation*}
+        f(x) = -\sum_{i=1}^m \log(b_i-a_i^\tp x)
+    \end{equation*}
+    with $\dom f=\set{x\in\R^n}{\forall i\in\iset{1}{m}, \quad a_i^\tp x<b_i}$, is convex.
+\end{example}
+
+\begin{example}
+    Any norm of an affine function:
+    \begin{equation*}
+        f(x) = \norm{Ax+b}
+    \end{equation*}
+    is convex.
+\end{example}
+
+\subsubsection{Pointwise maximum}
+\begin{property}[Pointwise maximum]
+    Let $f_1, f_2:\R^n\longrightarrow\bar{\R}$ be convex functions. Then, $\max(f_1, f_2)$ is convex. This extends to the pointwise maximum of any finite number of convex functions.
+\end{property}
+
+\begin{example}
+    The following piecewise linear function is convex:
+    \begin{equation*}
+        f(x) = \max_{i\in\iset{1}{m}} a_i^\tp x + b_i
+    \end{equation*}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=.5\textwidth]{convex-functions/piecewise-linear.png}
+    \end{figure}
+\end{example}
+
+\begin{example}[Sum of $r$ largest components]
+    The sum of the $r$ largest components of a vector $x\in\R^n$ is convex:
+    \begin{equation*}
+        f(x) = x_{(1)} + \dots + x_{(r)}
+    \end{equation*}
+    where $x_{(1)}\geq\dots\geq x_{(n)}$ are the components of $x$ sorted in decreasing order.
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=.5\textwidth]{convex-functions/top-r.png}
+    \end{figure}
+    Indeed, we can write $f$ as:
+    \begin{equation*}
+        f(x) = \max\set{x_{i_1} + x_{i_2} + \dots + x_{i_r}}{1\leq i_1<i_2<\dots<i_r\leq n}
+    \end{equation*}
+\end{example}
