@@ -21,7 +21,7 @@ Consider for instance a robotic arm. We can design a simplified scheme of the ro
 
 \subsection{Points, frames and transformations}
 \subsubsection{Position of a point in space}
-Once that a frame of reference $\{A\}$ is defined, we can localize any point of the universe given a \emph{position vector}:
+Once that a reference frame $\{A\}$ is defined, we can localize any point of the universe given a \emph{position vector}:
 \begin{figure}[H]
     \centering
 
@@ -40,7 +40,7 @@ Once that a frame of reference $\{A\}$ is defined, we can localize any point of 
 \end{figure}
 
 \subsubsection{Position and orientation of a body in space}
-To define the orientation of a body in space, we need to define a frame of reference $\{B\}$ attached to this body. The orientation is therefore defined as the expression of this coordinate system in the reference frame $\{A\}$.
+To define the orientation of a body in space, we need to define a reference frame $\{B\}$ attached to this body. The orientation is therefore defined as the expression of this coordinate system in the reference frame $\{A\}$.
 \begin{figure}[H]
     \centering
 
@@ -113,5 +113,105 @@ There are several ways to represent a rotation matrix, each with its own advanta
     \item Axis-angle representation --- 3 components
     \item Quaternions --- 4 components
 \end{itemize}
+The number of components used to be an important factor when computers were slow and memory was expensive. Nowadays, the choice of representation is more about the ease of use and the properties of the representation.
 
 \subsubsection{Euler angles}
+Each rotation can be represented by the composition of three elementary rotations around the fixed axes of the frame $\{A\}$.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.6\textwidth]{position/euler-angles.png}
+    \caption{Euler angles representation of a rotation.}
+\end{figure}
+In terms of rotation matrices, any rotation matrix can be written as $\prescript{A}{B}{R}(\gamma, \beta, \alpha)$, defined by:
+\begin{align*}
+    \prescript{A}{B}{R}(\gamma, \beta, \alpha) &= R_Z(\alpha)R_Y(\beta)R_X(\gamma)\\
+    &= \begin{bmatrix}
+        \cos\alpha & -\sin\alpha & 0 \\
+        \sin\alpha & \cos\alpha & 0 \\
+        0 & 0 & 1
+    \end{bmatrix}
+    \begin{bmatrix}
+        \cos\beta & 0 & \sin\beta \\
+        0 & 1 & 0 \\
+        -\sin\beta & 0 & \cos\beta
+    \end{bmatrix}
+    \begin{bmatrix}
+        1 & 0 & 0 \\
+        0 & \cos\gamma & -\sin\gamma \\
+        0 & \sin\gamma & \cos\gamma
+    \end{bmatrix}
+\end{align*}
+The Euler angles are not unique, as the same rotation can be represented by different sets of Euler angles. This is called gimbal lock, and is a major drawback of the Euler angles representation.
+
+We can also express the Euler angles given the rotation matrix:
+\begin{align*}
+    \prescript{A}{B}{R}(\gamma, \beta, \alpha) = \begin{bmatrix}
+        r_{11} & r_{12} & r_{13} \\
+        r_{21} & r_{22} & r_{23} \\
+        r_{31} & r_{32} & r_{33}
+    \end{bmatrix}
+    \implies
+    \begin{cases}
+        \beta = \atantwo(-r_{31}, \sqrt{r_{11}^2+r_{21}^2}) \\
+        \alpha = \atantwo(r_{21}/\cos\beta, r_{11}/\cos\beta) \\
+        \gamma = \atantwo(r_{32}/\cos\beta, r_{33}/\cos\beta)
+    \end{cases}
+\end{align*}
+
+\subsubsection{Axis-angle and quaternions}
+We are given a vector $\vec{k}$ and an angle $\theta$; the rotation represented by these two elements is the rotation of angle $\theta$ around the axis $\vec{k}$. We can define:
+\begin{equation*}
+    \begin{cases}
+        \epsilon_1 = k_x\sin\frac{\theta}{2} \\
+        \epsilon_2 = k_y\sin\frac{\theta}{2} \\
+        \epsilon_3 = k_z\sin\frac{\theta}{2} \\
+        \epsilon_4 = \cos\frac{\theta}{2}
+    \end{cases}
+\end{equation*}
+we have $\epsilon_1^2+\epsilon_2^2+\epsilon_3^2+\epsilon_4^2=1$, creating a unit quaternion. The rotation matrix associated to the quaternion is:
+\begin{equation*}
+    R_\epsilon = \begin{bmatrix}
+        1-2\epsilon_2^2-2\epsilon_3^2 & 2(\epsilon_1\epsilon_2-\epsilon_3\epsilon_4) & 2(\epsilon_1\epsilon_3+\epsilon_2\epsilon_4) \\
+        2(\epsilon_1\epsilon_2+\epsilon_3\epsilon_4) & 1-2\epsilon_1^2-2\epsilon_3^2 & 2(\epsilon_2\epsilon_3-\epsilon_1\epsilon_4) \\
+        2(\epsilon_1\epsilon_3-\epsilon_2\epsilon_4) & 2(\epsilon_2\epsilon_3+\epsilon_1\epsilon_4) & 1-2\epsilon_1^2-2\epsilon_2^2
+    \end{bmatrix}
+\end{equation*}
+
+The invert operation is also simple to compute:
+\begin{align*}
+    \prescript{A}{B}{R}(\gamma, \beta, \alpha) = \begin{bmatrix}
+        r_{11} & r_{12} & r_{13} \\
+        r_{21} & r_{22} & r_{23} \\
+        r_{31} & r_{32} & r_{33}
+    \end{bmatrix}
+    \implies
+    \begin{cases}
+        \epsilon_1 = \frac{r_{32}-r_{23}}{4\epsilon_4} \\
+        \epsilon_2 = \frac{r_{13}-r_{31}}{4\epsilon_4} \\
+        \epsilon_3 = \frac{r_{21}-r_{12}}{4\epsilon_4} \\
+        \epsilon_4 = \frac{1}{2}\sqrt{1+r_{11}+r_{22}+r_{33}}
+    \end{cases}
+\end{align*}
+
+\subsection{Angular velocity}
+The angular velocity of a body is a vector that describes the rotation of the body in space. It is defined as the derivative of the rotation matrix with respect to time. Angular velocity matrices are skew-symmetric matrices, i.e. matrices of the tangent space of $\SO(3)$, denoted $\so(3)$:
+\begin{equation*}
+    \so(3) = \set{W\in\mathcal{M}_3(\R)}{W^\tp=-W} = \set{\begin{bmatrix}
+        0 & -w_z & w_y \\
+        w_z & 0 & -w_x \\
+        -w_y & w_x & 0
+    \end{bmatrix}}{w_x, w_y, w_z\in\R}
+\end{equation*}
+Indeed, consider the rotation matrix $R(t)\in\SO(3)$, and denote $\dot R(t) = \partfrac{R(t)}{t}$ the derivative of $R(t)$ with respect to time. We have:
+\begin{align*}
+    R(t)R(t)^\tp &= I_3 \\
+    \dot RR^\tp + R\dot R^\tp &= 0_3 \\
+    \dot RR^\tp &= -R\dot R^\tp \\
+    \dot RR^\tp &= -\left(\dot RR^\tp\right)^\tp \\
+\end{align*}
+Hence, by defining $W := \dot RR^\tp$, we have $W\in\so(3)$.
+
+Note that $R(t)$ is the solution of the differential equation $\dot R = WR$, with $R(0)=R_0\in\SO(3)$. The solution is:
+\begin{equation*}
+    R(t) = R_0\exp(Wt) \quad\text{where}\quad \exp(Wt) = \sum_{n=0}^{+\infty}\frac{(Wt)^n}{n!}
+\end{equation*}
