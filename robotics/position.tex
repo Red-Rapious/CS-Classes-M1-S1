@@ -80,9 +80,9 @@ The lines correspond to the axes of the frame $\{A\}$ expressed in the frame $\{
 
 \subsubsection{Rotation matrices}
 We showed that the orientation of the body in space could be expressed as a 3-dimensional rotation matrix. The group of 3-dimensional rotation matrices is denoted $\SO(3)$, and is composed of all the matrices that are orthonormal, that is orthogonal and with a determinant equal to 1:
-\begin{equation*}
+\begin{equation}
     \SO(3) = \set{R\in\mathcal{M}_{3}(\R)}{RR^T=I_3 \text{ and } \det(R) = +1}
-\end{equation*}
+\end{equation}
 If we write:
 \begin{equation*}
     R = \begin{bmatrix}
@@ -215,3 +215,51 @@ Note that $R(t)$ is the solution of the differential equation $\dot R = WR$, wit
 \begin{equation*}
     R(t) = R_0\exp(Wt) \quad\text{where}\quad \exp(Wt) = \sum_{n=0}^{+\infty}\frac{(Wt)^n}{n!}
 \end{equation*}
+This gives us a new parameterization of the group $\SO(3)$, using the angular velocity matrices. Recall that a matrix $W\in\so(3)$ is associated to a vector $w=(w_x, w_y, w_z)\in\R^3$; we denote $\hat{w}=W$. The main question associated to this representation is to compute the infinite sum of the exponential function:
+\begin{equation}
+    \exp(tW)=\sum_{n=0}^{+\infty}\frac{(tW)^n}{n!}
+\end{equation}
+We can use the fact that any skew-symmetric matrix $W\in\so(3)$ is nilpotent, i.e. there exists an integer $n\in\N$ such that $W^n=0_3$. This allows us to compute the exponential function:
+\begin{equation*}
+    \hat{w}=W=\begin{bmatrix}
+        0 & -w_z & w_y \\
+        w_z & 0 & -w_x \\
+        -w_y & w_x & 0
+    \end{bmatrix} = w \times \cdot
+\end{equation*}
+Therefore, $\hat{w}^2=ww^\tp-I_3$, and $\hat{w}^3=-\hat{w}$. We can then regroup the different terms of the exponential function, by transforming the exponents greater than 3:
+% TODO: detail computation
+\begin{equation}
+    \exp(tW)=I_3+\sin(t)\hat{w}+\frac{1-\cos(t)}{t}\hat{w}^2
+\end{equation}
+
+\subsection{Exponential and logarithm map}
+We saw that the exponential map is an application from the tangent space of $\SO(3)$, $\so(3)$ to the group $\SO(3)$, defined by:
+\begin{align*}
+    \exp:\so(3)&\longrightarrow\SO(3)\\
+    tW&\longmapsto\exp(tW) = I_3 + \sin(t)\hat{w} + \frac{1-\cos(t)}{t}\hat{w}^2
+\end{align*}
+This function is surjective and $2\pi$-periodic.
+
+We can define a reciprocal function, the logarithm map, that is the inverse of the exponential map:
+\begin{equation*}
+    \log:R\in\SO(3)\longrightarrow w\in\so(3)
+\end{equation*}
+Note that
+\begin{equation*}
+    \norm{w}=\cos^{-1}\left(\frac{\Tr(R)-1}{2}\right)
+\end{equation*}
+and therefore:
+\begin{equation*}
+    w=\frac{\norm{w}}{2\sin(\norm{w})}\begin{bmatrix}
+        r_{32}-r_{23} \\
+        r_{13}-r_{31} \\
+        r_{21}-r_{12}
+    \end{bmatrix}
+\end{equation*}
+
+This gives us a way to compute the distance between two rotations:
+\begin{equation*}
+    d(R_1, R_2) = \norm{\log(R_1^\tp R_2)}
+\end{equation*}
+Such a construction comes handy when we want to minimize the distance between two rotations, for instance in the context of trajectory tracking.
