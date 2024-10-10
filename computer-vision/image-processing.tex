@@ -1,0 +1,45 @@
+\section{Image processing using filters and convolutions}
+An image can be interpreted either as a continuous function $f(x, y)$ or as a discrete array $F_{u,v}$.
+
+\subsection{Filters and convolution}
+\subsubsection{Basic filters}
+An image can be blurred using a filter, by replacing a point by the average of its neighbors. Blurring an image gives a smoother image, making it easier to compute derivatives. 
+
+\subsubsection{Convolutions}
+Given two integrable functions $f, g:\R\to\R$, we can define their convolution as:
+\begin{align*}
+    f*g: \R&\longrightarrow \R\\
+    x&\longmapsto\int_{-\infty}^{+\infty}f(x-t)g(t)dt
+\end{align*}
+Note that $f*g=g*f$ using a change of variable.
+
+This is the definition of the convolution from a continuous perspective. When dealing with images, we want to apply the convolution to a discrete array.
+\begin{equation*}
+    R_{i,j} = (F*G)_{i,j} = \sum_{u,v} F_{i-u, j-v}G_{u,v}
+\end{equation*}
+
+% Insert examples of blurring
+
+Convolution follow basic properties:
+\begin{description}
+    \item[Commutativity] $f*g=g*f$
+    \item[Associativity] $(f*g)*h = f*(g*h)$
+    \item[Linearity] $(af+bg)*h = af*h + bg*h$
+    \item[Shift invariance] $f_\dagger * h = (f*h)\dagger$
+\end{description}
+Note that is the only operator that is both linear and shift-invariant.
+
+The convolution can be differentiated:
+\begin{equation*}
+    \frac{\partial}{\partial x}(f*g) = \frac{\partial f}{\partial x}*g
+\end{equation*}
+
+Gaussian filters are used to blur images.
+
+\subsection{Computing derivatives}
+
+\subsection{Edge detection}
+
+\subsection{The Canny edge detector}
+
+\subsection{Denoising, sparsity and dictionary learning}
