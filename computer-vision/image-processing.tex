@@ -90,8 +90,8 @@ The two (orthogonal) directions of filtering are given by the eigenvectors of $\
 % Insert illustrations
 
 \subsection{Image derivatives}
+We will see in the next chapter a variety of techniques to solve the \emph{edge detection problem}. A building block of such methods are \emph{image derivatives}: intuitively, we want to be able to measure how much the contrast of the image change locally. Peaks in contrast variation can be somehow interpreted as being close to edges, since this would be the point where the contours of the object contrast with the background.
 \subsubsection{Finite differences}
-We will see in the next subsection a variety of techniques to solve the \emph{edge detection problem}. A building block of such methods are \emph{image derivatives}: intuitively, we want to be able to measure how much the contrast of the image change locally. Peaks in contrast variation can be somehow interpreted as being close to edges, since this would be the point where the contours of the object contrast with the background.
 
 Therefore, we want to compute at each pixel $(x, y)$ the derivates. In the discrete case, we could take the difference between the left and right pixels:
 \begin{equation*}
@@ -139,9 +139,3 @@ Second-order methods can also prove effective. This is a non-separable method, a
 \begin{equation*}
     \nabla^2G_\sigma(x,y) = \partfrac{^2G_\sigma(x,y)}{x^2} + \partfrac{^2G_\sigma(x,y)}{y^2}
 \end{equation*}
-
-\subsection{Edge detection}
-
-\subsection{The Canny edge detector}
-
-\subsection{Denoising, sparsity and dictionary learning}

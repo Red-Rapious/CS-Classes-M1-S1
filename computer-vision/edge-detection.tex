@@ -1,0 +1,16 @@
+\section{Edge detection}
+\subsection{Gradient-based edge detection}
+The edge detection problem aims at identifying the \emph{edges} inside an image; this requires a proper definition of \say{edge}, which often depends on the method used to compute it. Intuitively, an edge is a discontinuity of intensity in some direction; like explained previously, it could be detected by looking for place where the derivatives of the iamge have large values.
+
+Gradient-based edge detectors run into three major issues:
+\begin{enumerate}
+    \item The gradient magnitudes at different scalres are different: which one should we choose?
+    \item tThe gradient magnitude is large along thick trails: how do we identify the significant points?
+    \item How do we link the relevant points up into curves?
+\end{enumerate}
+
+Another way to detect an extremal first derivative is to look for a null second derivative. In practice, applying a Laplacian method always require smoothing with a Gaussian kernel first. The method goes as follows: smooth the image, apply the Laplacian, and mark the zero points where there is a sufficiently large derivative, and enough contrast.
+
+\subsection{The Canny edge detector}
+
+\subsection{Denoising, sparsity and dictionary learning}
