@@ -17,31 +17,31 @@ Classes are in active development. Below is a summary of the current availabilit
 | Introduction to Computer Vision | :x: |
 | Camera Geometry | :x: |
 | Camera Calibration | :x: |
-| Image processing | :white-check-mark: |
+| Image processing | :white_check_mark: |
 | Edge detection | :large_orange_diamond: |
 | Radiometry and Color | :x: |
 
 ### Deep Learning
 | **Chapter Title** | **Progress** |
 |-------------------|--------------|
-| Introduction | :white-check-mark: |
+| Introduction | :white_check_mark: |
 | Automatic differentiation | :large_orange_diamond: |
 | Deep Reinforcement Learning | :large_orange_diamond: |
-| Optimization and loss functions | :white-check-mark: |
-| Convolutional Neural Networks | :white-check-mark: |
-| Recurrent Neural Networks | :white-check-mark: |
-| Attention and Transformers | :white-check-mark: |
-| Robustnesss and Regularity | :white-check-mark: |
-| Generative and Autoregressive Models | :white-check-mark: |
-| Autoencoders | :white-check-mark: |
-| Generative Adversarial Neural Networks | :white-check-mark: |
-| Normalizing Flows | :white-check-mark: |
+| Optimization and loss functions | :white_check_mark: |
+| Convolutional Neural Networks | :white_check_mark: |
+| Recurrent Neural Networks | :white_check_mark: |
+| Attention and Transformers | :white_check_mark: |
+| Robustnesss and Regularity | :white_check_mark: |
+| Generative and Autoregressive Models | :white_check_mark: |
+| Autoencoders | :white_check_mark: |
+| Generative Adversarial Neural Networks | :white_check_mark: |
+| Normalizing Flows | :white_check_mark: |
 
 ### Robotics
 | **Chapter Title** | **Progress** |
 |-------------------|--------------|
 | Introduction | :x: |
-| Position and orientation | :white-check-mark: |
+| Position and orientation | :white_check_mark: |
 | Forward Kinematics | :large_orange_diamond: |
 | Inverse Kinematics | :x: |
 | Motion planning | :x: |
@@ -49,7 +49,7 @@ Classes are in active development. Below is a summary of the current availabilit
 ### Convex Optimization
 | **Chapter Title** | **Progress** |
 |-------------------|--------------|
-| Convex sets | :white-check-mark: |
+| Convex sets | :white_check_mark: |
 | Convex functions | :large_orange_diamond: |
 | Convex problems | :x: |
 | Duality | :x: |
