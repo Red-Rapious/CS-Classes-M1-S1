@@ -11,6 +11,13 @@ Available classes are:
 ## Progression
 Classes are in active development. Below is a summary of the current availability of chapters. Note that chapter titles for future lectures are subject to modifications.
 
+*The following legend is used:*
+| ***Symbol*** | ***Meaning*** |
+|------------|-------------|
+| :x: | *Not started* |
+| :large_orange_diamond: | *In progress* |
+| :white_check_mark: | *Finished* |
+
 ### Computer vision
 | **Chapter Title** | **Progress** |
 |-------------------|--------------|
@@ -44,7 +51,8 @@ Classes are in active development. Below is a summary of the current availabilit
 | Position and orientation | :white_check_mark: |
 | Forward Kinematics | :large_orange_diamond: |
 | Inverse Kinematics | :x: |
-| Motion planning | :x: |
+| Motion planning | :large_orange_diamond: |
+| Collision detection | :x: |
 
 ### Convex Optimization
 | **Chapter Title** | **Progress** |

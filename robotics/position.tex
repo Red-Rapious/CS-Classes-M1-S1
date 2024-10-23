@@ -1,6 +1,6 @@
 \section{Position and Orientation}
 \subsection{Introduction}
-Kinematics studies the movement of an object -- in our case of a robot -- without taking into acount the forces generating it. Instead, it only handles aspects such as position, orientation, speed and momentum of bodies in movement.
+Kinematics studies the \emph{movement} of an object -- in our case of a robot -- without taking into acount the \emph{forces} generating it. Instead, it only handles aspects such as position, orientation, speed and momentum of bodies in movement.
 
 Consider for instance a robotic arm. We can design a simplified scheme of the robot and its environment, to create a kinematic pipeline and reference frames associated to each of these objects.
 
@@ -263,6 +263,5 @@ This gives us a way to compute the distance between two rotations:
     d(R_1, R_2) = \norm{\log(R_1^\tp R_2)}
 \end{equation*}
 Such a construction comes handy when we want to minimize the distance between two rotations, for instance in the context of trajectory tracking.
-
 
 \subsection{Rigid Body Transformations}
