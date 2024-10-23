@@ -27,6 +27,7 @@ Classes are in active development. Below is a summary of the current availabilit
 | Image processing | :white_check_mark: |
 | Edge detection | :large_orange_diamond: |
 | Radiometry and Color | :x: |
+| ... | :x: |
 
 ### Deep Learning
 | **Chapter Title** | **Progress** |

@@ -51,12 +51,12 @@ Recall that the forward kinematic can be used to compute the position of each jo
 \begin{figure}[H]
     \centering
 
-    \begin{minipage}{0.4\textwidth}
+    \begin{minipage}{.4\textwidth}
         \centering
         \includegraphics[width=.5\textwidth]{motion-planning/humanoid.png}
         \caption*{A humanoid robot}
     \end{minipage}
-    \begin{minipage}{0.5\textwidth}
+    \begin{minipage}{.5\textwidth}
         \centering
         \includegraphics[width=.9\textwidth]{motion-planning/tree.png}
         \caption*{The associated configuration tree}
@@ -64,5 +64,62 @@ Recall that the forward kinematic can be used to compute the position of each jo
 \end{figure}
 
 \subsection{Obstacles and collisions}
+Obstacles and collision handling are crucial in motion planning, and are responsible for the complexity of the problem.
+\subsubsection{Representations and modelisation}
+There are multiple ways to represent obstacles, which are used in different algorithms. The \emph{polynomial representation} consists in representing the obstacles as sets satisfying polynomial inequalities. The \emph{mesh representation} and \emph{primitive representation} define simple sets of points in the workspace that are respectively inside or outside the obstacles.
+\begin{figure}[H]
+    \centering
+
+    \begin{minipage}{.5\textwidth}
+        \centering
+        \includegraphics[width=.9\textwidth]{motion-planning/polynomial.png}
+        \caption*{Polynomial representation}
+    \end{minipage}
+    \begin{minipage}{.4\textwidth}
+        \centering
+        \includegraphics[width=.5\textwidth]{motion-planning/mesh.png}
+        \caption*{Mesh representation}
+    \end{minipage}
+\end{figure}
+
+Given a physical state $S_q$ of the form
+\begin{equation*}
+    S_q = \varphi_1(K_1^\circ), \dots, \varphi(K_M^\circ), K_{M+1}^\circ, \dots, K_N^\circ
+\end{equation*}
+we can define the space of configurations $\Cc_{\text{obs}}$ that are in collision with the obstacles:
+\begin{equation*}
+    \Cc_{\text{obs}} = \set{q\in\Cc}{%
+        \underbrace{\exists i\neq j\leq M, \varphi_i(K_i^\circ)\cap \varphi_j(K_j^\circ)\neq\emptyset}_{\text{Auto-collision}}%
+        \:\text{or}\:%
+        \underbrace{\exists i\leq M, j>M, \varphi_i(K_i^\circ)\cap K_j^\circ\neq\emptyset}_{\text{Environment collision}}%
+    }
+\end{equation*}
+We can then define the \emph{free space} $\Cc_{\text{free}}$ as the set of configurations that are not in collision with the obstacles, that is:
+\begin{equation*}
+    \Cc_{\text{free}} = \Cc\setminus\Cc_{\text{obs}}
+\end{equation*}
+Therefore, the problem of motion planning is to find a path in the free space $\Cc_{\text{free}}$ that connects the initial configuration to the final configuration.
+
+\subsubsection{Example: translation without rotation of a rigid body}
+Let us consider the workspace $\E^2$ and a rigid body $K_r$ that can be translated without rotating. The configuration space is $SE(2)$, and the obstacles are represented by a set of points in the workspace.
+
+It is handy to compute the Minkowski sum of the robot $K_r$ and the obstacles $K_o$:
+\begin{equation*}
+    K_r + K_o = \set{x+y}{x\in K_r, y\in K_o}
+\end{equation*}
+If there is a path outside the Minkowski sum, then it is possible to find a path to move the body without rotating it.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.9\textwidth]{motion-planning/minkowski.png}
+    \caption{Use of the Minkowski sum of the robot and the obstacles.}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.7\textwidth]{motion-planning/minkowski-2.png}
+    \caption{Another example, without a feasible path.}
+\end{figure}
+
+
+\subsection{Path planning and roadmap}
 
 \newpage
