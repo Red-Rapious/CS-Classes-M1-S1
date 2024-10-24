@@ -145,6 +145,7 @@ Such algorithms come with different possible level of completeness:
 \subsubsection{Combinatorial planning}
 Combinatorial planning was developed in the 80s, and remains close to the mathematical problem studied. It is extremely efficient for low-dimensional problems, and are \emph{complete} and even sometimes \emph{resolution complete}. On the other hand, some are difficult to implement due to numerical issues, and most are intractable even with medium-sized problems.
 
+\paragraph*{Principle}
 The main idea is to build finite roadmaps; a \emph{roadmap} is a graph $\G$ such that:
 \begin{itemize}
     \item each vertex is a configuration $q\in\Cc_{\text{free}}$,
@@ -156,7 +157,24 @@ Furthermore, a roadmap $\G$ is a \emph{topological graph} for the space $\Cc_{\t
     \item $\G$ is \emph{homotopic-preserving}: every close path in $\Cc_{\text{free}}$ can be homotopically deformed into a path which is the concatenation of edges that form a cycle in $\G$.
 \end{itemize}
 
+In the following, we will assume that $\Cc_{\text{free}}$ is piecewise linear, that is, it is the union of a finite number of polytopes. The robot can be either a point, a polygonal, or even a disc, which has the ability to move without rotation (that is, it can be translated).
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.35\textwidth]{motion-planning/obstacles.png}
+    \caption{Example of piecewise linear obstacles.}
+\end{figure}
+
+\paragraph*{Sweep}
+A first approach to build a roadmap is to use a \emph{sweep} algorithm. The idea is to use the plane sweep principle to efficiently determine where the rays terminate on the obstacles. We sort the vertices by abscisse coordinate, and we handle extensions from left to right, while maintaining a vertically sorted list of edges. This leads to a simple to implement, $O(n\log n)$-time algorithm, where $n$ is the number of vertices of the obstacles.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.6\textwidth]{motion-planning/sweep.png}
+    \caption{Example of sweeping.}
+\end{figure}
+
 \subsubsection{Trajectory optimization (local planning)}
+Trajectory optimization, also known as local planning, use optimal control methods such as DDP or iLQR to find a local solution to the motion planning problem. It has a strong terminal cost, and does not guarantee to explore all the homotopy classes. To solve this issue, we need global optimization methods, that are only viable in small dimensions. 
+
 \subsubsection{Sampling-based motion planning (probabilistic planning)}
 
 \subsection{Path planning and roadmap}
