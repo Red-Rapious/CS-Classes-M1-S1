@@ -53,7 +53,7 @@ Classes are in active development. Below is a summary of the current availabilit
 | Forward Kinematics | :large_orange_diamond: |
 | Inverse Kinematics | :x: |
 | Motion planning | :large_orange_diamond: |
-| Collision detection | :x: |
+| Collision detection | :large_orange_diamond: |
 
 ### Convex Optimization
 | **Chapter Title** | **Progress** |

@@ -1,1 +1,16 @@
 \section{Collision detection}
+Collision detection is a subject at the center of physics simulators. To build a simulation of the robot in its environment, the main loop goes as follows:
+\begin{enumerate}
+    \item Collision detection: finding contact points
+    \item Collision resolution: finding contact forces using physical principles
+    \item Time integration: update of the quantities of interest (position, velocity, etc.)
+\end{enumerate}
+It is therefore crucial to have an efficient collision detection algorithm, that is to know whether two objects are in contact or not, and if so, to find the contact points.
+
+Nevertheless, collision detection is a computational bottleneck in physics simulators. Resolving collision detection for one pair of objects takes a significant amount of time, especially for complex shapes, and the number of pairs to check grows quadratically with the number of objects. A general method to optimize such a process is to decompose one collision detection into two phases, the broad phase and the narrow phase. The broad phase uses simple geometric primitives to quickly discard pairs of objects that are far from colliding. The narrow phase then uses more complex geometric primitives to find the exact contact points.
+
+\subsection{The broad phase}
+
+\subsection{The narrow phase}
+
+\newpage
