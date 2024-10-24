@@ -64,7 +64,7 @@ Recall that the forward kinematic can be used to compute the position of each jo
 \end{figure}
 
 \subsection{Obstacles and collisions}
-Obstacles and collision handling are crucial in motion planning, and are responsible for the complexity of the problem.
+Obstacles and collision handling are crucial in motion planning, and are responsible for the complexity of the problem. We will dive deeper into this topic in another chapter, but we introduce here the fundamental notions needed for motion planning.
 \subsubsection{Representations and modelisation}
 There are multiple ways to represent obstacles, which are used in different algorithms. The \emph{polynomial representation} consists in representing the obstacles as sets satisfying polynomial inequalities. The \emph{mesh representation} and \emph{primitive representation} define simple sets of points in the workspace that are respectively inside or outside the obstacles.
 \begin{figure}[H]
@@ -118,7 +118,46 @@ If there is a path outside the Minkowski sum, then it is possible to find a path
     \includegraphics[width=.7\textwidth]{motion-planning/minkowski-2.png}
     \caption{Another example, without a feasible path.}
 \end{figure}
+Thanks to the configuration space approach, motion planing can be reduced to a punctual trajectory problem. Given $q_i, q_f\in\Cc_{\text{free}}$, we want to find a continuous path $\gamma\in\Cc^0([0,1], \Cc_{\text{free}})$ such that $\gamma(0)=q_i$ and $\gamma(1)=q_f$.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.5\textwidth]{motion-planning/path.png}
+    \caption{Example of a continuous path in the free configuration space.}
+\end{figure}
+Nevertheless, this still raises sub-questions. From a mathematical point of view, we can study the existence and optimality of such paths. From a numerical point of view, we need to choose a representation of the configuration space and obstacles, and to design algorithms to compute the path.
 
+\subsection{Motion planning algorithms}
+\subsubsection{Algorithm paradigms}
+Three competing paradigms exist to solve the motion planning problem:
+\begin{itemize}
+    \item \emph{Combinatorial planning} consists in finding a global, exact planning. It is \say{moral} but computationally unrealistic.
+    \item \emph{Trajectory optimization} consists in finding a local planning. It is fast but remains a local approach.
+    \item \emph{Sampling-based motion planning} probabilistically explores the configuration space. It is very efficient but does not guarantee optimality. This is the most used approach in practice.
+\end{itemize}
+
+Such algorithms come with different possible level of completeness:
+\begin{itemize}
+    \item A \emph{complete} algorithm returns a solution if one exists, and reports a failure otherwise.
+    \item A \emph{semi-complete} algorithm returns a solution if one exists, but may run forever otherwise.
+    \item For a \emph{probabilistically complete} algorithm, if a solution exists, the probability that it will be found approaches 1 as the number of iterations approaches infinity.
+\end{itemize}
+
+\subsubsection{Combinatorial planning}
+Combinatorial planning was developed in the 80s, and remains close to the mathematical problem studied. It is extremely efficient for low-dimensional problems, and are \emph{complete} and even sometimes \emph{resolution complete}. On the other hand, some are difficult to implement due to numerical issues, and most are intractable even with medium-sized problems.
+
+The main idea is to build finite roadmaps; a \emph{roadmap} is a graph $\G$ such that:
+\begin{itemize}
+    \item each vertex is a configuration $q\in\Cc_{\text{free}}$,
+    \item each edge $e(q, q')$ is a path $\gamma\in\Cc^0([0,1], \Cc_{\text{free}})$ such that $\gamma(0)=q$ and $\gamma(1)=q'$.
+\end{itemize}
+Furthermore, a roadmap $\G$ is a \emph{topological graph} for the space $\Cc_{\text{free}}$ if:
+\begin{itemize}
+    \item $\G$ is \emph{accessible}: from anywhere in $\Cc_{\text{free}}$, it is trivial to compute a path that reaches at least one point along any edge in $\G$
+    \item $\G$ is \emph{homotopic-preserving}: every close path in $\Cc_{\text{free}}$ can be homotopically deformed into a path which is the concatenation of edges that form a cycle in $\G$.
+\end{itemize}
+
+\subsubsection{Trajectory optimization (local planning)}
+\subsubsection{Sampling-based motion planning (probabilistic planning)}
 
 \subsection{Path planning and roadmap}
 
