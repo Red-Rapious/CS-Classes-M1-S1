@@ -23,7 +23,7 @@ Classes are in active development. Below is a summary of the current availabilit
 |-------------------|--------------|
 | Introduction to Computer Vision | :x: |
 | Camera Geometry | :x: |
-| Camera Calibration | :x: |
+| Camera Calibration | :white_check_mark: |
 | Image processing | :white_check_mark: |
 | Edge detection | :large_orange_diamond: |
 | Radiometry and Color | :x: |

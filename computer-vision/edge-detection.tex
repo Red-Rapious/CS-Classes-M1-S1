@@ -1,15 +1,19 @@
 \section{Edge detection}
+The edge detection problem aims at identifying the \emph{edges} inside an image; this requires a proper definition of \say{edge}, which often depends on the method used to compute it. In general, an edge is a place where the intensity of the image changes abruptly. 
+
+The edge detection problem is a fundamental problem in computer vision, as it is the first step in many image processing tasks. The main motivation behind edge detection is the idea that the edges of an image contain important information about the structure of the objects in the scene. If the brightness of an image changes abruptly, it is likely that other properties of the image also change abruptly at that point, and specifically higher-level properties. Edges define the boundaries of objects in the image; they are caused by change of texture, color, depth, or illumination, which all are important cues for the semantic interpretation of the image.
+
 \subsection{Gradient-based edge detection}
-The edge detection problem aims at identifying the \emph{edges} inside an image; this requires a proper definition of \say{edge}, which often depends on the method used to compute it. Intuitively, an edge is a discontinuity of intensity in some direction; like explained previously, it could be detected by looking for place where the derivatives of the iamge have large values.
+Intuitively, an edge is a discontinuity of intensity in some direction; like explained previously, it could be detected by looking for place where the derivatives of the iamge have large values.
 
 Gradient-based edge detectors run into three major issues:
-\begin{enumerate}
-    \item The gradient magnitudes at different scalres are different: which one should we choose?
-    \item tThe gradient magnitude is large along thick trails: how do we identify the significant points?
-    \item How do we link the relevant points up into curves?
-\end{enumerate}
+\begin{description}
+    \item[Change of scale] The gradient magnitudes at different scales are different: which one should we choose? This reflects a fundament problem in computer vision, which is the necessity to select a threshold under which edges are \say{too small} to be considered.
+    \item[Thick countours] The gradient magnitude is large along thick trails: how do we identify the significant points?
+    \item[Continuity] Simple edge detection algorithms will produce non-continuous lines, which does not fit our high-level understanding of edges. How do we link the relevant points up into curves?
+\end{description}
 
-Another way to detect an extremal first derivative is to look for a null second derivative. In practice, applying a Laplacian method always require smoothing with a Gaussian kernel first. The method goes as follows: smooth the image, apply the Laplacian, and mark the zero points where there is a sufficiently large derivative, and enough contrast.
+Another way to detect an extremal first derivative is to look for a null second derivative. In practice, applying a Laplacian method always require smoothing with a Gaussian kernel first. The method goes as follows: smooth the image, apply the Laplacian, and mark the zero points where there is a sufficiently large derivative -- that is enough contrast.
 
 \subsection{The Canny edge detector}
 
