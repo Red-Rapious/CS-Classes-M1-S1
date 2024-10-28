@@ -1,1 +1,29 @@
 \section{Convex problems}
+\subsection{Optimization problems in standard form}
+\begin{definition}[Optimization problem]
+    In its standard form, an optimization problem can be written as:
+    \begin{equation*}
+        \min_{x\in\R^n} f(x) \quad\text{such that}\quad \begin{cases}
+            \forall i\in\iset{1}{m}, \quad g_i(x)\leq 0\\
+            \forall j\in\iset{1}{p}, \quad h_j(x) = 0
+        \end{cases}
+    \end{equation*}
+    where:
+    \begin{itemize}
+        \item $x\in\R^n$ is the optimization variable
+        \item $f:\R^n\to\R$ is the \emph{objectif} or \emph{cost function}
+        \item $g_i:\R^n\to\R$ are the inequality constraint functions
+        \item $h_j:\R^n\to\R$ are the equality constraint functions
+    \end{itemize}
+\end{definition}
+\begin{remark}
+    This form can be generalized to support an infinity of constraints, and strict inequalities. Note that we can assume that the problem is subject only to inequations, without loss of generality: indeed, each equality $h_i(x)=0$ can be expressed as two inequations $h_i(x)\leq0$ and $-h_i(x)\leq0$.
+\end{remark}
+
+\begin{definition}[Optimal value]
+    We define the optimal value associated to this optimization problem as:
+    \begin{equation*}
+        p^* := \inf\set{f(x)}{\forall i\in\iset{1}{m}, \: g_i(x)\leq 0 \quad\text{and}\quad \forall j\in\iset{1}{p}, \: h_j(x) = 0}
+    \end{equation*}
+    If $p^*=+\infty$, the problem is \say{infeasible}: no $x$ satisfies the constraints. If $p^*=-\infty$, the problem is \emph{unbounded below}.
+\end{definition}
