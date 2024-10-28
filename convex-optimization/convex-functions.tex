@@ -350,3 +350,141 @@ Therefore, $v^\tp\nabla^2 f(x)v \geq 0$, and $f$ is convex.
         f(x) = \max\set{x_{i_1} + x_{i_2} + \dots + x_{i_r}}{1\leq i_1<i_2<\dots<i_r\leq n}
     \end{equation*}
 \end{example}
+
+\subsubsection{Pointwise supremum}
+\begin{property}[Pointwise supremum]
+    If $\forall y\in\A, \quad x\longmapsto f(x, y)$ is convex, then:
+    \begin{equation*}
+        g(x) = \sup_{y\in\A} f(x, y)
+    \end{equation*}
+    is convex.
+\end{property}
+
+\begin{example}[Support function]
+    The support function of a set $C$ is convex:
+    \begin{equation*}
+        S_C(x) = \sup_{y\in C} y^\tp x
+    \end{equation*}
+\end{example}
+
+\begin{example}[Distance to farthest point]
+    The distance to the farthest point in a set $C$ is convex:
+    \begin{equation*}
+        f(x) = \sup_{y\in C} \norm{x-y}
+    \end{equation*}
+\end{example}
+
+\begin{example}[Legendre-Fenchel conjugate]
+    Let $f:\R^n\longrightarrow\bar{\R}$ be a convex function. Then, its Legendre-Fenchel conjugate is convex:
+    \begin{equation*}
+        f^*(x) = \sup_{y\in\R^n} x^\tp y - f(y)
+    \end{equation*}
+\end{example}
+
+\subsubsection{Eigenvalues}
+\begin{property}[Maximum eigenvalue]
+    The function associating to a symmetric matrix $X\in\Sb_n$ its maximum eigenvalue is \textbf{convex} on $\Sb_n$:
+    \begin{equation*}
+        \lambda_{\max}(X) = \sup_{\norm{y}_2=1} y^\tp Xy
+    \end{equation*}
+\end{property}
+
+\begin{property}[Minimum eigenvalue]
+    The function associating to a symmetric matrix $X\in\Sb_n$ its minimum eigenvalue is \textbf{concave} on $\Sb_n$:
+    \begin{equation*}
+        \lambda_{\min}(X) = \inf_{\norm{y}_2=1} y^\tp Xy
+    \end{equation*}
+\end{property}
+
+\subsubsection{Composition with scalar functions}
+\begin{property}[Composition with scalar functions]
+    \label{prop:composition-scalar}
+    Let $g:\R^n\to\bar{\R}$ and $h:\bar{\R}\to\bar{\R}$ be two functions. We define the composition:
+    \begin{equation*}
+        f(x) = h(g(x))
+    \end{equation*}
+    If either:
+    \begin{itemize}
+        \item $g$ is convex, $h$ is convex and nondecreasing,
+        \item $g$ is concave, $h$ is convex and nonincreasing,
+    \end{itemize}
+    then $f$ is convex.
+\end{property}
+\begin{proof}
+    We will only prove the case where $n=1$ and $g$, $h$ are twice differentiable. We have:
+    \begin{equation*}
+        f''(x) = h''(g(x))g'(x)^2 + h'(g(x))g''(x)
+    \end{equation*}
+    If $h$ is convex, then $h''(g(x))\geq0$ and $h''(g(x))g'(x)^2\geq0$. In the first case, $g$ convex implies that $g''(x)\geq0$, and $h$ nondecreasing implies that $h'(g(x))\geq0$. Therefore, $f''(x)\geq0$ and $f$ is convex. In the second case, $g$ concave implies that $g''(x)\leq$, and $h$ nonincreasing implies that $h'(g(x))\leq$. Therefore, $f''(x)\geq0$ and $f$ is also convex.
+
+    Note that the monotonicity must hold for $h$ on the whole domain of $g$, including the extended values.
+\end{proof}
+
+\begin{example}
+    This allows us to deduce the following properties:
+    \begin{itemize}
+        \item If $g$ is convex then $\exp g$ is convex.
+        \item If $g$ is concave and positive, then $-\log g$ is convex.
+        \item If $g$ is concave and positive, then $1/g$ is convex.
+        \item If $g$ is convex and nonnegative, then for $\alpha\geq1$ we have that $g^\alpha$ is convex.
+        \item For $\alpha\geq1$, then $\norm{\cdot}^\alpha$ is convex (with $h=[\cdot]^\alpha_+$, $g=\norm{\cdot}$).
+    \end{itemize}
+\end{example}
+
+\paragraph*{Counter-example.}
+The following counter-example shows the importance of the monotonicity of $h$:
+\begin{equation*}
+    g(x)=x^2 \qquad \text{and} \qquad h = \ind_{[1, 2]}
+\end{equation*}
+Then, we have the following composition, which is not convex:
+\begin{equation*}
+    h(g(x)) = \ind_{\left[-\sqrt{2}, -1\right]\cup\left[1, \sqrt{2}\right]}(x)
+\end{equation*}
+
+\subsubsection{Vector composition}
+We derive a property similar to Property \ref{prop:composition-scalar} for vector functions.
+
+\begin{property}[Vector composition]
+    Let $g:\R^n\to\bar{\R}^k$ and $h:\R^k\to\bar{\R}$ be two functions. We define the composition:
+    \begin{equation*}
+        f(x) = h(g(x)) = h(g_1(x), \dots, g_k(x))
+    \end{equation*}
+    If either:
+    \begin{itemize}
+        \item the $g_i$ are convex, $h$ is convex and nondecreasing in each argument,
+        \item the $g_i$ are concave, $h$ is convex and nonincreasing in each argument,
+    \end{itemize}
+    then $f$ is convex.
+\end{property}
+\begin{proof}
+    A proof similar to the one of Property \ref{prop:composition-scalar} can be done, by considering the second derivative of $f$:
+    \begin{equation*}
+        f''(x) = g'(x)^\tp\nabla^2h(g(x))g'(x)+\nabla h(g(x))^\tp g''(x)
+    \end{equation*}
+    This function is positive for similar reasons as in the scalar case.
+\end{proof}
+
+\begin{example}
+    This allows us to deduce the following properties:
+    \begin{itemize}
+        \item If the $g_i$ are concave and positive, then $-\log\sum_{i=1}^m\log g_i$ is convex.
+        \item If the $g_i$ are convex, then $\log\sum_{i=1}^m\exp g_i$ is convex.
+    \end{itemize}
+\end{example}
+
+\subsubsection{Partial minimization}
+\begin{property}[Partial minimization]
+   If $f(x,y)$ is convex in $(x, y)$ and $C$ is a non-empty convex set, then the minimization over one variable is convex:
+   \begin{equation*}
+    g(x) = \inf_{y\in C} f(x,y)
+   \end{equation*}
+\end{property}
+
+\begin{example}[Distance to a convex set]
+    The distance to a convex set $S$ is convex:
+    \begin{equation*}
+        \dist(x, S) = \inf_{y\in S} \norm{x-y}
+    \end{equation*}
+\end{example}
+
+\newpage
