@@ -65,7 +65,9 @@
 \end{definition}
 
 \subsection{Convex optimization problems}
+\subsubsection{Definition}
 \begin{definition}[Convex Optimization problem]
+    \label{def:convex-optimization-problem}
     In its standard form, a convex optimization problem can be written as:
     \begin{equation*}
         \text{minimize } f(x) \quad\text{subject to}\quad \begin{cases}
@@ -87,6 +89,82 @@
 \begin{remark}
     The feasible set of a convex optimization problem is convex.
 \end{remark}
+
+\begin{example}
+    Consider the following optimization problem:
+    \begin{equation*}
+        \text{minimize } x_1^2 + x_2^2 \quad\text{subject to}\quad \begin{cases}
+            g_1(x) = x_1/(1+x_2^2) \leq 0\\
+            h_1(x) = (x_1+x_2)^2 = 0
+        \end{cases}
+    \end{equation*}
+    The objective function $f(x)=x_1^2+x_2^2$ is convex, and the feasible set
+    \begin{equation*}
+        \set{(x_1, x_2)}{x_1=-x_2\leq0}
+    \end{equation*}
+    is convex. Nevertheless, this is not a convex problem according to Definition \ref{def:convex-optimization-problem} because the constraint $g_1(x)$ is not convex and $h_1$ is not affine. We can rewrite this problem in an equivalent but not identical form:
+    \begin{equation*}
+        \text{minimize } x_1^2 + x_2^2 \quad\text{subject to}\quad \begin{cases}
+            x_1\leq0\\
+            x_1+x_2=0
+        \end{cases}
+    \end{equation*}
+    This problem is now convex according to Definition \ref{def:convex-optimization-problem}.
+\end{example}
+
+\begin{remark}
+    One could ask why we enforce this definition for a convex optimization problem, and why we do not open it to more general forms. In general, recognizing a convex optimization problem is a difficult task, and this allows to provide a simple definition that is easy to check. Note that software tools exist to recognize convex optimization problems via composition rules, such as \emph{Disciplined Convex Programming (DCP)}.
+\end{remark}
+
+\subsubsection{Optimal and locally optimal points}
+\begin{definition}[Feasible point]
+    A point $x$ is \emph{feasible} if $x\in\dom f$ and it satisfies the constraints:
+    \begin{equation*}
+        \forall i\in\iset{1}{m}, \: g_i(x)\leq0 \quad\text{and}\quad \forall j\in\iset{1}{p}, \: h_j(x)=0
+    \end{equation*}
+\end{definition}
+
+\begin{definition}[Optimal point]
+    A feasible point $x$ is \emph{optimal} if $f(x)=p^*$. We denote $X_{\text{opt}}$ the set of optimal points.
+\end{definition}
+
+\begin{definition}[Locally optimal point]
+    A point $x$ is \emph{locally optimal} if there is an $R>0$ such that $x$ is optimal for the problem restricted to the ball $B(x, R)$:
+    \begin{equation*}
+        \text{minimize } f(z) \quad\text{subject to}\quad \begin{cases}
+            \forall i\in\iset{1}{m}, \quad g_i(x)\leq 0\\
+            \forall j\in\iset{1}{p}, \quad h_j(z) = 0\\
+            \norm{z-x}_2\leq R
+        \end{cases}
+    \end{equation*}
+\end{definition}
+
+\begin{example}
+    With $n=1, m=p=0$:
+    \begin{itemize}
+        \item $f(x)=x\log x$, we have $\dom f=\R_+^*$, $p^*=-1/e$, and $x=1/e$ is optimal
+        \item $f(x)=1/x$, we have $\dom f=\R_+^*$, $p^*=0$, but no optimal point
+        \item $f(x)=-\log x$, we have $\dom f=\R_+^*$, $p^*=-\infty$
+        \item $f(x)=x^3-3x$, we have $p^*=-\infty$ but a local optimum at $x=1$
+    \end{itemize}
+\end{example}
+
+\begin{theorem}[Global optimality for convex problems]
+    Any locally optimal point of a convex problem is globally optimal.
+\end{theorem}
+\begin{proof}
+    Suppose that $x$ is locally optimal and $y$ is optimal with $f(y)<f(x)$. Since $x$ is locally optimal, there is an $R>0$ such that:
+    \begin{equation*}
+        \forall z\in B(x, R), \quad z\text{ feasible} \implies f(z)\geq f(x)
+    \end{equation*}
+    Now consider $z=\theta y + (1-\theta)x$ with $\theta=R/(2\norm{y-x}_2)$. Since $\norm{y-x}_2>R$, we must have $0<\theta<1/2$. $z$ is a combination of two feasible points, hence it is feasible since the problem is convex. Finally, $\norm{z-x}_2=R/2$ hence $z\in B(x, R)$, and:
+    \begin{equation*}
+        f(z)\leq\theta f(x)+(1-\theta)f(y)<f(x)
+    \end{equation*}
+    which contradicts the assumption that $x$ is locally optimal.
+\end{proof}
+
+\subsubsection{Equivalent convex problems}
 
 \subsection{Linear optimization}
 
