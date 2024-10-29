@@ -3,7 +3,7 @@
 \begin{definition}[Optimization problem]
     In its standard form, an optimization problem can be written as:
     \begin{equation*}
-        \min_{x\in\R^n} f(x) \quad\text{such that}\quad \begin{cases}
+        \text{minimize } f(x) \quad\text{subject to}\quad \begin{cases}
             \forall i\in\iset{1}{m}, \quad g_i(x)\leq 0\\
             \forall j\in\iset{1}{p}, \quad h_j(x) = 0
         \end{cases}
@@ -25,5 +25,75 @@
     \begin{equation*}
         p^* := \inf\set{f(x)}{\forall i\in\iset{1}{m}, \: g_i(x)\leq 0 \quad\text{and}\quad \forall j\in\iset{1}{p}, \: h_j(x) = 0}
     \end{equation*}
-    If $p^*=+\infty$, the problem is \say{infeasible}: no $x$ satisfies the constraints. If $p^*=-\infty$, the problem is \emph{unbounded below}.
+    If $p^*=+\infty$, the problem is \say{infeasible}: no $x$ satisfies the constraints.\\
+    If $p^*=-\infty$, the problem is \emph{unbounded below}.
 \end{definition}
+
+\begin{remark}
+    An optimization problem in standard form has an \emph{implicit constraint} defined by the domain of the constraint functions:
+    \begin{equation*}
+        x\in\D := \bigcap_{i=0}^m\dom g_i \cap \bigcap_{j=0}^p\dom h_j
+    \end{equation*}
+    We call $\D$ the \emph{domain of the problem}. The constraints $g_i(x)\leq0$ and $h_j(x)=0$ are the explicit constraints, and the domain of the problem defines the implicit constraints. A problem is \emph{unconstrained} if it has no explicit constraints ($m=p=0$).
+\end{remark}
+
+\begin{example}
+    The following problem is unconstrained:
+    \begin{equation*}
+        \text{minimize } -\sum_{i=1}^k\log(b_i-a_i^\tp x)
+    \end{equation*}
+    The implit constraints are $a_i^\tp x<b_i$ for all $i\in\iset{1}{k}$.
+\end{example}
+
+\begin{definition}[Feasibility problem]
+    A feasibility problem is an optimization problem in which we seek a feasible point, i.e. a point that satisfies the constraints. It can be written as:
+    \begin{equation*}
+        \text{find } x \quad\text{subject to}\quad \begin{cases}
+            \forall i\in\iset{1}{m}, \quad g_i(x)\leq 0\\
+            \forall j\in\iset{1}{p}, \quad h_j(x) = 0
+        \end{cases}
+    \end{equation*}
+    It can be considered a special case of the general problem with $f(x)=0$:
+    \begin{equation*}
+        \text{minimize } 0 \quad\text{subject to}\quad \begin{cases}
+            \forall i\in\iset{1}{m}, \quad g_i(x)\leq 0\\
+            \forall j\in\iset{1}{p}, \quad h_j(x) = 0
+        \end{cases}
+    \end{equation*}
+    If constraints are feasible, $p^*=0$ and any feasible $x$ is optimal.\\
+    If constraints are infeasible, $p^*=+\infty$.
+\end{definition}
+
+\subsection{Convex optimization problems}
+\begin{definition}[Convex Optimization problem]
+    In its standard form, a convex optimization problem can be written as:
+    \begin{equation*}
+        \text{minimize } f(x) \quad\text{subject to}\quad \begin{cases}
+            \forall i\in\iset{1}{m}, \quad g_i(x)\leq 0\\
+            \forall j\in\iset{1}{p}, \quad a_j^\tp x = b_j
+        \end{cases}
+    \end{equation*}
+    where the $g_i$ are convex, and the equality constraints are affine.
+
+    Such a problem is often written as:
+    \begin{equation*}
+        \text{minimize } f(x) \quad\text{subject to}\quad \begin{cases}
+            \forall i\in\iset{1}{m}, \quad g_i(x)\leq 0\\
+            Ax = b
+        \end{cases}
+    \end{equation*}
+\end{definition}
+
+\begin{remark}
+    The feasible set of a convex optimization problem is convex.
+\end{remark}
+
+\subsection{Linear optimization}
+
+\subsection{Quadratic optimization}
+
+\subsection{Second-order cone optimization}
+
+\subsection{Generalized inequality constraints}
+
+\subsection{Semidefinite programming}
