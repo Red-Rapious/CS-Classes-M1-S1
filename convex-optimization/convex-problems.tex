@@ -165,6 +165,73 @@
 \end{proof}
 
 \subsubsection{Equivalent convex problems}
+Two problems are informally equivalent if the solution of one is readily obtained from the solution of the other, and vice-versa. In the following, we will see multiple transformations that preserve both the solution and the convexity of an optimization problem.
+
+\paragraph*{Eliminating equality constraints}
+Consider the problem:
+\begin{equation*}
+    \text{minimize } f(x) \quad\text{subject to}\quad \begin{cases}
+        \forall i\in\iset{1}{m}, \quad g_i(x)\leq 0\\
+        Ax = b
+    \end{cases}
+\end{equation*}
+If we can find $F$ and $x_0$ such that:
+\begin{equation*}
+    Ax=b \iff \exists z, \: x=Fz+x_0
+\end{equation*}
+then we can rewrite the problem as:
+\begin{equation*}
+    \text{minimize } f(Fz+x_0) \quad\text{subject to}\quad \forall i\in\iset{1}{m}, \: g_i(Fz+x_0)\leq 0
+\end{equation*}
+For instance, one can choose $F$ such that $\im(F)=\Ker(A)$ and $x_0$ such that $Ax_0=b$.
+
+\paragraph*{Introducing equality constraints}
+Reciprocally, the problem:
+\begin{equation*}
+    \text{minimize } f(A_0z+b_0) \quad\text{subject to}\quad \forall i\in\iset{1}{m}, \: g_i(A_iz+b_i)\leq 0
+\end{equation*}
+Can be rewritten as:
+\begin{equation*}
+    \text{minimize } f(y_0) \quad\text{subject to}\quad \begin{cases}
+        \forall i\in\iset{1}{m}, \quad g_i(y_i)\leq 0\\
+        \forall i\in\iset{0}{m}, \quad y_i=A_ix+b_i
+    \end{cases}
+\end{equation*}
+
+\paragraph*{Introducing slack variables for linear inequalities}
+The idea is to replace linear inequalities by linear equalities and non-negativity constraints.
+Formally, the problem:
+\begin{equation*}
+    \text{minimize } f(x) \quad\text{subject to}\quad \forall i\in\iset{1}{m}, \: a_i^\tp x\leq b_i
+\end{equation*}
+is equivalent to:
+\begin{equation*}
+    \text{minimize } f(y_0) \quad\text{subject to}\quad \begin{cases}
+        \forall i\in\iset{1}{m}, \: a_i^\tp x + s_i = b_i\\
+        \forall i\in\iset{1}{m}, \: s_i\geq0
+    \end{cases}
+\end{equation*}
+
+\paragraph*{Epigraph form}
+We saw previously that the epigraph of a convex function is a convex set. We can use this property to rewrite a convex optimization problem in its standard form as:
+\begin{equation*}
+    \text{minimize } t \quad\text{subject to}\quad \begin{cases}
+        f(x)-t\leq0\\
+        \forall i\in\iset{1}{m}, \: g_i(x)\leq 0\\
+        Ax=b
+    \end{cases}
+\end{equation*}
+
+\paragraph*{Minimizing over some variables}
+Consider the problem:
+\begin{equation*}
+    \text{minimize } f(x_1, x_2) \quad\text{subject to}\quad \forall i\in\iset{1}{m}, \: g_i(x_1)\leq 0
+\end{equation*}
+This can be rewritten as:
+\begin{equation*}
+    \text{minimize } \tilde{f}(x_1) \quad\text{subject to}\quad \forall i\in\iset{1}{m}, \: g_i(x_1)\leq 0\\
+\end{equation*}
+where $\tilde{f}(x_1)=\inf_{x_2}f(x_1, x_2)$. Said otherwise, we can start by minimizing over the unconstrained variables, and then minimize over the constrained variables.
 
 \subsection{Linear optimization}
 

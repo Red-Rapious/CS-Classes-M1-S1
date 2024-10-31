@@ -59,8 +59,8 @@ Classes are in active development. Below is a summary of the current availabilit
 | **Chapter Title** | **Progress** |
 |-------------------|--------------|
 | Convex sets | :white_check_mark: |
-| Convex functions | :large_orange_diamond: |
-| Convex problems | :x: |
+| Convex functions | :white_check_mark: |
+| Convex problems | :large_orange_diamond: |
 | Duality | :x: |
 | Base methods for unconstrained optimization | :x: |
 | Constrained optimization | :x: |
