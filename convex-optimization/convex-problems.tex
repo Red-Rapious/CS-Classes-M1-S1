@@ -233,12 +233,57 @@ This can be rewritten as:
 \end{equation*}
 where $\tilde{f}(x_1)=\inf_{x_2}f(x_1, x_2)$. Said otherwise, we can start by minimizing over the unconstrained variables, and then minimize over the constrained variables.
 
-\subsection{Linear optimization}
+\subsection{Special classes of convex problems}
+If methods exist to solve general convex optimization problems, some classes of problems have specific structures that can be exploited to design more efficient algorithms. We will present some of these classes in the following.
 
-\subsection{Quadratic optimization}
+\subsubsection{Linear programming (LP)}
+\begin{definition}[Linear programming problem]
+    A linear programming problem is an optimization problem in which the objective function is affine and the constraints are linear:
+    \begin{equation*}
+        \text{minimize } c^\tp x + d\quad\text{subject to}\: \begin{cases}
+            Gx\leq h\\
+            Ax=b
+        \end{cases}
+    \end{equation*}
+    The feasible set of a linear programming problem is a polyhedron $\Pc$.
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=.5\textwidth]{convex-problems/polyhedron.png}
+        \caption{A polyhedron $\Pc$, the feasible set of a linear programming problem.}
+    \end{figure}
+\end{definition}
 
-\subsection{Second-order cone optimization}
+As an example, we consider the problem of finding the Chebyshev center of a polyhedron.
+\begin{definition}[Chebyshev center]
+    Given a polyhedron $\Pc$ of the form:
+    \begin{equation*}
+        \Pc = \set{x}{\forall i\in\iset{1}{m}, \: a_i^\tp x\leq b_i,}
+    \end{equation*}
+    its \emph{Chebyshev center} is the center of the largest inscribed ball. Recall that the ball $B(x_c, r)$ of center $x_c$ and radius $r$ is defined as:
+    \begin{equation*}
+        B(x_c, r) = \set{x}{\norm{x-x_c}_2\leq r}
+    \end{equation*}
+    Then, the Chebyshev center $\hat{x}$ is the point $x_c$ that maximizes $r$:
+    \begin{equation*}
+        \hat{x} = \argmin_{x_c, r} \set{r\in\R_+}{B(x_c, r)\subseteq\Pc} = \argmin_{x_c} \max_{x\in\Pc} \norm{x-x_c}_2
+    \end{equation*}
+\end{definition}
 
-\subsection{Generalized inequality constraints}
+\begin{property}[Chebyshev center as a linear programming problem]
+    The Chebyshev center of a polyhedron $\Pc$ can be computed as the solution of the following linear programming problem:
+    \begin{equation*}
+        \text{maximize } r \quad\text{subject to}\quad \forall i\in\iset{1}{m}, \: a_i^\tp x_c + r\norm{a_i}_2\leq b_i
+    \end{equation*}
+\end{property}
 
-\subsection{Semidefinite programming}
+\subsubsection{Convex quadratic programming (QP)}
+
+\subsubsection{Quadratically constrained quadratic programming (QCQP)}
+
+\subsubsection{Second-order cone programming (SOCP)}
+
+\subsection{Robust linear programming}
+\subsubsection{Deterministic approach via SOCP}
+\subsubsection{Stochastic approach via SOCP}
+
+\subsection{Generalized inequalities}
