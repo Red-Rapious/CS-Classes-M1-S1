@@ -238,7 +238,7 @@ If methods exist to solve general convex optimization problems, some classes of 
 
 \subsubsection{Linear programming (LP)}
 \begin{definition}[Linear programming problem]
-    A linear programming problem is an optimization problem in which the objective function is affine and the constraints are linear:
+    A \emph{linear programming} (LP) problem is an optimization problem in which the objective function is affine and the constraints are linear:
     \begin{equation*}
         \text{minimize } c^\tp x + d\quad\text{subject to}\: \begin{cases}
             Gx\leq h\\
@@ -277,10 +277,82 @@ As an example, we consider the problem of finding the Chebyshev center of a poly
 \end{property}
 
 \subsubsection{Convex quadratic programming (QP)}
+\begin{definition}[Quadratic programming problem]
+    A \emph{quadratic programming} (QP) problem is an optimization problem in which the objective function is quadratic and the constraints are linear:
+    \begin{equation*}
+        \text{minimize } \frac{1}{2}x^\tp P x + q^\tp x + r\quad\text{subject to}\: \begin{cases}
+            Gx\leq h\\
+            Ax=b
+        \end{cases}
+    \end{equation*}
+    where $P\in\Sb_n^+(\R)$ is positive semidefinite.
+
+    The feasible set of a quadratic programming problem is a still polyhedron $\Pc$ (since the constraints have the same form as an LP problem). Solving a QP problem corresponds to minimizing a quadratic function over a polyhedron.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=.5\textwidth]{convex-problems/quadratic.png}
+        \caption{A quadratic function over a polyhedron.}
+    \end{figure}
+\end{definition}
+
+\begin{example}[Least squares problem]
+    The least squares problem can be written as a QP problem:
+    \begin{equation*}
+        \text{minimize } \norm{Ax-b}_2^2
+    \end{equation*}
+    The analytical solution is given by:
+    \begin{equation*}
+        x^* = A^\dagger b = (A^\tp A)^{-1}A^\tp b
+    \end{equation*}
+    Linear constraints such as $I\leq x\leq u$ can be added. 
+
+    Another common variant is the LASSO regularization:
+    \begin{equation*}
+        \text{minimize } \norm{Ax-b}_2^2 + \lambda\norm{x}_1
+    \end{equation*}
+\end{example}
+
+\begin{example}[Linear program with random cost]
+    Consider a random vector $c\in\R^n$ with mean $\E[c] =: \bar{c}$ and covariance matrix $\V(c) =: \Sigma$. The following linear program is often used in economics and finance:
+    \begin{equation*}
+        \text{minimize } \E[c^\tp x] + \gamma\V(c^\tp x) = \bar{c}^\tp x + \gamma x^\tp\Sigma x \quad\text{subject to}\quad \begin{cases}
+            Gx\leq h\\
+            Ax=b
+        \end{cases}
+    \end{equation*}
+    Where $\gamma>0$ is a risk-aversion parameter: it controls how much we penalize the variance of the cost. Higher values of $\gamma$ allow for solutions with higher expected cost but lower variance.
+\end{example}
 
 \subsubsection{Quadratically constrained quadratic programming (QCQP)}
+\begin{definition}[Quadratically constrained quadratic programming problem]
+    A \emph{quadratically constrained quadratic programming} (QCQP) problem is an optimization problem in which both the objective function and the constraints are quadratic:
+    \begin{equation*}
+        \text{minimize } \frac{1}{2}x^\tp P_0 x + q_0^\tp x + r_0\quad\text{subject to}\: \begin{cases}
+            \frac{1}{2}x^\tp P_i x + q_i^\tp x + r_i\leq0, \quad\forall i\in\iset{1}{m}\\
+            Ax=b
+        \end{cases}
+    \end{equation*}
+    where the objective and constraints matrices $P_i\in\Sb_n^+(\R)$ are positive semidefinite. In the case where $P_1, \dots, P_m\in\Sb_n^{++}(\R)$ are positive definite, the feasible region is the intersection of $m$ ellipsoids and an affine set.
+\end{definition}
 
 \subsubsection{Second-order cone programming (SOCP)}
+\begin{definition}[Second-order cone programming problem]
+    A \emph{second-order cone programming} (SOCP) problem is an optimization problem in which the objective function is linear and the constraints are second-order cones:
+    \begin{equation*}
+        \text{minimize } f^\tp x \quad\text{subject to}\: \begin{cases}
+            \norm{A_i x + b_i}_2\leq c_i^\tp x + d_i, \quad\forall i\in\iset{1}{m}\\
+            Fx=g
+        \end{cases}
+    \end{equation*}
+    where $f\in\R^n$, $A_i\in\mathscr{M}_{n_i, n}(\R)$, $b_i\in\R^{n_i}$, $c_i\in\R^{n_i}$, $d_i\in\R$, $F\in\mathscr{M}_{p, n}(\R)$, $g\in\R^p$.
+
+    Inequalities are second-order cone (SOC) constraints:
+    \begin{equation*}
+        (A_ix+b_i, c_i^\tp x+d_i)\in \text{second-order cone in } \R^{n_i+1}
+    \end{equation*}
+    For $n_i=0$, this reduces to an LP problem. If $c_i=0$, this reduces to a QCQP problem. In general, SOCP problems are more general than LP and QCQP problems.
+\end{definition}
 
 \subsection{Robust linear programming}
 \subsubsection{Deterministic approach via SOCP}
