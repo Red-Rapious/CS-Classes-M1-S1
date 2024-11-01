@@ -301,7 +301,7 @@ As an example, we consider the problem of finding the Chebyshev center of a poly
     \begin{equation*}
         \text{minimize } \norm{Ax-b}_2^2
     \end{equation*}
-    The analytical solution is given by:
+    The analytical solution can be expressed using the Moore-Penrose pseudo-inverse of $A$, $A^\dagger$:
     \begin{equation*}
         x^* = A^\dagger b = (A^\tp A)^{-1}A^\tp b
     \end{equation*}
@@ -338,7 +338,7 @@ As an example, we consider the problem of finding the Chebyshev center of a poly
 
 \subsubsection{Second-order cone programming (SOCP)}
 \begin{definition}[Second-order cone programming problem]
-    A \emph{second-order cone programming} (SOCP) problem is an optimization problem in which the objective function is linear and the constraints are second-order cones:
+    A \emph{second-order cone programming} (SOCP) problem is an optimization problem in which the objective function is linear, and the constraints are second-order cones:
     \begin{equation*}
         \text{minimize } f^\tp x \quad\text{subject to}\: \begin{cases}
             \norm{A_i x + b_i}_2\leq c_i^\tp x + d_i, \quad\forall i\in\iset{1}{m}\\
@@ -355,7 +355,35 @@ As an example, we consider the problem of finding the Chebyshev center of a poly
 \end{definition}
 
 \subsection{Robust linear programming}
+\subsubsection{Introduction}
+In many situations, the parameters of an optimization problems might be uncertain. For instance, in an LP problem such as:
+\begin{equation*}
+    \text{minimize } c^\tp x \quad\text{subject to}\quad \forall i\in\iset{1}{m}, \: a_i^\tp x\leq b_i
+\end{equation*}
+there can be uncertainty on the values of $c, a_i, b_i$, which can be modeled as taking any value in given intervals. There are two common approaches to handle this uncertainty: deterministic and stochastic models. Assume that the value of $a_i$ can be any value in the set $\Ec_i$.
+
+A \textbf{deterministic model} solves a harder problem, in which the constraints must hold for all $a_i\in\Ec_i$. This can be written as:
+\begin{equation*}
+    \text{minimize } c^\tp x \quad\text{subject to}\quad \forall i\in\iset{1}{m}, \: \underbrace{\forall a_i\in\Ec_i}_{\text{uncertainty}}, \: a_i^\tp x\leq b_i
+\end{equation*}
+
+A \textbf{stochastic model} uses chance constraints: we consider that $a_i$ is a random variable, and we require that the constraints hold with a given probability $\eta$. This can be written as:
+\begin{equation*}
+    \text{minimize } c^\tp x \quad\text{subject to}\quad \forall i\in\iset{1}{m}, \: \underbrace{\P(a_i^\tp x\leq b_i)\geq\eta}_{\text{probability constraint}}
+\end{equation*}
+
+In the following, we will develop both approaches using SOCP.
+
 \subsubsection{Deterministic approach via SOCP}
 \subsubsection{Stochastic approach via SOCP}
 
 \subsection{Generalized inequalities}
+\subsubsection{Convex cone properties}
+\subsubsection{Semidefinite programming (SDP)}
+
+\subsection{Quasi-convex problems}
+\subsubsection{Quasi-convex functions}
+\subsubsection{Quasi-convex optimization}
+\subsection{Examples}
+\subsubsection{Regression}
+\subsubsection{Classification}
