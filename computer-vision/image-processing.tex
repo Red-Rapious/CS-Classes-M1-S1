@@ -50,6 +50,8 @@ In computer vision, we will mostly use the 2-D Gaussian function:
 \begin{equation*}
     G(x, y) = \frac{1}{2\pi\sigma^2}e^{-\frac{x^2+y^2}{2\sigma^2}}
 \end{equation*}
+Note that in the following, we will denote by $1/C$ the normalization constants.
+
 In the continuous setup, blurring a function is achieved by convoluting it with a Gaussian function. In the discrete setup, we can build a matrix kernel that approximates the Gaussian function. Note that the Gaussian function has infinite support, but in actual applications, we can truncate the kernel to a finite size.
 
 Gaussian smoothing oftern provides better results than simple averaging. It is also quite effective to remove the noise in an image. 
