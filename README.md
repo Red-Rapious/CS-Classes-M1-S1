@@ -50,11 +50,11 @@ Classes are in active development. Below is a summary of the current availabilit
 | **Chapter Title** | **Progress** |
 |-------------------|--------------|
 | Introduction | :x: |
-| Position and orientation | :white_check_mark: |
+| Position and Orientation | :white_check_mark: |
 | Forward Kinematics | :large_orange_diamond: |
 | Inverse Kinematics | :x: |
-| Motion planning | :large_orange_diamond: |
-| Collision detection | :large_orange_diamond: |
+| Motion Planning | :large_orange_diamond: |
+| Collision Detection | :large_orange_diamond: |
 
 ### Convex Optimization
 | **Chapter Title** | **Progress** |
