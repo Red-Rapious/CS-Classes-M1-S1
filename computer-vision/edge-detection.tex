@@ -1,4 +1,4 @@
-\section{Edge detection}
+\section{Edge Detection}
 The edge detection problem aims at identifying the \emph{edges} inside an image; this requires a proper definition of \say{edge}, which often depends on the method used to compute it. In general, an edge is a place where the intensity of the image changes abruptly. 
 
 The edge detection problem is a fundamental problem in computer vision, as it is the first step in many image processing tasks. The main motivation behind edge detection is the idea that the edges of an image contain important information about the structure of the objects in the scene. If the brightness of an image changes abruptly, it is likely that other properties of the image also change abruptly at that point, and specifically higher-level properties. Edges define the boundaries of objects in the image; they are caused by change of texture, color, depth, or illumination, which all are important cues for the semantic interpretation of the image.
@@ -106,5 +106,3 @@ Putting all the steps together, the Canny edge detector goes as follows:
         \text{Canny}(I) = \text{Hysteresis}(|\nabla I|_{\text{NMS}}, t_h, t_l)
     \end{equation*}
 \end{enumerate}
-
-\subsection{Denoising, sparsity and dictionary learning}
