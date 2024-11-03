@@ -375,7 +375,47 @@ A \textbf{stochastic model} uses chance constraints: we consider that $a_i$ is a
 In the following, we will develop both approaches using SOCP.
 
 \subsubsection{Deterministic approach via SOCP}
+We can model the uncertainty on $a_i$ by choosing an ellipsoid as $\Ec_i$:
+\begin{equation*}
+    \Ec_i = \set{\bar{a}_i+P_iu}{\norm{u}_2\leq1}
+\end{equation*}
+where $\bar{a}_i\in\R^n$ are the centers, and the semi-axes are determined by the singular values and vectors of $P_i\in\mathscr{M}_n(\R)$. Therefore, the robust LP problem of the form:
+\begin{equation*}
+    \text{minimize } c^\tp x \quad\text{subject to}\quad \forall i\in\iset{1}{m}, \: \forall a_i\in\Ec_i, \: a_i^\tp x\leq b_i
+\end{equation*}
+can be written as the following SOCP problem:
+\begin{equation*}
+    \text{minimize } c^\tp x \quad\text{subject to}\quad \forall i\in\iset{1}{m}, \: \bar{a}_i^\tp x + \norm{P_i^\tp x}_2\leq b_i
+\end{equation*}
+This comes from the fact that:
+\begin{equation*}
+    \sup_{\norm{u}_2\leq1} (\bar{a}_i + P_iu)^\tp x = \bar{a}_i^\tp x + \norm{P_i^\tp x}_2
+\end{equation*}
+hence, if $\bar{a}_i^\tp x + \norm{P_i^\tp x}_2\leq b_i$ holds, then $a_i^\tp x\leq b_i$ holds for all $a_i\in\Ec_i$.
+
 \subsubsection{Stochastic approach via SOCP}
+Assume that $a_i$ is Gaussian with mean $\bar{a}_i$ and covariance matrix $\Sigma_i$:
+\begin{equation*}
+    a_i\sim\Nc(\bar{a}_i, \Sigma_i)
+\end{equation*}
+Therefore, $a_i^\tp x$ is a Gaussian random vector with mean $\bar{a}_i^\tp x$ and variance $x^\tp\Sigma_i x$. We can model the probability constraint as:
+\begin{equation*}
+    \P(a_i^\tp x\leq b_i)=\Phi\left(\frac{b_i-\bar{a}_i^\tp x}{\norm{\Sigma_i^{1/2}x}_2}\right)
+\end{equation*}
+where $\Phi(x)=(1/\sqrt{2\pi})\int_{-\infty}^x e^{-t^2/2}dt$ is the \emph{Cumulative Distribution Function} (CDF) of $\Nc(0,1)$. The robust LP problem can be written as:
+\begin{equation*}
+    \text{minimize } c^\tp x \quad\text{subject to}\quad \forall i\in\iset{1}{m}, \: \P(a_i^\tp x\leq b_i)\geq\eta
+\end{equation*}
+This can be written as the following SOCP problem:
+\begin{equation*}
+    \text{minimize } c^\tp x \quad\text{subject to}\quad \forall i\in\iset{1}{m}, \: \bar{a}_i^\tp x+\Phi^{-1}(\eta)\norm{\Sigma_i^{1/2}x}_2\leq b_i
+\end{equation*}
+which is an SOCP problem when $\Phi^{-1}(\eta)\geq0$, verified for $\eta\geq1/2$. For values of $\eta<1/2$, the problem is non-convex, as can be seen in the following visualization.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.8\textwidth]{convex-problems/reliability.png}
+    \caption{The set $\set{x}{\forall i\in\iset{1}{m}, \: \P(a_i^\tp x\leq b_i)\geq\eta}$ for multiple values of $\eta$. It is convex for $\eta\geq1/2$ and in general non-convex for $\eta<1/2$.}
+\end{figure}
 
 \subsection{Generalized inequalities}
 \subsubsection{Convex cone properties}
