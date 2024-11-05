@@ -418,8 +418,171 @@ which is an SOCP problem when $\Phi^{-1}(\eta)\geq0$, verified for $\eta\geq1/2$
 \end{figure}
 
 \subsection{Generalized inequalities}
+For multiple reasons, it can be useful to consider more general inequalities than the standard ones, in the sense that the inequalities are not necessarily defined on the real line. This is mainly motivated by semi-definite programming, where the inequalities must hold on the cone of positive semidefinite matrices. We first define a partial ordering $\succcurlyeq$ on a cone $K$, and use it to introduce generalized inequalities.
+
 \subsubsection{Convex cone properties}
+Recall that a set $K$ is a convex cone if:
+\begin{equation*}
+    x_1, x_1\in K \implies \forall\theta_1, \theta_2>0, \quad \theta_1x_1+\theta_2x_2\in K
+\end{equation*}
+
+\begin{definition}
+    A convex cone $K$ can have the following properties:
+    \begin{itemize}
+        \item \emph{pointed}: if it contains $0$
+        \item \emph{salient}: if it contains no line, that is $x\in K \land -x\in K\implies x=0$
+        \item \emph{solid}: if it has a non-empty interior ($\mathring{K}\neq\emptyset$)
+        \item \emph{closed}: if $K^\subset$ is an open set
+    \end{itemize}
+\end{definition}
+
+\begin{definition}[Notation]
+    Let $K$ be a pointed, salient and solid convex cone. Let $A$ and $B$ be two points of the ambient space.
+    \begin{itemize}
+        \item We note $A\succcurlyeq_K 0$ if and only if $A\in K$.
+        \item We note $A\succcurlyeq_K B$ if and only if $A-B\succcurlyeq_K 0$.
+        \item We note $A\succ_K 0$ if and only if $A\in\mathring{K}$ (which makes sense if $K$ is solid).
+    \end{itemize}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=.3\textwidth]{convex-problems/cone.png}
+    \end{figure}
+\end{definition}
+
+\begin{property}
+    $\succcurlyeq_K$ defines a partial ordering.
+\end{property}
+\begin{proof}$ $
+    \begin{itemize}
+        \item $K$ is pointed, hence $0\in K$, hence for any $A$ we have that $A-A\succcurlyeq_K 0$ and $A\succcurlyeq_K A$.
+        \item $A\succcurlyeq_K B$ and $B\succcurlyeq_K A$ implies that $A-B\in K$ and $B-A\in K$. Since $K$ is salient, $A-B=0$ and $A=B$.
+        \item $A\succcurlyeq_K B$ and $B\succcurlyeq_K C$ implies that $A-B\in K$ and $B-C\in K$. Therefore, $A-C=(A-B)+(B-C)\in K$ since $K$ is a cone, and therefore $A\succcurlyeq_K C$.
+    \end{itemize}
+\end{proof}
+
+\begin{definition}[Convex problem with generalized inequality constraints]
+    A \emph{convex optimization problem with generalized inequality} constraints is a problem of the form:
+    \begin{equation*}
+        \text{minimize } f(x) \quad\text{subject to}\quad \begin{cases}
+            \forall i\in\iset{1}{m}, \: g_i(x)\preccurlyeq_{K_i} 0\\
+            Ax=b
+        \end{cases}
+    \end{equation*}
+    where $f:\R^n\to\R$ is convex, and the $g_i:\R^n\to\R^{k_i}$ are $K_i$-convex with respect to the proper cones $K_i$:
+    \begin{equation*}
+        \forall i\in\iset{1}{m}, \: \forall x, y\in\R^n, \: \forall\theta\in[0,1], \quad g_i(\theta x+(1-\theta)y)\preccurlyeq_{K_i} \theta g_i(x)+(1-\theta)g_i(y)
+    \end{equation*}
+\end{definition}
+A convex optimization problem with generalized inequality constraints as the same properties as a standard convex problem: its feasible set is convex, any local optimum is a global optimum, etc. When the $K_i$ are clear from the context, we can simply use $\preccurlyeq$ and omit the $K_i$.
+
+\begin{definition}[Conic convex optimization problem]
+    A \emph{conic convex optimization problem} is a special case of the generalized convex problem, where the objective and the constraints are affine:
+    \begin{equation*}
+        \text{minimize } c^\tp x \quad\text{subject to}\quad \begin{cases}
+            Fx+g\preccurlyeq_K 0\\
+            Ax=b
+        \end{cases}
+    \end{equation*}
+    where $c\in\R^n$, $F\in\mathscr{M}_{p, n}(\R)$, $g\in\R^p$, $A\in\mathscr{M}_{m, n}(\R)$. This extends linear programming to non-polyedral cones. The linear programming case can be obtained by choosing $K=\R_+^m$.
+\end{definition}
+
 \subsubsection{Semidefinite programming (SDP)}
+\begin{definition}
+    A \emph{semidefinite programming} (SDP) problem is a problem of the form:
+    \begin{equation*}
+        \text{minimize } c^\tp x \quad\text{subject to}\quad \begin{cases}
+            x_1G_1+\dots+x_nG_n+H\preccurlyeq 0\\
+            Ax=b
+        \end{cases}
+    \end{equation*}
+    where $G_i, H\in\Sb_k(\R)$. 
+    
+    \begin{remark}
+        The inequality constraint is called a \emph{linear matrix inequality} (LMI). Note that problems with multiple LMIT constraints can be transformed into a single LMI constraint of higher dimension. Suppose that you have the constraints:
+        \begin{equation*}
+            x_1\hat{G}_1+\dots+x_n\hat{G}_n+\hat{H}\preccurlyeq0 \quad\text{and}\quad x_1\tilde{G}_1+\dots+x_n\tilde{G}_n+\tilde{H}\preccurlyeq0
+        \end{equation*}
+        They can be rewritten as a single LMI:
+        \begin{equation*}
+            x_1\begin{bmatrix}
+                \hat{G}_1 & 0\\
+                0 & \tilde{G}_1
+            \end{bmatrix}
+            +\dots+
+            x_n\begin{bmatrix}
+                \hat{G}_n & 0\\
+                0 & \tilde{G}_n
+            \end{bmatrix}
+            +\begin{bmatrix}
+                \hat{H} & 0\\
+                0 & \tilde{H}
+            \end{bmatrix}\preccurlyeq0
+        \end{equation*}
+    \end{remark}
+\end{definition}
+
+\begin{example}[Largest eigenvalue minimization]
+    Consider the following problem:
+    \begin{equation*}
+        \text{minimize } \lambda_{\max}(A(x))
+    \end{equation*}
+    where $A(x)=A_0+x_1A_x+\dots+x_nA_n$ and $A_0, A_1, \dots, A_n\in\Sb_k(\R)$. This problem can be written as an equivalent SDP problem:
+    \begin{equation*}
+        \text{minimize } t \quad\text{subject to}\quad A(x)\preccurlyeq tI
+    \end{equation*}
+    over variables $x\in\R^n$ and $t\in\R$. This follows from:
+    \begin{equation*}
+        \lambda_{\max}(A(x))\leq t \iff A(x)\preccurlyeq tI
+    \end{equation*}
+\end{example}
+
+\begin{example}[Matrix norm minimization]
+    Consider the following problem:
+    \begin{equation*}
+        \text{minimize } \norm{A(x)}_2 = \sqrt{\lambda_{\max}(A(x)^\tp A(x))}
+    \end{equation*}
+    where $A(x)=A_0+x_1A_x+\dots+x_nA_n$ and $A_i\in\Sb_k(\R)$. This problem can be written as an equivalent SDP problem:
+    \begin{equation*}
+        \text{minimize } t \quad\text{subject to}\quad \begin{bmatrix}
+            tI & A(x)\\
+            A(x)^\tp & tI
+        \end{bmatrix}\succeq0
+    \end{equation*}
+    over variables $x\in\R^n$ and $t\in\R_+$. This follows from:
+    \begin{equation*}
+        \norm{A(x)}_2\leq t \iff A^\tp A\preccurlyeq t^2I \iff \begin{bmatrix}
+            tI & A(x)\\
+            A(x)^\tp & tI
+        \end{bmatrix}\succeq0
+    \end{equation*}
+    where the last equivalence comes from the Schur complement.
+\end{example}
+
+\subsubsection{LPs and SOCPs as SDPs}
+\begin{property}[Any LP problem is equivalent to an SDP problem]
+    Consider the LP problem:
+    \begin{equation*}
+        \text{minimize } c^\tp x \quad\text{subject to}\quad Ax\leq b
+    \end{equation*}
+    This can be written as the following SDP problem:
+    \begin{equation*}
+        \text{minimize } c^\tp x \quad\text{subject to}\quad \diag(Ax-b)\preccurlyeq0
+    \end{equation*}
+\end{property}
+
+\begin{property}[Any SOCP problem is equivalent to an SDP problem]
+    Consider the SOCP problem:
+    \begin{equation*}
+        \text{minimize } f^\tp x \quad\text{subject to}\quad \forall i\in\iset{1}{m}, \: \norm{A_ix+b_i}_2\leq c_i^\tp x+d_i
+    \end{equation*}
+    This can be written as the following SDP problem:
+    \begin{equation*}
+        \text{minimize } f^\tp x \quad\text{subject to}\quad \forall i\in\iset{1}{m}, \: \begin{bmatrix}
+            c_i^\tp x+d_i & A_ix+b_i\\
+            (A_ix+b_i)^\tp & c_i^\tp x+d_i
+        \end{bmatrix}\succcurlyeq0
+    \end{equation*}
+\end{property}
 
 \subsection{Quasi-convex problems}
 \subsubsection{Quasi-convex functions}
