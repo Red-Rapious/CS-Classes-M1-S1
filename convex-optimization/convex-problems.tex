@@ -586,7 +586,87 @@ A convex optimization problem with generalized inequality constraints as the sam
 
 \subsection{Quasi-convex problems}
 \subsubsection{Quasi-convex functions}
+\begin{definition}[Quasi-convex function]
+    A function $f:\R^n\to\R$ is \emph{quasi-convex} if $\dom f$ is convex at the sublevel sets; that is, for all $\alpha\in\R$, the set $S_\alpha$ is convex:
+    \begin{equation*}
+        S_\alpha := \set{x\in\dom f}{f(x)\leq\alpha}
+    \end{equation*}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=.5\textwidth]{convex-problems/quasiconvex.png}
+        \caption{A quasi-convex function.}
+    \end{figure}
+\end{definition}
+
+\begin{definition}[Quasi-concave function]
+    A function $f$ is \emph{quasi-concave} if $-f$ is quasi-convex.
+\end{definition}
+
+\begin{definition}[Quasi-linear function]
+    A function $f$ is \emph{quasi-linear} if it is both quasi-convex and quasi-concave.    
+\end{definition}
+
+\begin{example}$ $
+    \begin{itemize}
+        \item $x\mapsto \sqrt{|x|}$ is quasi-convex on $\R$
+        \item $x\mapsto \lfloor x\rfloor$ is quasi-linear
+        \item $\log x$ is quasi-linear on $\R_+^*$
+        \item $f(x_1, x_2) = x_1x_2$ is quasi-concave on $(\R_+^*)^2$
+        \item Any linear-fractional function is quasi-linear:
+        \begin{equation*}
+            f(x)=\frac{a^\tp x+b}{c^\tp x+d}
+        \end{equation*}
+        where $\dom f = \set{x}{c^\tp x+d>0}$
+        \item The distance ratio is quasi-convex:
+        \begin{equation*}
+            f(x) = \frac{\norm{x-a}_2}{\norm{x-b}_2}
+        \end{equation*}
+        where $\dom f = \set{x}{\norm{x-a}_2\leq\norm{x-b}_2}$.
+    \end{itemize}
+\end{example}
+
+\begin{property}[Modified Jensen inequality]
+    Let $f$ be a quasi-convex function, and $x, y\in\dom f$. Then, for all $\theta\in[0,1]$:
+    \begin{equation*}
+        f(\theta x+(1-\theta)y)\leq\max(f(x), f(y))
+    \end{equation*}
+\end{property}
+
+\begin{property}[First-order condition]
+    A differentiable function $f$ with convex domain is quasi-convex if and only if:
+    \begin{equation*}
+        \forall x\in\dom f, \: \forall y\in\dom f, \: f(y)\leq f(x) \implies \nabla f(x)^\tp (y-x)\leq 0
+    \end{equation*}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=.35\textwidth]{convex-problems/fo-condition.png}
+    \end{figure}
+\end{property}
+
+\begin{remark}
+    The sum of two quasi-convex functions is not necessarily quasi-convex.
+\end{remark}
+
 \subsubsection{Quasi-convex optimization}
+\begin{definition}[Quasi-convex optimization problem]
+    A \emph{quasi-convex optimization problem in standard form} is an optimization problem in which the objective function is quasi-convex and the constraints are convex:
+    \begin{equation*}
+        \text{minimize } f(x) \quad\text{subject to}\quad \begin{cases}
+            \forall i\in\iset{1}{m}, \: g_i(x)\leq 0\\
+            \forall i\in\iset{1}{m}, \: a_i^\tp x = b_i
+        \end{cases}
+    \end{equation*}
+    where $f$ is \textbf{quasi-convex}, and the $g_i$ are convex.
+\end{definition}
+
+\begin{remark}
+    Such a problem can have locally optimal points that are not globally optimal.
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=.4\textwidth]{convex-problems/non-global.png}
+    \end{figure}
+\end{remark}
+
 \subsection{Examples}
 \subsubsection{Regression}
 \subsubsection{Classification}
