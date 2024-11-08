@@ -667,6 +667,63 @@ A convex optimization problem with generalized inequality constraints as the sam
     \end{figure}
 \end{remark}
 
+\subsubsection{Quasi-convex optimization via bisection}
+Consider for a fixed $t$ consider the following feasibility problem in $x$:
+\begin{equation}
+    \label{eq:quasi-convex-feasibility}
+    \text{find } x \quad\text{subject to}\quad \begin{cases}
+        f(x)\leq t\\
+        \forall i\in\iset{1}{m}, \: g_i(x)\leq 0\\
+        Ax=b
+    \end{cases}
+\end{equation}
+where $f$ is quasi-convex and the $g_i$ are convex.
+
+If this problem is feasible, we can conclude that $t\geq p^*$; if it is infeasible, $t\leq p^*$. This leads to the following bisection algorithm, acting as a binary search. Consider two initial values $I_0<u_0$. We simply repeat the following steps:
+\begin{enumerate}
+    \item $t:=(I+u)/2$
+    \item Solve the convex feasibility problem \eqref{eq:quasi-convex-feasibility}
+    \item If \eqref{eq:quasi-convex-feasibility} is feasible, $u:=t$; otherwise, $I=t$.
+\end{enumerate}
+This requires $\lceil \log_2((u_0-I_0)/\epsilon)\rceil$ iterations to obtain an optimality gap of at most $\epsilon$.
+
 \subsection{Examples}
+We present two common applications in statistical learning, taking the form of optimization problems: regression and classification.
 \subsubsection{Regression}
+Consider a set of data formed of vectors $x_i\in\R^d$ and labels $y_i\in\R$:
+\begin{equation*}
+    \set{(x_i, y_i)}{i\in\iset{1}{n}} \subset \R^d\times\R
+\end{equation*}
+We can form the following data matrix $X$ and labels vector $Y$:
+\begin{equation*}
+    X:=\begin{bmatrix}x_1 & x_2 & \cdots & x_n\end{bmatrix}
+    \quad\text{and}\quad
+    Y:=\begin{bmatrix}y_1 \\ y_2 \\ \vdots \\ y_n\end{bmatrix}
+\end{equation*}
+The goal of linear regression is to find a $\theta\in\R^d$ such that:
+\begin{equation*}
+    X^\tp\theta \simeq Y
+\end{equation*}
+This can be done by solving the \emph{Least Absolute Shrinkage and Selection Operator} (LASSO) of parameter $\lambda>0$:
+\begin{equation*}
+    \min_\theta \norm{X^\tp\theta-Y}_2^2 + \lambda\norm{\theta}_1
+\end{equation*}
+
 \subsubsection{Classification}
+Consider a set of data formed of vectors $x_i\in\R^d$ and labels $y_i\in\{-1, 1\}$:
+\begin{equation*}
+    \set{(x_i, y_i)}{i\in\iset{1}{n}} \subset \R^d\times\{-1, 1\}
+\end{equation*}
+
+The hard-margin \emph{Support Vector Machine} (SVM) is defined as:
+\begin{equation*}
+    \text{find } w\in\R^d \quad\text{such that}\quad \forall i\in\iset{1}{n}, \: y_i(w^\tp x_i+b)\geq 1
+\end{equation*}
+This problem can be solved via optimization by maximizing the margin $2/\norm{w}_2$:
+\begin{equation*}
+    \minimize_w \norm{w}_2^2 \quad\text{such that}\quad \forall i\in\iset{1}{n}, \: y_i(w^\tp x_i+b)\geq 1
+\end{equation*}
+The soft-margin SVM is defined as:
+\begin{equation*}
+    \minimize_{s\geq0, w} \lambda\norm{w}_2^2 + \sum_{i=1}^n s_i \quad\text{such that}\quad \forall i\in\iset{1}{n}, \: y_i(w^\tp x_i+b)\geq 1
+\end{equation*}
