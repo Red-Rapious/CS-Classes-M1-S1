@@ -59,6 +59,7 @@ Classes are in active development. Below is a summary of the current availabilit
 ### Convex Optimization
 | **Chapter Title** | **Progress** |
 |-------------------|--------------|
+| Introduction | :white_check_mark: |
 | Convex sets | :white_check_mark: |
 | Convex functions | :white_check_mark: |
 | Convex problems | :white_check_mark: |
