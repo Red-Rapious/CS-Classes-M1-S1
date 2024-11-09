@@ -172,7 +172,7 @@ A first approach to build a roadmap is to use a \emph{sweep} algorithm. The idea
 \end{figure}
 
 \subsubsection{Trajectory optimization (local planning)}
-Trajectory optimization, also known as local planning, use optimal control methods such as DDP or iLQR to find a local solution to the motion planning problem. It has a strong terminal cost, and does not guarantee to explore all the homotopy classes. To solve this issue, we need global optimization methods, that are only viable in small dimensions. 
+Trajectory optimization, also known as local planning, use optimal control methods such as DDP or iLQR to find a local solution to the motion planning problem. It has a strong terminal cost, and does not guarantee to explore all the homotopy classes. To solve this issue, we need global optimization methods, that are only viable in small dimensions, or momentum methods, as introduced by El Khadir and Lassere in 2020.
 
 \subsubsection{Sampling-based motion planning (probabilistic planning)}
 
