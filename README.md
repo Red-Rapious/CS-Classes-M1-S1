@@ -28,6 +28,8 @@ Classes are in active development. Below is a summary of the current availabilit
 | Edge Detection | :white_check_mark: |
 | Image Restoration | :x: |
 | Radiometry and Color | :x: |
+| Stereopsis | :x: |
+| Two-view Geometry | :white_check_mark: |
 | ... | :x: |
 
 ### Deep Learning

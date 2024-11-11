@@ -4,6 +4,7 @@
 The camera matrix is composed of two matrices: the \emph{intrinsic matrix} and the \emph{extrinsic matrix}. The intrinsic matrix contains the parameters that are specific to the camera, such as the focal length, the principal point, and the skew coefficient. The extrinsic matrix contains the parameters that describe the position and orientation of the camera in the world coordinate system.
 
 \subsection{Least squares calibration}
+\label{subsec:least-squares-calibration}
 Consider a set of $n$ points $p_i\in\R^3$ and $P_i\in\R^4$, respectively the homogeneous coordinates of the 2D and 3D points that we will use for calibration:
 \begin{equation*}
     p_i = \begin{bmatrix} u_i \\ v_i \\ 1 \end{bmatrix} \quad\text{and}\quad P_i = \begin{bmatrix} x_i \\ y_i \\ z_i \\ 1 \end{bmatrix}
