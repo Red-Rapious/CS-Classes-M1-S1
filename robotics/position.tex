@@ -1,4 +1,5 @@
 \section{Position and Orientation}
+Building algorithms for robots requires a good understanding of the position and orientation of the robot in space. This chapter will introduce the mathematical tools to describe these concepts.
 \subsection{Introduction}
 Kinematics studies the \emph{movement} of an object -- in our case of a robot -- without taking into acount the \emph{forces} generating it. Instead, it only handles aspects such as position, orientation, speed and momentum of bodies in movement.
 
@@ -193,7 +194,7 @@ The invert operation is also simple to compute:
     \end{cases}
 \end{align*}
 
-\subsection{Angular velocity}
+\subsection{Angular velocity of rotation matrices}
 The angular velocity of a body is a vector that describes the rotation of the body in space. It is defined as the derivative of the rotation matrix with respect to time. Angular velocity matrices are skew-symmetric matrices, i.e. matrices of the tangent space of $\SO(3)$, denoted $\so(3)$:
 \begin{equation*}
     \so(3) = \set{W\in\mathcal{M}_3(\R)}{W^\tp=-W} = \set{\begin{bmatrix}
@@ -230,7 +231,7 @@ We can use the fact that any skew-symmetric matrix $W\in\so(3)$ is nilpotent, i.
 Therefore, $\hat{w}^2=ww^\tp-I_3$, and $\hat{w}^3=-\hat{w}$. We can then regroup the different terms of the exponential function, by transforming the exponents greater than 3:
 % TODO: detail computation
 \begin{equation}
-    \exp(tW)=I_3+\sin(t)\hat{w}+\frac{1-\cos(t)}{t}\hat{w}^2
+    \exp_{\so(3)}(tW)=I_3+\sin(t)\hat{w}+\frac{1-\cos(t)}{t}\hat{w}^2
 \end{equation}
 
 \subsection{Exponential and logarithm map}
@@ -243,7 +244,10 @@ This function is surjective and $2\pi$-periodic.
 
 We can define a reciprocal function, the logarithm map, that is the inverse of the exponential map:
 \begin{equation*}
-    \log:R\in\SO(3)\longrightarrow w\in\so(3)
+    \begin{aligned}
+        \log_{\SO(3)}\SO(3)&\longrightarrow \so(3)\\
+        R&\longmapsto w
+    \end{aligned}
 \end{equation*}
 Note that
 \begin{equation*}
@@ -260,8 +264,98 @@ and therefore:
 
 This gives us a way to compute the distance between two rotations:
 \begin{equation*}
-    d(R_1, R_2) = \norm{\log(R_1^\tp R_2)}
+    d(R_1, R_2) = \norm{\log_{\SO(3)}(R_1^\tp R_2)}
 \end{equation*}
 Such a construction comes handy when we want to minimize the distance between two rotations, for instance in the context of trajectory tracking.
 
 \subsection{Rigid Body Transformations}
+\subsubsection{Definition}
+Rigid body transformations are the combination of a rotation and a translation. They are defined as the set of matrices that preserve the vector product $v\times w$ and the scalar product $v\cdot w$; note that the preservation of the scalar product implies the preservation of the norm of the vectors, hence the distances (no deformation).
+
+The group of rigid body transformations is also called the \emph{Special Euclidian group} (denoted $\SE(3)$), and defined by:
+\begin{equation*}
+    \SE(3) = \set{g:\E^3\to\E^3}{\forall x, y\in\E^3, \: \norm{g(x)-g(y)}=\norm{x-y}}
+\end{equation*}
+Note that the rotation matrices ($\SO(3)$) form a subgroup of the rigid body transformations group. Therefore, we also denote:
+\begin{equation*}
+    \SE(3) = \R^3x\times\SO(3) = \set{(t, R)}{t\in\R^3, R\in\SO(3)}
+\end{equation*}
+
+\subsubsection{Homogeneous transformations}
+A rigid body transformation $M\simeq (t, R)\in\SE(3)$ has the following action on a point $p\in\E^3$:
+\begin{equation*}
+    M(p) = R(p) + t
+\end{equation*}
+Therefore, similarly to the expression of $\SO(3)$ as orthogonal matrices, one can write $\SE(3)$ as a set of $4\times 4$ invertible matrices:
+\begin{equation*}
+    M(p) = \begin{bmatrix}
+        R & t \\
+        0_3 & 1
+    \end{bmatrix} \begin{bmatrix}
+        p \\
+        1
+    \end{bmatrix}
+\end{equation*}
+
+Formally, one can define a composition law for the representation in homogeneous coordinates:
+\begin{equation*}
+    M_1\circ M_2 = M_1M_2 = \begin{bmatrix}
+        R_1 & t_1 \\
+        0_3 & 1
+    \end{bmatrix} \begin{bmatrix}
+        R_2 & t_2 \\
+        0_3 & 1
+    \end{bmatrix} = \begin{bmatrix}
+        R_1R_2 & R_1t_2+t_1 \\
+        0_3 & 1
+    \end{bmatrix} \in \mathscr{M}_4(\R)
+\end{equation*}
+The identity of $\SE(3)$ is the invertible matrix $I_4$. Finally, the invert of $M$ corresponds to:
+\begin{equation*}
+    M^{-1} = \begin{bmatrix}
+        R^\tp & -R^\tp t \\
+        0_3 & 1
+    \end{bmatrix}
+\end{equation*}
+
+\subsubsection{Linear and angular velocities}
+Similarly to the case of rotation matrices, one can derive an exponential map for the group $\SE(3)$. To do so, we consider a curve $M(s)\in\SE(3)$; we have:
+\begin{equation*}
+    \dot{M}(s)M(s)^{-1} = \begin{bmatrix}
+        \dot{R}(s)R(s)^\tp & t(s) - \dot{R}(s)R(s)^\tp t(s) \\
+        0_3 & 1
+    \end{bmatrix}
+\end{equation*}
+We identify the angular velocity $W(s)=\dot{R}(s)R(s)^\tp=[w(s)]_\times$ and the linear velocity $v(s)=\dot{t}(s)-w(s)\times t(s)$. Therefore, the pair $(v, w)\in\se(3)\simeq\R^3 \times \so(3)$ corresponds to the tangent vector of the group $\SE(3)$ at the point $M\in\SE(3)$.
+
+This allows us to define the exponential map for the group $\SE(3)$:
+\begin{equation*}
+    \begin{aligned}
+        \exp_{\se(3)}:\se(3)&\longrightarrow\SE(3)\\
+        (v, w) &\longmapsto M
+    \end{aligned}
+\end{equation*}
+such that:
+\begin{equation*}
+    \exp_{\se(3)}(v, w) = \begin{bmatrix}
+        \exp_{\so(3)}(w) & \frac{1}{\norm{w}}\left(ww^\tp v + (I_3 - \exp_{\so(3)}(w))w\times v\right) \\
+        0_3 & 1
+    \end{bmatrix}
+\end{equation*}
+
+Since $\exp_{\se(3)}$ is surjective, we can define its reciprocal function, the logarithm map:
+\begin{equation*}
+    \begin{aligned}
+        \log_{\SE(3)}:\SE(3)&\longrightarrow\se(3)\\
+        M &\longmapsto (v, w)
+    \end{aligned}
+\end{equation*}
+such that:
+\begin{equation*}
+    w = \log_{\SO(3)}(R) \quad\text{and}\quad
+    v = \norm{w}(ww^\tp+(I-R)W)^{-1}t
+\end{equation*}
+This allows once again to define a notion of distance between two rigid body transformations:
+\begin{equation*}
+    d(M_1, M_2) = \norm{\log_{\SE(3)}(M_1^{-1}M_2)}
+\end{equation*}
