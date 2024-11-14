@@ -54,7 +54,7 @@ Classes are in active development. Below is a summary of the current availabilit
 | Introduction | :x: |
 | Position and Orientation | :white_check_mark: |
 | Forward Kinematics | :white_check_mark: |
-| Inverse Kinematics | :large_orange_diamond: |
+| Inverse Kinematics | :white_check_mark: |
 | Motion Planning | :large_orange_diamond: |
 | Collision Detection | :large_orange_diamond: |
 | Optimal Control | :x: |

@@ -80,7 +80,65 @@ We define the error correction profile as:
 \begin{equation*}
     \dot{e}(t, q(t), \dot{q}(t)) = -\lambda e(t, q(t))
 \end{equation*}
-for some $\lambda>0$. This finally gives us the following optimization problem:
+for some $\lambda>0$. 
+
+We would like to have $\dot{e}+\lambda e=0$ to respect the error correction profile. Therefore, we want to solve the following optimization problem:
 \begin{equation}
-    \boxed{\min_{\dot{q}(t)} \frac{1}{2}\norm{\dot{e}+\lambda e}_2^2}
+    \min_{\dot{q}(t)} \frac{1}{2}\norm{\dot{e}+\lambda e}_2^2
 \end{equation}
+By substituting the expressions of $e$ and $\dot{e}$, we obtain:
+\begin{equation*}
+    \min_{\dot{q}(t)} \frac{1}{2}\norm{
+        \underbrace{J(q(t))}_{A}\underbrace{\dot{q}(t)}_{x} - \underbrace{v^*(t) + \lambda\left(M(q)\ominus M^*\right)}_{b}
+    }_2^2
+\end{equation*}
+This is a linear least squares problem, i.e. of the form:
+\begin{equation*}
+    \min_{x\in\R^n}\frac{1}{2}\norm{Ax-b}_2^2
+\end{equation*}
+with $A=J(q(t))$ and $b=v^*(t)+\lambda\left(M(q)\ominus M^*\right)$. The solution is given by:
+\begin{equation*}
+    x^* = A^+b = (A^\tp A)^{-1}A^\tp b
+\end{equation*}
+We can then update the joint speeds $\dot{q}(t)$ using the computed values $x^*$.
+
+\subsection{Exploiting the redundancy of solutions}
+In the case of redundant robots, there are multiple solutions to the inverse kinematics problem. We can exploit this redundancy to optimize a given criterion. For instance, we can minimize the energy consumption of the robot by minimizing the norm of the joint speeds.
+
+More generally, we can consider two tasks to be achieved simultaneously, one being strictly prioritized over the other:
+\begin{equation*}
+    (A_1, b_1) \gg (A_2, b_2)
+\end{equation*}
+
+\subsubsection{Relaxed approach}
+A first approach is to assign each task a coefficient $\alpha_i>0$, and to choose the cost function to be the sum of the weighted tasks. Given $\alpha_1\gg\alpha_2>0$, we might want to minimize:
+\begin{equation*}
+    \min_x\alpha_1\norm{A_1x+b_1}_2^2 + \alpha_2\norm{A_2x+b_2}_2^2
+\end{equation*}
+However, this approach does not guarantee that the first task will be strictly prioritized over the second one. Imagine that the first task is for our robot to stay in a safe position, while the second task is to reach a target position. To ensure that the robot stays in a safe position, we need to strictly prioritize the first task, resulting in a much higher $\alpha_1$ than $\alpha_2$. This would lead to a numerically unstable problem, and the robot would likely not reach the target position.
+
+\subsubsection{Strict approach}
+A more stable approach consists in solving a constrained optimization problem:
+\begin{equation*}
+    \min_x\norm{A_2x+b_2}_2^2 \quad\text{s.t. } A_1x=b
+\end{equation*}
+This guarantees that the first task is strictly prioritized over the second one, and does not require coefficients. To do so, we can compute the projection of the second task onto the null space of the first task. For any problem of the form:
+\begin{equation*}
+    \min_x\norm{Ax-b}_2^2
+\end{equation*}
+a solution is given by $x^*=A^+b$. If $A$ is not invertible (which is the case when the system is underdetermined), the solutions are given by:
+\begin{equation*}
+    x^* = A^+b + \underbrace{(I-A^+A)}_{P_{\ker(A)}}y
+\end{equation*}
+for some $y\in\R^n$. The general idea of minimizing the second task while respecting the first one is to choose the value of $y$ that minimizes the norm of the second task. This is equivalent to projecting the second task onto the null space of the first task.
+
+Given two tasks $(A_1, b_1)\gg(A_2, b_2)$, we want to choose $y$ such that:
+\begin{alignat*}{2}
+    &&A_2(A_1^+b_1 + (I-A_1^+A_1)y) &= b_2\\
+    \iff &&\underbrace{A_2(I-A_1^+A_1)}_{\tilde{A}_2}y &= \underbrace{b_2 - A_2A_1^+b_1}_{\tilde{b}_2}\\
+    \iff &&y &= \tilde{A}_2^+\tilde{b}_2
+\end{alignat*}
+Hence, we obtain the solution to the constrained optimization problem:
+\begin{equation*}
+    x^* = A_1^+b_1 + (I-A_1^+A_1)\tilde{A}_2^+\tilde{b}_2
+\end{equation*}
