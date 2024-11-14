@@ -30,7 +30,7 @@ Each joint can be represented as a function $K_i$ from a configuration space $Q_
 Consider for instance the revolute joint, which constrains the motion of two bodies around a fixed axis. It is parameterized by the angle $\theta\in\R$, therefore the configuration space is $Q_i=\Sb^1\simeq\R$ (one degree of freedom). The function $K_i$ is then defined as:
 \begin{equation*}
     \begin{aligned}
-        K_i: \Sb^1\simeq\R &\longrightarrow SE(3)\\
+        K_i: \Sb^1\simeq\R &\longrightarrow \SE(3)\\
         q &\longmapsto \begin{bmatrix}
             \cos  & -\sin q & 0 & 0\\
             \sin q & \phantom{-}\cos q & 0 & 0\\
