@@ -1,1 +1,76 @@
 \section{Direct Dynamics}
+Previously, we studied \emph{kinematics}, which describes the motion of a robot without considering the forces that cause it. We now turn to \emph{dynamics}, which studies the forces that cause the motion. The \emph{direct dynamics} problem consists in finding the motion of a robot given the forces applied to it.
+
+\subsection{Physical equations}
+The motion of a robot is governed by the laws of physics. The \emph{Newton-Euler} equations describe the motion of a rigid body in space. They are a set of differential equations that relate the forces and torques applied to the body to its translational and rotational motion. The equations are given by:
+\begin{equation}
+    \tag{Newton's equation}
+    m_k\underline{\ddot{x}}_k = f_k
+\end{equation}
+for the translational motion, and:
+\begin{equation}
+    \tag{Euler's equation}
+    I_k\underline{\dot{\omega}}_k + \underline{\omega}_k\times I_k\underline{\omega}_k = \tau_k
+\end{equation}
+for the rotational motion. Here, $m_k$ is the mass of the body, $f_k$ is the force applied to it, $I_k$ is the inertia matrix, $\underline{\omega}_k$ is the angular velocity, and $\tau_k$ is the torque applied to the body. The equations are written in the body frame of the body $k$, whose origin coincides with the body's center of mass.
+
+We can define $\Ds$ to be a kinetic metric of least deviation between the actual motion of the robot and the desired motion:
+\begin{equation}
+    \Ds := \sum_{k=1}^n \frac{1}{2}(\ddot{x}_k - \underline{\ddot{x}}_k)^\tp m_k (\ddot{x}_k - \underline{\ddot{x}}_k) + \frac{1}{2}(\dot{\omega}_k - \underline{\dot{\omega}}_k)^\tp I_k (\dot{\omega}_k - \underline{\dot{\omega}}_k)
+\end{equation}
+The principle of least action states that the actual motion of the robot is the one that minimizes $\Ds$. We can find the actual motion by solving the following optimization problem:
+\begin{equation}
+    \min_{\ddot{x}_k, \dot{\omega}_k} \Ds
+\end{equation}
+
+In the joint space, we can write the equations of motion as:
+\begin{equation}
+    M(q)\ddot{q} + C(q, \dot{q})\dot{q} - F(q) = 0
+\end{equation}
+where $M(q)$ is the mass matrix, $C(q, \dot{q})$ is the Coriolis matrix, and $F(q)$ is the vector of forces applied to the joints.
+
+\subsection{Contact forces}
+The poly-articulated system dynamics is driven by the Lagrangian dynamics. If we consider the contact forces, we can write the equations of motion as:
+\begin{equation*}
+    \underbrace{M(q)}_{\text{Mass matrix}}\ddot{q} + \underbrace{C(q, \dot{q})}_{\text{Coriolis}}\dot{q} + \underbrace{G(q)}_{\text{Gravity}} = \underbrace{\tau}_{\text{Motor torque}} + \underbrace{J_c^\tp(q)\lambda_c}_{\text{External forces}}
+\end{equation*}
+
+With this equation in mind, the direct dynamics problem consists in finding the motion of the robot given the forces applied to it. Schematically, the problem can be written as:
+\begin{equation*}
+    \ddot{q} = \text{ForwardDynamics}(q, \dot{q}, \tau, \lambda_c)
+\end{equation*}
+This is used in simulation, and can be solved using the articulated body algorithm.
+
+Conversely, the \emph{inverse dynamics} problem consists in finding the forces applied to the robot given its motion. Schematically, the problem can be written as:
+\begin{equation*}
+    \tau = \text{InverseDynamics}(q, \dot{q}, \ddot{q}, \lambda_c)
+\end{equation*}
+This is used in control, and can also be solved by integrating the equations of motion over time (recursive Newton-Euler algorithm).
+
+Note that naive algorithms for solving the direct dynamics problem have a complexity of $O(n^3)$, which is prohibitive for large systems. However, the articulated body algorithm has a complexity of $O(n)$, which makes it tractable for large systems. Such improvements come from the structure of the mass matrix, which is often sparse since parts of the robots are not connected. Similarly, the Jacobian of the contact forces is often sparse, which can also be exploited to reduce the complexity of the problem.
+
+An important aspect of the direct dynamics problem is the computation of $\lambda_c$. Multiple approaches, corresponding to different contact models, can be used:
+\begin{itemize}
+    \item Soft contact: using a spring-damper model
+    \item Rigid contact: using a bilateral or unilateral contact model
+    \item Mixed contact: using a relaxed contact model
+\end{itemize}
+we will study these models in more detail in the next sections.
+
+\subsection{Soft contact}
+The soft contact model is used when the contact between the robot and the environment is soft, i.e. when the robot can penetrate the environment. This is one of the simplest contact model, which is both very intuitive and straightforward to implement. 
+
+The model is based on a spring-damper system, where the contact force is proportional to the penetration depth and the relative velocity between the robot and the environment. The spring will push the robot away from the environment (proportionally to the penetration $p$), while the damper will slow down the relative motion between the robot and the environment (proportionally to the speed $\dot{p}$).
+
+We consider the parameter $k$ to be the stiffness of the spring, and $b$ to be the damping coefficient of the damper. The contact force is then given by:
+\begin{equation}
+    \lambda_c = \max(-k\cdot p - b\cdot\dot{p}, 0)
+\end{equation}
+The $\max$ function is used to ensure that the contact force is always positive, i.e. that the robot is always pushed away from the environment.
+
+Lower values of $k$ correspond to softer contacts, while higher values of $k$ correspond to harder objects. Higher values of $d$ also mean higher energy dissipation; in the case of a trampoline, for instance, we would have a very low $d$ to allow the robot to bounce back.
+
+Despite being simple and easy, the soft contact model is not relevant for rigid interfaces (when $k\to+\infty$). Furthermore, it requires a very stable integrator, since the equation is stiff (because of the $\max$ function).
+
+\subsection{Rigid contacts}
+\subsubsection{Bilateral contacts}
