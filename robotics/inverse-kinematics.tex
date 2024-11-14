@@ -1,2 +1,86 @@
 \section{Inverse Kinematics}
-\newpage
+\emph{Inverse Kinematics} aims at finding joint parameters that achieve a desired end-effector pose. This is a more complex problem than forward kinematics, as it is not always possible to find a solution, and when it is, there may be multiple solutions.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{inverse-kinematics/inverse-kinematics.png}
+\end{figure}
+
+\subsection{Optimization problem and resolution}
+Given a target position $M^*$ for the end-effector, we aim at solving the following distance minimization problem:
+\begin{equation*}
+    \min_{q\in Q} d(\prescript{0}{}{K_n(q)}, M^*)
+\end{equation*}
+Using the logarithm distance, we can rewrite the problem as:
+\begin{equation}
+    \min_{q\in Q} \norm{\log(\prescript{0}{}{K_n(q)}^{-1}M^*)}
+\end{equation}
+We can cast this initial problem $\min_{q\in Q} \norm{\log(\prescript{0}{}{K_n(q)}^{-1}M^*)}$ as a more general optimization problem:
+\begin{equation*}
+    \min_{x\in\R^n}\frac{1}{2}\norm{f(x)}_2^2
+\end{equation*}
+We aim at iteratively solving this optimization problem. A first-order linear approximation of $f$ around $x$ is given by:
+\begin{equation*}
+    f(x+p)=f(x)+\underbrace{\partfrac{f}{x}(x)}_{J(x)}p
+\end{equation*}
+Hence:
+\begin{equation*}
+    \min_{p\in\R^n}\frac{1}{2}\norm{f(x_0+p)}_2^2 = \min_{p\in\R^n}\frac{1}{2}\norm{f(x)+J(x)p}_2^2
+\end{equation*}
+We can now solve the optimization problem by setting the gradient of the objective function to zero:
+\begin{equation*}
+    \begin{aligned}
+        &\nabla_p\left(\frac{1}{2}\norm{f(x)+J(x)p^*}_2^2\right)=0\\
+        \iff &J(x)^\tp (f(x)+J(x)p^*) = 0\\
+        \iff &p^* = -(J(x)^\tp J(x))^{-1}J(x) f(x)\\
+        \iff &p^* = -J(x)^+ f(x)
+    \end{aligned}
+\end{equation*}
+where $J(x)^+$ is the \emph{Moore-Penrose pseudoinverse} of $J(x)$. We can then iteratively update:
+\begin{equation*}
+    x_{k+1} = x_k + \alpha p_k
+\end{equation*}
+until we obtain $\norm{J(x)^\tp f(x)}\leq\epsilon^*$, where $\epsilon^*>0$ is a fixed precision we aim at achieving. This iterative method is known as the \emph{Newton-Raphson} method. If we work on a differential manifold, we can use instead:
+\begin{equation*}
+    q_{k+1}=q_l\oplus\alpha p_k
+\end{equation*}
+
+\subsection{Trajectory tracking}
+We can extend the previous method to track a trajectory $M(t)$: we want to compute the joint speeds $\dot{q}$ that track the trajectory as closely as possible. Consider a continuous and differentiable time trajectory $M^*$:
+\begin{equation*}
+    \begin{aligned}
+        M^*:[0, T]&\longrightarrow \SE(3)\\
+        t&\longmapsto M^*(t)
+    \end{aligned}
+\end{equation*}
+We are also given the corresponding spatial (linear and angular) velocity of the end-effector $v^*$:
+\begin{equation*}
+    \begin{aligned}
+        v^*:[0, T]&\longrightarrow\se(3)\\
+        t&\longmapsto v^*(t)
+    \end{aligned}
+\end{equation*}
+
+At each instant $t$, the forward kinematics of the robot give us the current end-effector pose $M(t)$ and the corresponding Jacobian $J(t)$:
+\begin{equation*}
+    M(q(t)) = \bigtimes_{i=0}^n K_i(q_i(t)) \in\SE(3)
+    \quad\text{and}\quad
+    v(t) = J(q(t))\dot{q}(t)\in\se(3)
+\end{equation*}
+Using the angular speed of the joints $\dot{q}(t)$, we can control the position $q(t)$ of the joints. Our goal is to minimize the gap between the position and speed of the end-effector $(M(q(t)), v(q(t), \dot{q}(t)))$ and the desired trajectory $(M^*(t), v^*(t))$.
+
+The error can be computed using the following cost function:
+\begin{equation*}
+    e(t, q(t)) = M(q(t)) \ominus M^*(t) = \log_{\SE(3)}\left(M^*(t)^{-1}M(q(t))\right)
+\end{equation*}
+The error in velocity space is given by:
+\begin{equation*}
+    \dot{e}(t, q(t), \dot{q}(t)) = v(q(t), \dot{q}(t)) - v^*(t) = J(q(t))\dot{q}(t) - v^*(t)
+\end{equation*}
+We define the error correction profile as:
+\begin{equation*}
+    \dot{e}(t, q(t), \dot{q}(t)) = -\lambda e(t, q(t))
+\end{equation*}
+for some $\lambda>0$. This finally gives us the following optimization problem:
+\begin{equation}
+    \boxed{\min_{\dot{q}(t)} \frac{1}{2}\norm{\dot{e}+\lambda e}_2^2}
+\end{equation}
