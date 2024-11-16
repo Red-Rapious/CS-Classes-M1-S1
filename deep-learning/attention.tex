@@ -69,7 +69,7 @@ Diagonal attention (the first four words and the last 5 words) means that words 
 \subsection{Image captioning with RNNs and Attention}
 It is important to notice that the decoder does not use the fact that the hidden states $(h_i)_i$ form an ordered sequence, but only considers them as an unordered set $\set{h_i}{i\in I}$. This means that we can use the same architecture given any set of input hidden vectors $\set{h_i}{i\in I}$, especially for other types of data that do not form sequences.
 
-Consider a deep convolutional neural network, without fully-connected layers at the end. The ouput of this CNN can be interpreted as a grid of feature vectors of the image. We see these feature vectors just like a sequence of hidden states of an encoder RNN: we can therefore apply the attention mechanism to them. We consider a simple model $f_{\textnormal{acc}}$ that we use to compute the alignment scores of each feature in the grid:
+Consider a deep convolutional neural network, without fully-connected layers at the end. The output of this CNN can be interpreted as a grid of feature vectors of the image. We see these feature vectors just like a sequence of hidden states of an encoder RNN: we can therefore apply the attention mechanism to them. We consider a simple model $f_{\textnormal{acc}}$ that we use to compute the alignment scores of each feature in the grid:
 \begin{equation*}
     e_{t,i,j} = f_{\textnormal{att}}(s_{t-1}, h_{i,j})
 \end{equation*}
@@ -101,7 +101,7 @@ Let's start by building an attention layer which exactly mimics the behavior des
     \item A set of \emph{inputs vectors} $X$ of shape $N_X\times D_X$ (the equivalent of the encoder states vector $h_i$)
     \item A \emph{similarity function} $f_{\textnormal{acc}}:\R^{D_Q}\times\R^{D_X} \longrightarrow \R$ that can take $q$ and a certain $X_i$ as inputs and return their similarity (or alignment score)
 \end{itemize}
-Like we detailled previously, the computations done by the attention layer are:
+Like we detailed previously, the computations done by the attention layer are:
 \begin{itemize}
     \item The similarities $e$ of shape $N_X$, obtained by setting $e_i = f_{\textnormal{acc}}(q, X_i)$
     \item The attention weights $a=\softmax(e)$ of shape $N_X$
@@ -120,7 +120,7 @@ In practice, large similarities will cause $\softmax$ to saturate and give vanis
 \end{equation*}
 
 \subsubsection{Multiple query vectors}
-In previous applications of the attention layer (sequence-to-sequence, image captioning), we always used a single query vector (the decoder states). We would like to generalize this to handle multiple query vectors at a time; therefore, we replace the query vector $q$ by a set of query vectors $Q$ of size $N_Q\times D_Q$. Instead of computing the similaritie score between the query vector and each input vector, we will compute the similarities for each query vector and for each input vector:
+In previous applications of the attention layer (sequence-to-sequence, image captioning), we always used a single query vector (the decoder states). We would like to generalize this to handle multiple query vectors at a time; therefore, we replace the query vector $q$ by a set of query vectors $Q$ of size $N_Q\times D_Q$. Instead of computing the similarities score between the query vector and each input vector, we will compute the similarities for each query vector and for each input vector:
 \begin{equation*}
     E_{k,i} = \frac{Q_k\cdot X_i}{\sqrt{D_Q}}
 \end{equation*}
@@ -229,7 +229,7 @@ A self-attention layer can be added at the end of a CNN to reproduce a similar b
 \subsubsection{Processing sequences}
 We saw three ways to process sequences, each with their upsides and downsides.
 
-Recurrent Neural Networks are very good at processing long sequences, since the last hidden state $h_T$ depends directly on all the previous inputs and hidden states. Their biggest drawback is that they are not parallelizable: we need to compute hidden states sequentially, which is unadapted to GPUs. 
+Recurrent Neural Networks are very good at processing long sequences, since the last hidden state $h_T$ depends directly on all the previous inputs and hidden states. Their biggest drawback is that they are not parallelizable: we need to compute hidden states sequentially, which is ill-adapted to GPUs. 
 
 Convolutions, and especially 1D convolutions, provide a highly parallelizable alternative. Unfortunately, they do not really suit language processing and long sequences, since the context window of each output is restricted to the kernel size.
 

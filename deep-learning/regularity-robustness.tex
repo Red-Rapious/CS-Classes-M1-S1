@@ -3,7 +3,7 @@
 During the training of neural networks, the gradients can sometimes become very large, leading to a strong drop in accuracy. The final results can be quite random, and the final performance of the network depends on initialization.
 
 \subsubsection{Gradient vanishing and gradient explosion}
-This is mainly caused by two problems: gradient vanishing and gradient explosion, that we previously adressed in the specific case of RNNs and LSTM. Formaly, if $\theta_t$ are the iterates of the parameters learned using stochastic gradient descent on minibatches $(x_{t,i}, y_{t,i})_{i\in\iset{1}{K}}$ at time $t$, the parameter updates is:
+This is mainly caused by two problems: gradient vanishing and gradient explosion, that we previously addressed in the specific case of RNNs and LSTM. Formally, if $\theta_t$ are the iterates of the parameters learned using stochastic gradient descent on minibatches $(x_{t,i}, y_{t,i})_{i\in\iset{1}{K}}$ at time $t$, the parameter updates is:
 \begin{equation*}
     \theta_{t+1}=\theta_t-\frac{\eta}{K}\sum_{i=1}^K \nabla\L_{x_{t,i}, y_{t,i}}(\theta)
 \end{equation*}
@@ -99,7 +99,7 @@ A simple solution is to set the biases $b^{(l)}=0$ and to sample the weights $W_
     \end{equation*}
 \end{proof}
 
-\subsubsection{Different initializations}
+\subsubsection{Different initialization}
 \paragraph*{Gaussian initialization} The previous assumptions are satisfied if we use Gaussian weights:
 \begin{equation*}
     W_{ij}^{(l)} \sim \Nc\left(0, \frac{2}{d^{(l-1)}}\right)
@@ -147,7 +147,7 @@ Nevertheless, during training we actually minimize $\L_{\hat{\D}_n}(\theta)$, wh
 \end{equation*}
 is the empirical distribution over the training dataset $(x_i,i)_{i\in\iset{1}{n}}$.
 
-Usually, the training set is not the final target: our objective is to provide a good model on another distributin $\D_{\textnormal{test}}$. This raises multiple sub-problems, depending on the test distribution: generalization, out-of-distribution samples, but also robustness, interpolation and aversarial attacks\dots
+Usually, the training set is not the final target: our objective is to provide a good model on another distributing $\D_{\textnormal{test}}$. This raises multiple sub-problems, depending on the test distribution: generalization, out-of-distribution samples, but also robustness, interpolation and adversarial attacks\dots
 
 \subsubsection{Generalization}
 We consider a setup in which the training samples are drawn i.i.d~according to the target distribution $\D=\D_{\textnormal{test}}$. Let:
@@ -180,9 +180,9 @@ Unfortunately, $\htheta_n$ depends on the distribution $\hat{\D}_n$; therefore, 
     \item[Generalization error] This is the difficult part, which depends on both the model and the optimization process. It increases as the size of the model and the optimization steps increase, and decreases when the number of examples increase.
 \end{description}
 
-Longer training time (more optmization iterations) generally decreases the optimization error, but also increases the generalization error: this is called \emph{overfitting}. There is a trade-off to find to have a performant model on the training distribution (low optimization error), while making it generalize well (avoid learning each example specifically).
+Longer training time (more optimization iterations) generally decreases the optimization error, but also increases the generalization error: this is called \emph{overfitting}. There is a trade-off to find to have a performant model on the training distribution (low optimization error), while making it generalize well (avoid learning each example specifically).
 
-Usual mitigation stategies for overfitting include early stopping, hyperparameters selection via cross-validation, and regularization: adding a small term such as $\gamma\norm{\theta}_2^2$ to the loss, to benefit smooth models. Over-parametrization also tends to create implicit regularization: after a certain model size, the test error starts decreasing again.
+Usual mitigation strategies for overfitting include early stopping, hyperparameters selection via cross-validation, and regularization: adding a small term such as $\gamma\norm{\theta}_2^2$ to the loss, to benefit smooth models. Over-parametrization also tends to create implicit regularization: after a certain model size, the test error starts decreasing again.
 
 \subsection{Robustness and adversarial attacks}
 \subsubsection{Adversarial attacks}

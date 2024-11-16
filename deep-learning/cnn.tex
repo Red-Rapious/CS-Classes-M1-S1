@@ -51,7 +51,7 @@
 
         \draw[<->, thick] (6, 2.1) -- (6, -2.1) node[right, pos=0.5] {$1024$};
     \end{tikzpicture}
-    \caption{Flatten layer breaking the spatial strucutre of input data}
+    \caption{Flatten layer breaking the spatial structure of input data}
 \end{figure}
 
 CNNs introduce new operators taking advantage of the spatial structure of the input data, while remaining compatible with automatic differentiation. While MLPs build the basic blocks of Deep Neural Networks using Fully-Connected Layers and Activation Layers, this chapter will introduce three new types of layers: \emph{Convolution Layers}, \emph{Pooling Layers}, and \emph{Normalization}.
@@ -144,7 +144,7 @@ The convolutional layer itself consists of small kernels (also called filters) u
     \end{figure}
 \end{definition}
 
-Intuitively, the result of the kernel convolution tells us for each pixel \emph{how much the neighbourhood of the input pixel corresponds to the kernel}.
+Intuitively, the result of the kernel convolution tells us for each pixel \emph{how much the neighborhood of the input pixel corresponds to the kernel}.
 
 \begin{example}[Gaussian blur]
     Let $G\in\mathscr{M}_{3}(\R)$ be the following kernel:
@@ -194,7 +194,7 @@ Intuitively, the result of the kernel convolution tells us for each pixel \emph{
     \end{figure}
 \end{example}
 
-These two examples show that kernels used in convolutional layers express meaningful transformations of the input, justifying their use in CNNs. For instance, one could hardcode different kernels (gaussian blur, Sobel operator, vertical/horizontal lines extraction) to extract interesting features from an image, and plug these features into an MLP to obtain an improved classifier compared to a basic, flattening MLP. We will see that instead, CNNs have learnable kernel weights, allowing the model to choose the kernels that it considers bests.
+These two examples show that kernels used in convolutional layers express meaningful transformations of the input, justifying their use in CNNs. For instance, one could hard-code different kernels (Gaussian blur, Sobel operator, vertical/horizontal lines extraction) to extract interesting features from an image, and plug these features into an MLP to obtain an improved classifier compared to a basic, flattening MLP. We will see that instead, CNNs have learnable kernel weights, allowing the model to choose the kernels that it considers bests.
 
 \subsubsection{Multiple kernels}
 In Figure \ref{fig:one-kernel-layer}, we used simply one kernel to compute one activation map. In practice, we repeat this process multiple times: we consider a set (or \emph{bank}) of filters having different weights values, and for each kernel of the set, we compute its activation map.
@@ -234,7 +234,7 @@ In Figure \ref{fig:one-kernel-layer}, we used simply one kernel to compute one a
 Using a bank containing $C'$ filters, the output of the convolutional layer in an \emph{activation map} of dimension $C'\times (H - K + 1) \times (W - K + 1)$ representing for each pixel the convolution between the given kernel and the corresponding chunk of the image.
 
 \begin{remark}[Biases in Convolutional Layers]
-    Similarly to fully-connected layers, we often add to the activation map of each kernel a bias of size $1\times (H - K + 1) \times (W - K + 1)$. Those biases might me ommited in the rest of the chapter for the sake of simplicity.
+    Similarly to fully-connected layers, we often add to the activation map of each kernel a bias of size $1\times (H - K + 1) \times (W - K + 1)$. Those biases might be omitted in the rest of the chapter for the sake of simplicity.
 \end{remark}
 
 \subsubsection{Stacking convolutions}
@@ -434,7 +434,7 @@ A solution to this is to introduce \emph{padding} by adding zeros around the bor
 \end{figure}
 
 \begin{remark}[Padding strategies]
-    Even though we might imagine different padding strategies instead of always padding with zeros (for instance, nearest-neightbour padding, circular padding, random padding\dots), zero-padding seems to be both simple and effective in practice, and is the most commonly used strategy.
+    Even though we might imagine different padding strategies instead of always padding with zeros (for instance, nearest-neighborhood padding, circular padding, random padding\dots), zero-padding seems to be both simple and effective in practice, and is the most commonly used strategy.
 \end{remark}
 
 Padding introduces an additional hyperparameter to the layer, $P$.
@@ -608,7 +608,7 @@ Another difference is that the operation is applied for each slice of the input 
     \end{equation*}
 \end{definition}
 
-A \emph{Max Pooling} layer applies the Max Pooling function to each location of size $K\times K$ in each slice of the input volume. We often choose the same kernel size as the slide (that is $K=S$) to avoid recovering twice the same pixel value. In this setting, it is equivalent to spliting each input channel into non-overlapping regions of size $K\times K$, from which are extracted the maximum value of the section and stored in the output channel.
+A \emph{Max Pooling} layer applies the Max Pooling function to each location of size $K\times K$ in each slice of the input volume. We often choose the same kernel size as the slide (that is $K=S$) to avoid recovering twice the same pixel value. In this setting, it is equivalent to splitting each input channel into non-overlapping regions of size $K\times K$, from which are extracted the maximum value of the section and stored in the output channel.
 
 Max Pooling has some advantages over convolutional layers with stride: it does not involve learnable parameters, reducing the computational cost, but also introduces translational invariance to small spatial shifts. Indeed, if the position of a specific maximum pixel is moved slightly, we might intuitively think that it will stay the maximum of its region, making the model robust to small translations.
 
@@ -642,7 +642,7 @@ The first blocks of Convolutional and Pooling layers progressively decrease the 
 
 \subsection{Normalization}
 \label{subseq:normalization}
-Deep convolutional neural networks are described previously can be extremly effective when trained; nevertheless, they are also very difficult to train, and we need to properly prepare data for the descent to converge.
+Deep convolutional neural networks are described previously can be extremely effective when trained; nevertheless, they are also very difficult to train, and we need to properly prepare data for the descent to converge.
 
 A recent solution to ease the training is to add \emph{normalization layers} in the network.
 
@@ -670,7 +670,7 @@ giving us a vector $\sigma$ of size $D$ as well. Finally, each element of the ba
 \end{equation*}
 The small constant $\epsilon$ is added at the denominator to avoid diving by zero when the standard deviation is null.
 
-In practice, zero mean and unit variance can be too hard of a constraint on the network. We prefer to add learnable scale and shift parameters $\gamma$ and $\beta$ of size $D$, allowing the network to choose what mean and variance it wants for the next layer. The acutal output is therefore $y$, defined by:
+In practice, zero mean and unit variance can be too hard of a constraint on the network. We prefer to add learnable scale and shift parameters $\gamma$ and $\beta$ of size $D$, allowing the network to choose what mean and variance it wants for the next layer. The actual output is therefore $y$, defined by:
 \begin{equation*}
     y_{i,j} := \gamma_j\hat{x}_{i,j}+\beta_j
 \end{equation*}
@@ -719,7 +719,7 @@ While they are widely used in practice, normalization layers also come with down
 
 Finally, batch normalization is not always appropriate: some very unbalanced data sets might not fit appropriately with batch normalization, and this can reduce the performance of the model. This depends highly on the application: for computer vision, batch normalization is most of the time suitable.
 
-\subsubsection{Layer and Instance normalizations}
+\subsubsection{Layer and Instance normalization}
 A variant to batch normalization, called \emph{layer normalization}, has be proposed. It aims at unifying the behavior of the normalization layer at training and testing time. This guarantees, even at training time, the independence between elements of one batch. The idea is to normalize the input in the layer direction instead of the batch direction. For a fully-connected layer with batch dimension:
 \begin{equation*}
     x:N\times D

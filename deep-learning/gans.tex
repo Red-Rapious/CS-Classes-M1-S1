@@ -11,7 +11,7 @@ while variational autoencoders maximize the evidence lower bound:
 Both of these models have their limitations; autoregressive models are slow to sample from, and variational autoencoders can have blurry samples. Generative adversarial networks (GANs) are a third approach to generative modeling that can generate high-quality samples quickly, by focusing on the problem of generating samples from a distribution instead of trying to explicitly model the distribution.
 
 \subsection{Generator and Discriminator}
-Assume that we have acces to some data samples $x_i$ drawn from a certain distribution $p_{\text{data}}$. Our goal is to draw new samples from $p_{\text{data}}$, without trying to access its values. Similarly to variational autoencoders, we assume that each sample is associated to a latent variable $z$ with a simple prior distribution $p(z)$. The idea is to learn a \emph{Generator Network} $G(z)$ that takes a latent variable $z$ as input and outputs a sample $x = G(z)$. $G$ implicitely defines a probability distribution $p_G$ over the samples $x$; we want to learn $G$ such that $p_G$ is as close as possible to $p_{\text{data}}$.
+Assume that we have access to some data samples $x_i$ drawn from a certain distribution $p_{\text{data}}$. Our goal is to draw new samples from $p_{\text{data}}$, without trying to access its values. Similarly to variational autoencoders, we assume that each sample is associated to a latent variable $z$ with a simple prior distribution $p(z)$. The idea is to learn a \emph{Generator Network} $G(z)$ that takes a latent variable $z$ as input and outputs a sample $x = G(z)$. $G$ implicitly defines a probability distribution $p_G$ over the samples $x$; we want to learn $G$ such that $p_G$ is as close as possible to $p_{\text{data}}$.
 
 In parallel, we will train a \emph{Discriminator Network} $D$ to perform a classification task: given a sample $x$, $D(x)$ should output the probability that $x$ is a sample from $p_{\text{data}}$ rather than $p_G$. The training of $D$ is supervised: it is trained on both real samples $x_i$ and fake samples $G(z)$, of which we know the labels $0$ and $1$ respectively.
 \begin{figure}[H]
@@ -36,7 +36,7 @@ Let $V(G, D) = \E_{x\sim p_{\text{data}}}\left[\log D(x)\right] + \E_{z\sim p(z)
 \end{enumerate}
 Note that we are not minimizing any overall loss; the generator and the discriminator have their own loss, which depend on each other and is usually not monotonically decreasing.
 
-In practice, at the start of training, the generator performs quite poorly while the dicriminator can easily tell apart real and fake data, making $D(G(z))$ very close to $0$. This usually leads to a vanishing gradient for $G$. To avoid this, instead of training $G$ to minimize $\log\left(1-D(G(z))\right)$, we train it to minimize $-\log D(G(z))$.
+In practice, at the start of training, the generator performs quite poorly while the discriminator can easily tell apart real and fake data, making $D(G(z))$ very close to $0$. This usually leads to a vanishing gradient for $G$. To avoid this, instead of training $G$ to minimize $\log\left(1-D(G(z))\right)$, we train it to minimize $-\log D(G(z))$.
 
 \subsection{Optimality}
 We hope that jointly training $G$ and $D$ will make the generator's distribution $p_G$ converge to $p_{\text{data}}$. We will analytically derive the optimal discriminator and generator to show that this is the case.

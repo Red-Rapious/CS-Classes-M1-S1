@@ -104,7 +104,7 @@ An \emph{autoencoder} is a type of neural network used to solve unsupervised lea
 \subsubsection{Principle}
 Autoencoders are designed to learn feature vectors from raw data, without any labels. Features should extract useful information, that we can use for other tasks. The main challenge is to learn this feature transform from raw data, without any idea of the form that this feature vector should take. Therefore, the idea of autoencoders is to ask the model to use these features to estimate the raw data; this way, the model will keep the features that will help it reconstruct the data, which can be intuitively considered as the \say{best} features.
 
-An autoencoder consists of two parts: an encoder, taking into input the raw data $x$ and outputing the feature vector $z$; and a decoder, taking the feature vector $z$ as input and outputing the reconstructing input data $\hat{x}$. Both the encoder and the decoder are updated during training; the name \emph{autoencoder} shows that the model chooses its own code.
+An autoencoder consists of two parts: an encoder, taking into input the raw data $x$ and outputting the feature vector $z$; and a decoder, taking the feature vector $z$ as input and outputting the reconstructing input data $\hat{x}$. Both the encoder and the decoder are updated during training; the name \emph{autoencoder} shows that the model chooses its own code.
 \begin{figure}[H]
     \centering
     \includegraphics[width=.6\textwidth]{autoencoders/encoder-decoder.png}
@@ -115,7 +115,7 @@ Since the goal of the decoder is to reconstruct the input data as well as possib
     \L(x) = \norm{\hat{x}-x}_2^2 = \norm{f_\theta(x)-x}_2^2
 \end{equation*}
 
-In general, learning the identity function is not especially usefull and can be easily learned by a simple neural network. Therefore, features need to have a low dimension compared to the data, and act as a bottleneck. If the model approximates the identity function well, it means that the latent code (the feature vector) is an efficient way to represent the input data.
+In general, learning the identity function is not especially useful and can be easily learned by a simple neural network. Therefore, features need to have a low dimension compared to the data, and act as a bottleneck. If the model approximates the identity function well, it means that the latent code (the feature vector) is an efficient way to represent the input data.
 
 \subsubsection{Applications}
 Once trained, the encoder part can be extracted and added upstream of another supervised model to solve other problems: for instance, we might add a classifier downstream and fine-tune the encoder and the classifier together.
@@ -154,7 +154,7 @@ Note that according to Bayes' rule:
 \begin{equation*}
     \P_\theta(x) = \frac{\P_\theta(x|z)\cdot \P_\theta(z)}{\P_\theta(z|x)}
 \end{equation*}
-The probability $p_\theta(x|z)$ is computed by the network taking into input $z$ and outputing the Gaussian parameters. We assumed $z$ to be sampled from a Gaussian distribution, we therefore know $\P_\theta(z)$. Finally, $\P_\theta(z|x)$ is estimated by the encoder.
+The probability $p_\theta(x|z)$ is computed by the network taking into input $z$ and outputting the Gaussian parameters. We assumed $z$ to be sampled from a Gaussian distribution, we therefore know $\P_\theta(z)$. Finally, $\P_\theta(z|x)$ is estimated by the encoder.
 
 \begin{property}[Variational lower bound]
     The following inequality holds for any distributions $p_\theta$ and $q_\varphi$:
@@ -173,7 +173,7 @@ The probability $p_\theta(x|z)$ is computed by the network taking into input $z$
         &= \E_{z\sim q_\varphi(z|x)}\left[\log p_\theta(x|z)\right] - \E_{z\sim q_\varphi(z|x)}\left[\log\frac{q_\varphi(z|x)}{p(z)}\right] + \E_{z\sim q_\varphi(z|x)}\left[\log\frac{q_\varphi(z|x)}{p_\theta(z|x)}\right] \\
         &= \E_{z\sim q_\varphi(z|x)}\left[\log p_\theta(x|z)\right] - \KL\left(q_\varphi(z|x)\parallel p(z)\right) + \KL\left(q_\varphi(z|x)\parallel p_\theta(z|x)\right)
     \end{align*}
-    Since the Kullback-Leibler divergence is always positive, we can ommit the rightmost term and obtain:
+    Since the Kullback-Leibler divergence is always positive, we can omit the rightmost term and obtain:
     \begin{equation*}
         \log p_\theta(x) \geq \E_{z\sim q_\varphi(z|x)}\left[\log p_\theta(x|z)\right] - \KL\left(q_\varphi(z|x)\parallel p_\theta(x)\right)
     \end{equation*}

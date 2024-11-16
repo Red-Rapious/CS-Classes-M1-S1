@@ -6,7 +6,7 @@ A tensor is a $d$-dimensional array in \texttt{PyTorch}. Tensors are used in dee
 A tensor can be created from a list: \mintinline{python}{x = torch.Tensor([[1,0,2],[3,2,2]])}. By default, tensors are not deepcopied, but can be cloned: \mintinline{python}{x.clone()}. Each tensor has a data type, which can be specified at its creation: \mintinline{python}{x = torch.Tensor(..., dtype=torch.int64)}. In the case of data (for instance, training examples), the first dimension of a tensor is usually the samples: \mintinline{python}{x.shape[0]} is the batch size.
 
 \paragraph*{Operations}
-Most operations on tensors (\mintinline{python}{+}, \mintinline{python}{*}, \dots) are performed coordinate-wise and need matching sizes. Mathematical functions from the \mintinline{python}{torch} library, such as \mintinline{python}{torch.exp} or \mintinline{python}{x**2}, are vectorized and therefore performed coordinate-wise. Notably, matrix multiplication can be perfomed using the \mintinline{python}{x @ y} syntax.
+Most operations on tensors (\mintinline{python}{+}, \mintinline{python}{*}, \dots) are performed coordinate-wise and need matching sizes. Mathematical functions from the \mintinline{python}{torch} library, such as \mintinline{python}{torch.exp} or \mintinline{python}{x**2}, are vectorized and therefore performed coordinate-wise. Notably, matrix multiplication can be performed using the \mintinline{python}{x @ y} syntax.
 
 \paragraph*{Shapes}
 A tensor shape can be obtained by calling \mintinline{python}{x.shape}. Reshaping can be performed using \mintinline{python}{x.view(1,3,-1)}, where \mintinline{python}{-1} acts as a wildcard for \texttt{PyTorch} to fill in automatically the appropriate dimension. For instance, \mintinline{python}{x.view(-1)} flattens the tensor into a one-dimensional vector. The operation \mintinline{python}{x.unsqueeze(0)} adds a dimension of size 1 to the tensor.
@@ -31,7 +31,7 @@ Manipulating tensors and tensor sizes is complex and leads to many bugs in deep 
     \end{equation*}
 \end{definition}
 
-MSE has a probabilistic interpretation, fitting the following probabilistic model: we are trying to learn a certain function $g_\theta$, parametered by $\theta\in\R^p$. To do so, we are given tuples of data of the form $(X_i, Y_i)$, where $Y_i$ is the label corresponding to $X_i$. We assume that the probabilistic relationship between $X_i$ and $Y_i$ is the following:
+MSE has a probabilistic interpretation, fitting the following probabilistic model: we are trying to learn a certain function $g_\theta$, parametrized by $\theta\in\R^p$. To do so, we are given tuples of data of the form $(X_i, Y_i)$, where $Y_i$ is the label corresponding to $X_i$. We assume that the probabilistic relationship between $X_i$ and $Y_i$ is the following:
 \begin{equation*}
     Y_i=g_\theta(X_i)+\epsilon_i
 \end{equation*}
@@ -146,7 +146,7 @@ In the following, $\eta>0$ denotes a \emph{learning rate} (or \emph{step-size}).
 Keep in mind that the final goal is to reduce the population risk, that is $\E[\ell(g_\theta(X), Y)]$. We need to pay attention to overfitting in addition to using the optimization algorithm to reduce the training error. In this class, we focus specifically on the performance of the optimization algorithm in minimizing the objective function, rather than the model's generalization error. In the next chapters, we will see techniques to avoid overfitting.
 
 \subsection{Convergence analysis}
-We aim at providing theoreticla guarantees over the convergence rates of our algorithms. Optimizing non-convex functions is hard in general, but we will make the following assumptions:
+We aim at providing theoretical guarantees over the convergence rates of our algorithms. Optimizing non-convex functions is hard in general, but we will make the following assumptions:
 \begin{itemize}
     \item The objective function is non-convex but differentiable and $\beta$-smooth, that is:
     \begin{equation*}
@@ -164,7 +164,7 @@ We aim at providing theoreticla guarantees over the convergence rates of our alg
         \L(\theta_t)-\L(\theta^*) = \Omega(t^{-\frac{1}{d}})
     \end{equation*}
 \end{property}
-This is prohibitive for large dimensional spaces, since this makes the convergence extremly slow. Therefore, we often choose to restrict ourselves to guarantees for local optima.
+This is prohibitive for large dimensional spaces, since this makes the convergence extremely slow. Therefore, we often choose to restrict ourselves to guarantees for local optima.
 
 \begin{theorem}[Convergence of non-convex SGD to a stationary point]
     Let $\L:\R^p\to\R$ be a smooth function and $\Delta=\L(\theta_0)-\L(\theta^*)$. Then, SGD with step-size:
@@ -202,7 +202,7 @@ To conclude:
 \end{itemize}
 
 \subsection{Gradient descent variants}
-Mini-batch gradient descent is the algorithm of choice when training a neural network. The term SGD is usually employed even when mini-batches are used! But despite working very well on fundamental examples (such as MLPs), some important questions remain. For instance, choosing learning rates can be difficult: how can we adapt the learning rate during training? Do we apply the same learning rate to all parameter updates? How to espace saddle points when the gradient is close to zero in all dimensions? We will introduce modifications to SGD to address these issues.\footnote{For more information, you can read \href{https://www.ruder.io/optimizing-gradient-descent/}{this nice survey} by Sebastian Ruder of different gradient descent optimization algorithms.}
+Mini-batch gradient descent is the algorithm of choice when training a neural network. The term SGD is usually employed even when mini-batches are used! But despite working very well on fundamental examples (such as MLPs), some important questions remain. For instance, choosing learning rates can be difficult: how can we adapt the learning rate during training? Do we apply the same learning rate to all parameter updates? How to escape saddle points when the gradient is close to zero in all dimensions? We will introduce modifications to SGD to address these issues.\footnote{For more information, you can read \href{https://www.ruder.io/optimizing-gradient-descent/}{this nice survey} by Sebastian Ruder of different gradient descent optimization algorithms.}
 
 \subsubsection{Momentum}
 The core idea of \emph{momentum} is to accelerate SGD by dampening oscillations, that is averaging the last values of the latest gradients. We maintain a hidden state $v_t$ which is updated at each step, and used to update the parameter:
@@ -237,7 +237,7 @@ With momentum, we first compute the gradient and then make a step following our 
 \end{figure}
 
 \subsubsection{AdaGrad}
-We would like to adapt our updates to each individual parameter, i.e.~have a different decreasing learning rate for each parameter. This is what AdaGrad (standing for Adaptative Gradient) does:
+We would like to adapt our updates to each individual parameter, i.e.~have a different decreasing learning rate for each parameter. This is what AdaGrad (standing for Adaptive Gradient) does:
 \begin{equation*}
     \begin{aligned}
         s_{t+1,i} &= s_{t,i} + \nabla\L(\theta_t)_i^2\\
@@ -257,7 +257,7 @@ The problem with AdaGrad is that the learning rate goes to zero, and never forge
 where $\gamma$ is a decay factor (similarly to the idea of momentum), with default values $\gamma=0.9$ and $\eta=0.001$.
 
 \subsubsection{Adam}
-From the algorithm variations presented previously emerge two big ideas: using momentum to store the gradient, and having individual learning rates. Combining RMSProp and momentum gives us a widely used algorithm, Adam (for Adaptative Moment Estimation). It uses the following equations:
+From the algorithm variations presented previously emerge two big ideas: using momentum to store the gradient, and having individual learning rates. Combining RMSProp and momentum gives us a widely used algorithm, Adam (for Adaptive Moment Estimation). It uses the following equations:
 \begin{equation*}
     \begin{aligned}
         m_{t+1} &= \beta_1\cdot m_t + (1-\beta_1)\cdot\nabla\L(\theta_t)\\
@@ -267,7 +267,7 @@ From the algorithm variations presented previously emerge two big ideas: using m
         \theta_{t+1} &= \theta_t - \frac{\eta}{\sqrt{\hat{v}_{t+1}}+\epsilon}\cdot\hat{m}_{t+1}
     \end{aligned}
 \end{equation*}
-While they seem complex, these are just the extension and combinaison of the algorithms detailled before. $m_t$ and $v_t$ are estimates for the first and second moments of the gradients, just like we used in momentum and RMSProp. Because $m_0=v_0=0$, these estimates are biased towards $0$, thus the factors $(1-\beta^{t+1})^{-1}$ are here to counteract these biases. Typical values are $\beta_1=0.9$, $\beta_2=0.999$ and $\epsilon=10^{-8}$.
+While they seem complex, these are just the extension and combination of the algorithms detailed before. $m_t$ and $v_t$ are estimates for the first and second moments of the gradients, just like we used in momentum and RMSProp. Because $m_0=v_0=0$, these estimates are biased towards $0$, thus the factors $(1-\beta^{t+1})^{-1}$ are here to counteract these biases. Typical values are $\beta_1=0.9$, $\beta_2=0.999$ and $\epsilon=10^{-8}$.
 
 \subsubsection{AMSGrad}
 Sometimes, Adam forgets too fast. To fix it, we replace the moving average by a $\max$ operator:
@@ -285,7 +285,7 @@ All these optimizers are built-in in \texttt{PyTorch}. They share the similar co
 \begin{center}
     \mintinline{python}{torch.optim.*(params, lr=..., momentum=...)}
 \end{center}
-Default values are different for all optimizers. In this construction, \mintinline{python}{params} should be an iterable (like a list) containing the parameters to optimize over. It can be obtained from any model with \mintinline{python}{module.parameters()}. The \mintinline{python}{setp} method updates the internal state of the optimizer acoording to the \mintinline{python}{grad} attributes of the \mintinline{python}{params}, and updates the latter according to the internal state.
+Default values are different for all optimizers. In this construction, \mintinline{python}{params} should be an iterable (like a list) containing the parameters to optimize over. It can be obtained from any model with \mintinline{python}{module.parameters()}. The \mintinline{python}{setp} method updates the internal state of the optimizer according to the \mintinline{python}{grad} attributes of the \mintinline{python}{params}, and updates the latter according to the internal state.
 
 A simple training loop is of the form:
 \begin{figure}[H]

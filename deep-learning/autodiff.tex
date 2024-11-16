@@ -32,7 +32,7 @@ The average of the loss function is then given by:
 which we will try to minimize.
 
 \subsubsection{Gradient descent}
-The idea behind gradient descent is therefore to be able to compute the gradient of $\L$ with respect to the paramters $\theta$ for each point of the dataset:
+The idea behind gradient descent is therefore to be able to compute the gradient of $\L$ with respect to the parameters $\theta$ for each point of the dataset:
 \begin{figure}[H]
     \centering
     \begin{minipage}{0.4\textwidth}
@@ -51,7 +51,7 @@ The only remaining challenge is the computation of $\nabla_\theta\L$, preferably
 \subsubsection{By hand}
 The most straightforward approach to computing $\nabla_\theta\L$ would be to derive it on paper. Nevertheless, this is complicated, as it involves very long computations using matrix calculus.
 
-Furthermore, this approach is not modular, as changing the loss function or adding a layer requires to re-derive the gradient from scratch. Such a method does not scale: if the computations can be done in a reasonable amount of time for small models using linear and activation layers, complex models introduced in the next chapters have enormous gradient expressions, making the computation way too long and tidious to be done by hand.
+Furthermore, this approach is not modular, as changing the loss function or adding a layer requires to re-derive the gradient from scratch. Such a method does not scale: if the computations can be done in a reasonable amount of time for small models using linear and activation layers, complex models introduced in the next chapters have enormous gradient expressions, making the computation way too long and tedious to be done by hand.
 
 \subsubsection{Numerical differentiation}
 A first automatic approach to compute the gradient automatically would be to use \emph{numerical differentiation}, a method to estimate the derivative of the function using finite differences. Recall that since the derivative of a real-valued function is the limit of its growth rate:

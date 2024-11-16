@@ -18,13 +18,13 @@ When considering other applications, we would like more flexibility on the input
     \includegraphics[width=.2\textwidth]{rnn/vanilla-rnn.png}
     \caption{A simple RNN.}
 \end{wrapfigure}
-In its simplest form, a Recurrent Neural Network posesses an internal hidden state which is updated each time that it reads an input. The handling of a sequential input (for instance, a sentence) follows this update loop: a fixed-size bit of the input is fed into the network, and is combined with the internal hidden state to produce an output and update the state. The next bit of the input is then fed to the network, and so on.
+In its simplest form, a Recurrent Neural Network possesses an internal hidden state which is updated each time that it reads an input. The handling of a sequential input (for instance, a sentence) follows this update loop: a fixed-size bit of the input is fed into the network, and is combined with the internal hidden state to produce an output and update the state. The next bit of the input is then fed to the network, and so on.
 
 Formally, this can be written as a recurrence relationship:
 \begin{equation*}
     h_t = f_W(h_{t-1}, x_t)
 \end{equation*}
-where $x$ is a sequence of vectors, $(h_t)_t$ is the sequence of hidden states, and $f_W$ is our network depending on some parameter $W$. To produce an output at each time step, we can simply transform the hidden state into an ouput using a feed-forward neural network:
+where $x$ is a sequence of vectors, $(h_t)_t$ is the sequence of hidden states, and $f_W$ is our network depending on some parameter $W$. To produce an output at each time step, we can simply transform the hidden state into an output using a feed-forward neural network:
 \begin{equation*}
     y_t = g_{W'}(h_t)
 \end{equation*}
@@ -40,7 +40,7 @@ We can create a simple RNN built around a single hidden vector $h_t$:
 \end{equation*}
 
 \subsubsection{Computational graphs of RNNs}
-Alongside with this intuition of RNNs as networks with hidden cells, it is also useful to think of RNNs as computational graphs. The graph of an RNN can be unfolded over multiple time steps, expliciting the inputs and gradient flow.
+Alongside with this intuition of RNNs as networks with hidden cells, it is also useful to think of RNNs as computational graphs. The graph of an RNN can be unfolded over multiple time steps, making explicit the inputs and gradient flow.
 \begin{figure}[H]
     \centering
     \includegraphics[width=.7\textwidth]{rnn/rnn-graph.png}
@@ -48,18 +48,18 @@ Alongside with this intuition of RNNs as networks with hidden cells, it is also 
 \end{figure}
 The initial hidden state $h_0$ is often initialized to 0 in most contexts. It is then fed to the $f_W$ function with the first input $x_1$, which produces the new hidden state $h_1$. This hidden state can be used to compute the output $y_1$.
 
-Note that the parameter $W$ remains the same for all; when computing the gradient $\frac{\partial\L}{\partial W}$, we will sum all the graidents coming from each time step to compute the total gradient.
+Note that the parameter $W$ remains the same for all; when computing the gradient $\frac{\partial\L}{\partial W}$, we will sum all the gradients coming from each time step to compute the total gradient.
 
-This unfolded view also allows to understand the relationship with the loss more explicitely.
+This unfolded view also allows to understand the relationship with the loss more explicitly.
 \begin{figure}[H]
     \centering
     \includegraphics[width=.7\textwidth]{rnn/graph-loss.png}
     \caption{Loss of the unfolded graph.}
 \end{figure}
-Each output $y_t$ produced can be fed into some loss, for instance by comparing it to some gound truth label. The individual losses $\L_t$ can then be summed into a total loss $\L$, from which the backpropagation will start. Therefore, if we want to compute the gradient $\frac{\partial\L}{\partial W}$, the gradient flow will start in $\L$, separate itself into the different temporal steps $\L_t$, and then combine itself back to $W$ since the parameter is the same at each time step. This is called \emph{backpropagation through time}, as the forward pass is done by generating outputs at increasing time steps, while the backward pass is done starting from the most recently generated outputs.
+Each output $y_t$ produced can be fed into some loss, for instance by comparing it to some ground truth label. The individual losses $\L_t$ can then be summed into a total loss $\L$, from which the backpropagation will start. Therefore, if we want to compute the gradient $\frac{\partial\L}{\partial W}$, the gradient flow will start in $\L$, separate itself into the different temporal steps $\L_t$, and then combine itself back to $W$ since the parameter is the same at each time step. This is called \emph{backpropagation through time}, as the forward pass is done by generating outputs at increasing time steps, while the backward pass is done starting from the most recently generated outputs.
 
 \subsubsection{Many-to-one, one-to-many, many-to-many}
-The previous examples involve a mechanism in which an output $y_t$ is produced for each input $x_t$. In the case of other types of models (many-to-one, one-to-many, mnay-to-many), we might produce no output for certain inputs, or outputs without inputs.
+The previous examples involve a mechanism in which an output $y_t$ is produced for each input $x_t$. In the case of other types of models (many-to-one, one-to-many, many-to-many), we might produce no output for certain inputs, or outputs without inputs.
 
 \paragraph*{Many-to-one}
 In the many-to-one situation, we usually decide to produce an output only for the final input. The decision is therefore made based only on the final hidden state of the layer, $h_T$; the intuition behind this is that $h_T$ depends on all the previous hidden states $h_t$, and is therefore able to store the information used for the final decision.
@@ -70,7 +70,7 @@ In the many-to-one situation, we usually decide to produce an output only for th
 \end{figure}
 
 \paragraph*{One-to-many}
-In the one-to-many situation, we typically feed the function with the input only once. After that, the model will keep producing outputs depending solely on the previous hiddens state. This generation process usually stops when a certain output is produced, corresponding to some end-of-file token.
+In the one-to-many situation, we typically feed the function with the input only once. After that, the model will keep producing outputs depending solely on the previous hidden state. This generation process usually stops when a certain output is produced, corresponding to some end-of-file token.
 \begin{figure}[H]
     \centering
     \includegraphics[width=.7\textwidth]{rnn/rnn-one-to-many.png}
@@ -78,7 +78,7 @@ In the one-to-many situation, we typically feed the function with the input only
 \end{figure}
 
 \paragraph*{Many-to-many}
-While many-to-one and one-to-many situations are pretty straighforward, many-to-many requires more work, as it would be tricky to manage to make it work with only one recurrent neural network. For instance, in the case of machine translation, it is difficult to produce a translation before the whole input sentence is finished. It seems to be simpler to first read the original sentence, then generate a translated sentence. Furthermore, there is no guarantee that the best hidden states for input understanding are the same as the best hidden states for output generation. Therefore, the sequence to sequence situation is usually handled with two RNNs: an encoder and a decoder.
+While many-to-one and one-to-many situations are pretty straightforward, many-to-many requires more work, as it would be tricky to manage to make it work with only one recurrent neural network. For instance, in the case of machine translation, it is difficult to produce a translation before the whole input sentence is finished. It seems to be simpler to first read the original sentence, then generate a translated sentence. Furthermore, there is no guarantee that the best hidden states for input understanding are the same as the best hidden states for output generation. Therefore, the sequence to sequence situation is usually handled with two RNNs: an encoder and a decoder.
 \begin{figure}[H]
     \centering
     \includegraphics[width=.8\textwidth]{rnn/rnn-many-to-many.png}
@@ -170,7 +170,7 @@ Instead of keeping only one vector at each time step, two are used: the cell sta
 \end{itemize}
 Note that the $g$ gate is the only one to go through a $\tanh$ linearity. The $i,f$ and $o$ gates have coefficients in $[0,1]$, which fits the opened/closed gate interpretation, while $g$ has coefficients in $[-1,1]$, which is the range of values of $c_t$.
 
-The new cell value is a combinaison of its previous value $c_{t-1}$ and the cell input gate $g$: the proportion of both values are controlled by the forget gate $f$ and the input gate $i$. The new $c_t$ value being computed, it is sent to the classical hidden state $h_t$; the output gate $o$ controls what coefficients are being sent.
+The new cell value is a combination of its previous value $c_{t-1}$ and the cell input gate $g$: the proportion of both values are controlled by the forget gate $f$ and the input gate $i$. The new $c_t$ value being computed, it is sent to the classical hidden state $h_t$; the output gate $o$ controls what coefficients are being sent.
 
 \subsubsection{Gradient flow}
 While it might seem very complex, LSTM improves the gradient flow throughout the cell. An important behavior is that the gradient propagation from $c_t$ to $c_{t-1}$ only passes through an element-wise multiplication by $f$, and no matrix multiplication by $W^\tp$.
