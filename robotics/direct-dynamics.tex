@@ -192,5 +192,56 @@ which is the dual of the least-action principle (primal):
 \end{equation*}
 
 \subsection{Rigid unilateral contacts}
+\subsubsection{Unilateral contact as a Nonlinear Complementarity Problem}
+The rigid unilateral contact model is used when the contact between the robot and the environment is rigid, and when the robot can only push the environment. This is the case, for instance, when the robot is standing on the floor. 
 
-\subsection{Relaxed contacts}
+When dealing with unilateral contact conditions, three conditions must be satisfied:
+\begin{enumerate}
+    \item \textbf{Maximum dissipation} states that the contact forces should dissipate at most the kinetic energy:
+    \begin{equation*}
+        \min_{\lambda_c} \frac{1}{2}\lambda_c^\tp G_c(q)\lambda_c + \lambda_c^\tp a_{c, f}(q, \dot{q}, \ddot{q}_f)
+    \end{equation*}
+    \item \textbf{Complementary condition} (Signorini's conditions) require that the floor can \textbf{only push} (no pulling), and should emit no force when the contact is about to open:
+    \begin{equation*}
+        0\leq\lambda_{c,n} \perp a_{c,n}\geq 0
+    \end{equation*}
+    \item \textbf{Friction cone constraint} (Coulomb law) bounds the lateral forces by the normal force:
+    \begin{equation*}
+        \sqrt{\lambda_{c,x}^2 + \lambda_{c,y}^2} \leq \mu\lambda_{c,n}
+    \end{equation*}
+\end{enumerate}
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}{0.4\textwidth}
+        \centering
+        \includegraphics[width=.9\textwidth]{direct-dynamics/signorini.png}
+        \caption*{Signorini's conditions}
+    \end{minipage}
+    \begin{minipage}{0.4\textwidth}
+        \centering
+        \includegraphics[width=.43\textwidth]{direct-dynamics/coulomb.png}
+        \caption*{Coulomb law}
+    \end{minipage}
+\end{figure}
+
+The contact problem then corresponds to a \emph{Nonlinear Complementarity Problem (NCP)}:
+\begin{equation*}
+    \begin{cases}
+        \min_{\lambda_c} \frac{1}{2}\lambda_c^\tp G_c(q)\lambda_c + \lambda_c^\tp a_{c, f}(q, \dot{q}, \ddot{q}_f) \\
+        0\leq\lambda_{c,n} \perp a_{c,n}\geq 0 \\
+        \sqrt{\lambda_{c,x}^2 + \lambda_{c,y}^2} \leq \mu\lambda_{c,n}
+    \end{cases}
+\end{equation*}
+which is non-convex, hence hard to solve. More complex solvers can be used to solve this problem in an exact way.
+
+\subsubsection{Relaxed contact problem}
+Another approach to solve the rigid unilateral contact problem is to relax the contact conditions. This is done by removing the complementarity condition, and by regularizing the forces:
+\begin{equation*}
+    \begin{cases}
+        \min_{\lambda_c} \frac{1}{2}\lambda_c^\tp (G_c(q)\textcolor{red}{+R})\lambda_c + \lambda_c^\tp a_{c, f}(q, \dot{q}, \ddot{q}_f) \\
+        \sqrt{\lambda_{c,x}^2 + \lambda_{c,y}^2} \leq \mu\lambda_{c,n}\\
+        \hcancel[red]{0\leq\lambda_{c,n} \perp a_{c,n}\geq 0}
+    \end{cases}
+\end{equation*}
+where $R$ is a regularization term. This problem becomes convex, which makes it much easier to solve. Nevertheless, the solution is not exact, which might lead to some physical inconsistencies.
