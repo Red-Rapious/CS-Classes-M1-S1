@@ -147,11 +147,11 @@ which is a close estimate of $\tilde{\Ec}$ of rank 2.
 
 From \autoref{eq:normalized-essential}, we can deduce that:
 \begin{equation*}
-    (pT)^\tp\tilde{\Ec}^*(p'T')^\tp\simeq0
+    (Tp)^\tp\tilde{\Ec}^*(T'p')\simeq0
 \end{equation*}
 and thus, we can recover the final estimate of the essential matrix by projecting back the normalized data to the original coordinate basis:
 \begin{equation*}
-    \Ec = T^\tp\tilde{\Ec}^*T'
+    \Ec = T\tilde{\Ec}^*T'
 \end{equation*}
 
 In practice, the estimate using Hartley's normalization improves the results by a significant margin, especially for a small number of points (such as 8).
