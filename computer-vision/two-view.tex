@@ -11,7 +11,7 @@ The basic setup of epipolar geometry is described in \autoref{fig:epipolar-geome
     \caption{Epipolar geometry.}
     \label{fig:epipolar-geometry}
 \end{figure}
-The scene is observed from two view points, caracterized by the two optical centers $O$ and $O'$, and their respective projected images (planes $\pi$ and $\pi'$). The line $OO'$ is called the \emph{baseline}, and cuts the planes respectively on $e$ and $e'$ called the \emph{epipoles}. 
+The scene is observed from two view points, characterized by the two optical centers $O$ and $O'$, and their respective projected images (planes $\pi$ and $\pi'$). The line $OO'$ is called the \emph{baseline}, and cuts the planes respectively on $e$ and $e'$ called the \emph{epipoles}. 
 
 The plane formed by $OPO'$ is called the \emph{epipolar plane}. Its intersection with $\pi$ is called the \emph{epipolar line} associated to $p'$, denote $l$. Respectively, its intersection with $\pi'$ is called the epipolar line associated to $p$ and is denoted $l'$.
 
@@ -46,10 +46,10 @@ where $\Ec=[t_\times]\Rc$.\footnote{For any vector $a$, $[a_\times]$ denotes the
 \end{remark}
 
 \subsection{Essential matrix estimation}
-We now assume that we are given a set of corresponding points from views $\pi$ and $\pi'$, with equal intrinsinc parameters, and denoted respectively as $p$ and $p'$. We know that such points must satisfy Theorem \ref{thm:epipolar-constraint}. Therefore, we can use this information to estimate the essential matrix $\Ec$, and use it to make correspondences between new points.
+We now assume that we are given a set of corresponding points from views $\pi$ and $\pi'$, with equal intrinsic parameters, and denoted respectively as $p$ and $p'$. We know that such points must satisfy Theorem \ref{thm:epipolar-constraint}. Therefore, we can use this information to estimate the essential matrix $\Ec$, and use it to make correspondences between new points.
 
 \begin{remark}
-    In practice, Longuet-Higgins showed that at least 8 correspondences were needed to have a reasonable estimate of $\Ec$. In these notes, the algorithm is given for one single pair of points $(p,p')$, but it can be easily extended to multiple pairs $(p_i,p_i')_i$.
+    In practice, Longuet-Higgins showed that at least 8 correspondences were needed to have a reasonable estimate of $\Ec$. The algorithm is therefore known as the \emph{eight-point algorithm}. In these notes, it is given for a single pair of points $(p,p')$, but it can be easily extended to multiple pairs $(p_i,p_i')_i$.
 \end{remark}
 
 Using \autoref{eq:essential-matrix}, we can write the epipolar constraint as:
@@ -104,7 +104,7 @@ Given a point $p=\begin{bmatrix}u\\v\\1\end{bmatrix}$, the projection of $p$ on 
 Using these two formulae and basic linear algebra allow to recover the epipolar lines, to draw them, and to compute the distance with the points.
 
 \subsection{Hartley's normalization}
-The Longuet-Higgins approache described as \autoref{eq:least-squares-essential} is numerically poorly conditioned, and the estimations are often very inaccurate in practice. Hartley thus proposed an improvement of the algorithm, based on a rescaling of the data to ensure that the resulting matrix would satisfy the required properties of the essential or fundament matrix.
+The Longuet-Higgins approach described in \autoref{eq:least-squares-essential} is numerically poorly conditioned, and the estimations are often inaccurate in practice. Hartley thus proposed an improvement of the algorithm, based on a rescaling of the data, while ensuring that the resulting matrix would satisfy the required properties of the essential or fundamental matrix.
 
 The idea is to center the data around 0, and to scale it such that the average distance to the origin is $\sqrt{2}$ (chosen empirically). This is done by applying the following transformation to the points $p$ and $p'$:
 \begin{equation*}
