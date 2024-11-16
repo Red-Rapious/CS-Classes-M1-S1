@@ -80,7 +80,7 @@ Despite being simple and easy, the soft contact model is not relevant for rigid 
 \subsubsection{Optimization problem}
 The rigid contact model is used when the contact between the robot and the environment is rigid, i.e. when the robot cannot penetrate the environment. It uses the least-action principle to write and solve an optimization problem: given $q$ and $\dot{q}$, we aim at retrieving $\ddot{q}$ and $\lambda_c$.
 
-Wwhen the contact is symmetric, i.e. when the robot can push the environment and the environment can push the robot, we used the bilateral contact model. To do so, we solve the following optimization problem:
+When the contact is symmetric, i.e. when the robot can push the environment and the environment can push the robot, we used the bilateral contact model. To do so, we solve the following optimization problem:
 \begin{equation}
     \label{eq:bilateral-contact}
     \min_{\ddot{q}} \frac{1}{2}\norm{\ddot{q}-\ddot{q}_f}^2_{M(q)} \quad\text{s.t.}\quad c(q)=0
@@ -100,7 +100,7 @@ Therefore, we can rewrite \autoref{eq:bilateral-contact} as:
 \end{equation}
 
 \subsubsection{Solution using the KKT conditions}
-The solution of this problem can be retrived by deriving the KKT conditions\footnote{The \emph{Karush-Kuhn-Tucker (KKT) conditions} are conditions for a solution of an optimization problem to be optimal.} of the QP problem, via the so-called \emph{Lagrangian}:
+The solution of this problem can be retrieved by deriving the KKT conditions\footnote{The \emph{Karush-Kuhn-Tucker (KKT) conditions} are conditions for a solution of an optimization problem to be optimal.} of the QP problem, via the so-called \emph{Lagrangian}:
 \begin{equation*}
     \L(\ddot{q}, \lambda_c) = 
     \underbrace{
@@ -116,7 +116,7 @@ where $\lambda_c$, the dual variable (or Lagrange multiplier), corresponds to th
     \nabla_{\ddot{q}}\L &= M(q)(\ddot{q}-\ddot{q}_f) - J_c^\tp(q)\lambda_c = 0 \\
     \nabla_{\lambda_c}\L &= J_c(q)\ddot{q} + \gamma_c(q, \dot{q}) = 0
 \end{align}
-where the first equation represents the joint space force propagation, and the second equation translates the cotnact acceleration constraint.
+where the first equation represents the joint space force propagation, and the second equation translates the contact acceleration constraint.
 
 By rearranging the equations, we obtain:
 \begin{align*}

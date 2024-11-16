@@ -65,13 +65,13 @@ In many cases, we will use proper (i.e. non-empty) convex sets, and closed conve
     \end{figure}
 \end{definition}
 
-\subsubsection{Euclidian balls and ellipsoids}
+\subsubsection{Euclidean balls and ellipsoids}
 \begin{definition}[Euclidian ball]
-    The \emph{Euclidian ball} of center $x_c$ and radius $r$ is the set:
+    The \emph{Euclidean ball} of center $x_c$ and radius $r$ is the set:
     \begin{equation*}
         B(x_c, r) = \set{x}{\norm{x - x_c}_2\leq r} = \set{x_c+ru}{\norm{u}_2\leq 1}
     \end{equation*}
-    Euclidian balls are convex.
+    Euclidean balls are convex.
 \end{definition}
 
 \begin{definition}[Ellipsoid]
@@ -91,7 +91,7 @@ In many cases, we will use proper (i.e. non-empty) convex sets, and closed conve
     \begin{equation*}
         E = \set{x_c + Au}{\norm{u}_2\leq 1}
     \end{equation*}
-    for some nonsingular matrix $A\in\textnormal{GL}_n(\R)$. We can choose $A$ symmatric and positive definite without loss of generality, for instance by choosing $A = P^{1/2}$.
+    for some nonsingular matrix $A\in\textnormal{GL}_n(\R)$. We can choose $A$ symmetric and positive definite without loss of generality, for instance by choosing $A = P^{1/2}$.
 \end{definition}
 
 \subsubsection{Cones}
@@ -245,7 +245,7 @@ More explicitly, let $A\in\mathscr{M}_{m,n}(\R)$ and $b\in\R^m$. The affine func
 \subsection{Geometric elements}
 \subsubsection{Separating and supporting hyperplanes}
 \begin{property}[Separating hyperplanes]
-    Soppose that $C, D\subseteq\R^n$ are two non-intersecting convex sets (that is $C\cap D = \emptyset$). Then there exists a hyperplane that separates $C$ and $D$, that is:
+    Suppose that $C, D\subseteq\R^n$ are two non-intersecting convex sets (that is $C\cap D = \emptyset$). Then there exists a hyperplane that separates $C$ and $D$, that is:
     \begin{equation*}
         \exists s\in\R^n\setminus\{0\}, \exists r\in\R, \quad \forall x\in C, s^\tp x\leq r \quad \text{and} \quad \forall x\in D, s^\tp x\geq r
     \end{equation*}

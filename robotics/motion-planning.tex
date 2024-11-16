@@ -5,7 +5,7 @@ We will first introduce a mathematical framework to describe the robot's configu
 
 \subsection{Configuration space}
 \subsubsection{Definitions}
-The ambient space, also called the \emph{workspace}, is in most cases the Euclian manifold $\E^3$. In this ambient space, a physical system can be described as a set of compacts subsets called \emph{bodies}. The vector of the considered physical systems must be in the \emph{state space} $\S$, the set of all possible sets:
+The ambient space, also called the \emph{workspace}, is in most cases the Euclidean manifold $\E^3$. In this ambient space, a physical system can be described as a set of compacts subsets called \emph{bodies}. The vector of the considered physical systems must be in the \emph{state space} $\S$, the set of all possible sets:
 \begin{equation*}
     (K_1, \dots, K_N) \in\S \subseteq \mathcal{K}(\E^3)^N
 \end{equation*}
@@ -27,7 +27,7 @@ where the $K_i^\circ$ are compacts representing each body, intuitively in their 
 In general, $\Cc$ is a manifold, its dimension being the number of degrees of freedom of the system. Note that the numerical dimension used to represent $\Cc$ is not necessarily the same as the actual dimension of the manifold: for instance, quaternions of dimension 4 can be used to represent rotations of $SO(3)$, a manifold of dimension 3.
 
 \subsubsection{Joints}
-Multiple types of joints can be used to connect the different parts of a robot. Formally, a joint is a mapping from a manifold of dimension $1\leq p\leq6$ into the solid placement $SE(3)$. The difference between the joints is the dimension of the manifold, which can also be seens as the number of degrees of freedom of the joint.
+Multiple types of joints can be used to connect the different parts of a robot. Formally, a joint is a mapping from a manifold of dimension $1\leq p\leq6$ into the solid placement $SE(3)$. The difference between the joints is the dimension of the manifold, which can also be seen as the number of degrees of freedom of the joint.
 \begin{figure}
     \centering
     \includegraphics[width=.7\textwidth]{motion-planning/joints.png}
@@ -36,7 +36,7 @@ Multiple types of joints can be used to connect the different parts of a robot. 
 
 \subsubsection{Examples}
 \paragraph*{Moving solid}
-Let us consider the Euclidian manifold $\E^2$ as a workspace, that is 2D objects. A solid object $K$ is described as a compact subset of $\E^2$. The configuration space is the set of transformations of this object, $SE(2)$, the special Euclidian group of dimension 2.
+Let us consider the Euclidean manifold $\E^2$ as a workspace, that is 2D objects. A solid object $K$ is described as a compact subset of $\E^2$. The configuration space is the set of transformations of this object, $SE(2)$, the special Euclidean group of dimension 2.
 
 \paragraph*{Double pendulum}
 In the case of a double pendulum, the workspace remains $\E^2$. Because of the physical constraints on the structure of the system, the pendulum is parametrized by two angles $\theta_1$ and $\theta_2$. The configuration space is therefore a torus $T^2=S^1\times S^1$, but can also be seen as $[0,2\pi)\times[0,2\pi)$.
@@ -164,7 +164,7 @@ In the following, we will assume that $\Cc_{\text{free}}$ is piecewise linear, t
 \end{figure}
 
 \paragraph*{Sweep}
-A first approach to build a roadmap is to use a \emph{sweep} algorithm. The idea is to use the plane sweep principle to efficiently determine where the rays terminate on the obstacles. We sort the vertices by abscisse coordinate, and we handle extensions from left to right, while maintaining a vertically sorted list of edges. This leads to a simple to implement, $O(n\log n)$-time algorithm, where $n$ is the number of vertices of the obstacles.
+A first approach to build a roadmap is to use a \emph{sweep} algorithm. The idea is to use the plane sweep principle to efficiently determine where the rays terminate on the obstacles. We sort the vertices by abscissa coordinate, and we handle extensions from left to right, while maintaining a vertically sorted list of edges. This leads to a simple to implement, $O(n\log n)$-time algorithm, where $n$ is the number of vertices of the obstacles.
 \begin{figure}[H]
     \centering
     \includegraphics[width=.6\textwidth]{motion-planning/sweep.png}

@@ -42,7 +42,7 @@ Classes are in active development. Below is a summary of the current availabilit
 | Convolutional Neural Networks | :white_check_mark: |
 | Recurrent Neural Networks | :white_check_mark: |
 | Attention and Transformers | :white_check_mark: |
-| Robustnesss and Regularity | :white_check_mark: |
+| Robustness and Regularity | :white_check_mark: |
 | Generative and Autoregressive Models | :white_check_mark: |
 | Autoencoders | :white_check_mark: |
 | Generative Adversarial Neural Networks | :white_check_mark: |
@@ -77,4 +77,4 @@ Classes are in active development. Below is a summary of the current availabilit
 Contributing to this repository is encouraged: please let me know about typos and suggestions, using the GitHub issue feature or through a PR. Small additions are also welcomed.
 
 ## Disclaimer
-Despite being written and organised by me, these documents contain material heavily inspired by my teacher's own classes.
+Despite being written and organized by me, these documents contain material heavily inspired by my teacher's own classes.
