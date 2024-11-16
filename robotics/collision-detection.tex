@@ -16,7 +16,7 @@ As described previously, the broad phase uses \emph{bounding volumes} (BVs) to p
 The narrow phase will later determine which pairs are actually colliding, and which aren't, using exact representation of the objects. This two-phases approach allows for improved performance without sacrificing the precision of the detector.
 
 \subsubsection{Example of bounding volumes}
-The choice of a bounding volume is always a tradeoff between performance and precision. Larger BVs such as spheres or axis-aligned bounding boxes rely on extremly efficient algorithms, at the cost of a poor representation of the actual volume of the object. On the other hand, complex volumes such as the convex hull represent precisely the objects while requiring a longer time to compute collisions.
+The choice of a bounding volume is always a tradeoff between performance and precision. Larger BVs such as spheres or axis-aligned bounding boxes rely on extremely efficient algorithms, at the cost of a poor representation of the actual volume of the object. On the other hand, complex volumes such as the convex hull represent precisely the objects while requiring a longer time to compute collisions.
 \begin{figure}[H]
     \centering
     \includegraphics[width=.7\textwidth]{collision-detection/bv-examples.png}
@@ -30,7 +30,7 @@ Given any representation of the bounding volumes of the objects of the scene, an
     \centering
     \includegraphics[width=.8\textwidth]{collision-detection/tree.png}
 \end{figure}
-The idea is to split the scene into primitives that are easy to compute, for instance AABBs, such that any object is in exactly one subpart of the scene. Therefore, two objects are coliding only if they are children of the same node of the tree, which drastically reduces the number of collisions to check.
+The idea is to split the scene into primitives that are easy to compute, for instance AABBs, such that any object is in exactly one subpart of the scene. Therefore, two objects are colliding only if they are children of the same node of the tree, which drastically reduces the number of collisions to check.
 
 \subsubsection{Sweep and Prune algorithm}
 When using exclusively AABBs, another efficient approach is to use the \emph{Sweep and Prune} (SaP) algorithm. Its idea is to sort the bounding boxes along each axis of their axis. Objects may overlap at their starts or ends; if two objects are overlapping for every axis, one can conclude that their AABBs collide.

@@ -1,7 +1,7 @@
 \section{Position and Orientation}
 Building algorithms for robots requires a good understanding of the position and orientation of the robot in space. This chapter will introduce the mathematical tools to describe these concepts.
 \subsection{Introduction}
-Kinematics studies the \emph{movement} of an object -- in our case of a robot -- without taking into acount the \emph{forces} generating it. Instead, it only handles aspects such as position, orientation, speed and momentum of bodies in movement.
+Kinematics studies the \emph{movement} of an object -- in our case of a robot -- without taking into account the \emph{forces} generating it. Instead, it only handles aspects such as position, orientation, speed and momentum of bodies in movement.
 
 Consider for instance a robotic arm. We can design a simplified scheme of the robot and its environment, to create a kinematic pipeline and reference frames associated to each of these objects.
 
@@ -18,7 +18,7 @@ Consider for instance a robotic arm. We can design a simplified scheme of the ro
     \includegraphics[width=.6\textwidth]{position/direct-kinematic.png}
 \end{figure}
 
-\emph{Invert kinematics} answers the question the other way around: given the position and orientation of a boyd, how can we compute the values of the articulations angles. Invert kinematics is used for instance for trajectory tracking: given a reference trajectory, how can we compute the speed of the articulations?
+\emph{Invert kinematics} answers the question the other way around: given the position and orientation of a body, how can we compute the values of the articulations angles. Invert kinematics is used for instance for trajectory tracking: given a reference trajectory, how can we compute the speed of the articulations?
 
 \subsection{Points, frames and transformations}
 \subsubsection{Position of a point in space}
@@ -272,7 +272,7 @@ Such a construction comes handy when we want to minimize the distance between tw
 \subsubsection{Definition}
 Rigid body transformations are the combination of a rotation and a translation. They are defined as the set of matrices that preserve the vector product $v\times w$ and the scalar product $v\cdot w$; note that the preservation of the scalar product implies the preservation of the norm of the vectors, hence the distances (no deformation).
 
-The group of rigid body transformations is also called the \emph{Special Euclidian group} (denoted $\SE(3)$), and defined by:
+The group of rigid body transformations is also called the \emph{Special Euclidean group} (denoted $\SE(3)$), and defined by:
 \begin{equation*}
     \SE(3) = \set{g:\E^3\to\E^3}{\forall x, y\in\E^3, \: \norm{g(x)-g(y)}=\norm{x-y}}
 \end{equation*}
