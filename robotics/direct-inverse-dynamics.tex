@@ -1,5 +1,7 @@
-\section{Direct Dynamics}
-Previously, we studied \emph{kinematics}, which describes the motion of a robot without considering the forces that cause it. We now turn to \emph{dynamics}, which studies the forces that cause the motion. The \emph{direct dynamics} problem consists in finding the motion of a robot given the forces applied to it.
+\section{Direct and Inverse Dynamics}
+Previously, we studied \emph{kinematics}, which describes the motion of a robot without considering the forces that cause it. We now turn to \emph{dynamics}, which studies the \emph{forces} that cause the motion. 
+
+Similarly to kinematics, dynamics can be divided into two problems: the \emph{direct dynamics} problem and the \emph{inverse dynamics} problem. The \emph{direct dynamics} problem consists in finding the motion of a robot given the forces applied to it. Conversely, the goal of \emph{inverse dynamics} is to minimize the gap between the position and speed of the end-effector and the desired trajectory, while taking into account the dynamics of the robot.
 
 \subsection{Physical equations}
 The motion of a robot is governed by the laws of physics. The \emph{Newton-Euler} equations describe the motion of a rigid body in space. They are a set of differential equations that relate the forces and torques applied to the body to its translational and rotational motion. The equations are given by:
@@ -165,7 +167,7 @@ The bottleneck of this method is the computation and inversion of $G_c(q)$, whic
 This is prohibitive for large systems, as the inversion of $M(q)$ has a complexity of $O(n^3)$. A solution is to exploit the sparsity in the Cholesky factorization of $M(q)$.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.7\textwidth]{direct-dynamics/cholesky.png}
+    \includegraphics[width=.7\textwidth]{direct-inverse-dynamics/cholesky.png}
 \end{figure}
 This reduced the complexity to $O(n^2)$ when using a dense Cholesky decomposition.
 
@@ -215,12 +217,12 @@ When dealing with unilateral contact conditions, three conditions must be satisf
     \centering
     \begin{minipage}{0.4\textwidth}
         \centering
-        \includegraphics[width=.9\textwidth]{direct-dynamics/signorini.png}
+        \includegraphics[width=.9\textwidth]{direct-inverse-dynamics/signorini.png}
         \caption*{Signorini's conditions}
     \end{minipage}
     \begin{minipage}{0.4\textwidth}
         \centering
-        \includegraphics[width=.43\textwidth]{direct-dynamics/coulomb.png}
+        \includegraphics[width=.43\textwidth]{direct-inverse-dynamics/coulomb.png}
         \caption*{Coulomb law}
     \end{minipage}
 \end{figure}
@@ -245,3 +247,28 @@ Another approach to solve the rigid unilateral contact problem is to relax the c
     \end{cases}
 \end{equation*}
 where $R$ is a regularization term. This problem becomes convex, which makes it much easier to solve. Nevertheless, the solution is not exact, which might lead to some physical inconsistencies.
+
+\subsection{Inverse dynamics}
+Similarly to the inverse kinematics problem, we can solve the inverse dynamics problem by minimizing the gap between the actual motion of the robot and the desired motion. Instead of solving for the configuration of the robot, $q\in Q$, we solve for the forces applied to the robot, or equivalently for $\ddot{q}, \tau, \lambda_c$.
+
+Consider the actual position and speed of the end effector, $(M, v, a)$. To compare it to a reference trajectory $(M^*, v^*, a^*)$, we define the error as:
+\begin{equation}
+    e := M\ominus M^* = \log_{\SE(3)}\left((M^*)^{-1}M\right)
+\end{equation}
+The error in velocity space is given by:
+\begin{equation*}
+    \dot{e} = v - v^*
+\end{equation*}
+and the acceleration of the error is:
+\begin{equation*}
+    \ddot{e} = a - a^* = J(q)\ddot{q} + \dot{J}(q, \dot{q})\dot{q} - a^*
+\end{equation*}
+This allows us to define the error correction profile as:
+\begin{equation}
+    \ddot{e}=-K_pe-K_v\dot{e}
+\end{equation}
+for some $K_p, K_v>0$. We can then solve the following optimization problem:
+\begin{equation*}
+    \min_{\ddot{q},\tau,\lambda_c} \frac{1}{2}\norm{\ddot{e}+K_p\dot{e}+K_v\dot{e}}_2^2 \quad\text{s.t.}\quad M(q)\ddot{q} + C(q, \dot{q}) + G(q) = \tau + J_c^\tp(q)\lambda_c
+\end{equation*}
+with $\lambda_c$ the contact forces.
