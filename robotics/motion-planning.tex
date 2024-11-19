@@ -174,7 +174,81 @@ A first approach to build a roadmap is to use a \emph{sweep} algorithm. The idea
 \subsubsection{Trajectory optimization (local planning)}
 Trajectory optimization, also known as local planning, use optimal control methods such as DDP or iLQR to find a local solution to the motion planning problem. It has a strong terminal cost, and does not guarantee to explore all the homotopy classes. To solve this issue, we need global optimization methods, that are only viable in small dimensions, or momentum methods, as introduced by El Khadir and Lassere in 2020.
 
-\subsubsection{Sampling-based motion planning (probabilistic planning)}
+\subsection{Sampling-based motion planning (probabilistic planning)}
+\subsubsection{Principle}
+The idea of sampling-based motion planning is to randomly sample the configuration space, and to connect the samples to build a roadmap. It uses a collision detector to separate planning from input geometry. Single-query algorithms incrementally sample and search the configuration space, while multiple-query algorithms precompute a complete sampling-based roadmap. Such algorithms have been developed since the 90s, with a proof of probabilistic completeness by Latombe in 1999.
 
+Similarly to combinatorial planning, we build approximate roadmaps. The high-level procedure is as follows:
+\begin{enumerate}
+    \item Sample a configuration
+    \item Check whether the configuration is in collision
+    \item Add the configuration to a graph (roadmap) of the nodes which are free configurations, and the edges of which are collision-free steerable paths
+\end{enumerate}
 
-\newpage
+\subsubsection{Sampling}
+The sampling step is fundamental in sampling-based motion planning. The sampling distribution must be chosen carefully, and depend on the specific motion planning task.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{motion-planning/sampling.png}
+    \caption{Example of different sampling procedures.}
+\end{figure}
+
+\subsubsection{Collision detection}
+The choice of a good collision detector is crucial in sampling-based motion planning. The collision detector must quickly determine whether a configuration is in collision, to be able to efficiently sample valid configurations. The next chapter will dive deeper into this topic.
+
+\subsubsection{Probabilistic roadmap}
+The \emph{Probabilistic Roadmap} (PRM) algorithm was introduced in 1994. It consists in building a roadmap by sampling the configuration space, and connecting the samples with collision-free paths. The roadmap is then used to find a path between the initial and final configurations, using a graph search algorithm such as Dijkstra's.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.7\textwidth]{motion-planning/prm.png}
+    \caption{Example of the PRM algorithm.}
+\end{figure}
+
+A drawback of PRM is that it samples a lot of useless nodes, which quadratically increases the collision checking time. A solution is to use a concept called \emph{visibility}, as for the art gallery problem. According to Chvátal's art gallery theorem:
+\begin{center}
+    "To guard a simple polygon with $n$ vertices,\\ $\lfloor n/3\rfloor$ guards are always sufficient and sometimes necessary."
+\end{center}
+This lead to the Visibility-PRM algorithm, introduced by Laumond in 2000, which is more efficient than the original PRM.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.7\textwidth]{motion-planning/visibility-prm.png}
+    \caption{Example of the PRM algorithm.}
+\end{figure}
+
+\subsubsection{Tree}
+PRM explores the whole space, which is good for multiple queries. For a single query, we want to explore \say{from the configuration}, which lead to growing a tree from the initial configuration:
+\begin{enumerate}
+    \item Pick a random node $q$ of the tree
+    \item Pick a random direction (an element of $T_q\Cc$)
+    \item Steer with 1 unit in this direction
+\end{enumerate}
+This is the principle of the \emph{Rapidly-exploring Random Tree} (RRT) algorithm:
+\begin{enumerate}
+    \item Pick a random node $q_{\text{dir}}$ of the configuration space
+    \item Pick the $q$ in the tree nearest to $q_{\text{dir}}$
+    \item Steer with 1 unit towards $q_{\text{dir}}$
+\end{enumerate}
+It improves exploration thanks to Voronoï biases: it statistically explores in the \emph{biggest Voronoï cell} of the tree.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.55\textwidth]{motion-planning/voronoi.png}
+    \caption{Example of Voronoï biases in the RRT algorithm.}
+\end{figure}
+
+Variants include early termination when an obstacle is encountered, bidirectional search, and so on. 
+% A more general formulation of the RRT algorithm can be expressed as follows. Given a metric, a sampler, and a local planner, we can define Algorithm \ref{alg:rrt}.
+% \begin{algorithm}[H]
+%     \caption{General RRT}\label{alg:rrt}
+%     \begin{algorithmic}
+%         \Input $\ $Sampler $\alpha$, metric $d$, local planner $\beta$, initial configuration $q_{\text{init}}$, number of iterations $k$
+%         \EndInput
+        
+%         \State $\mathcal{G} = \{q_{\text{init}}\}$
+%         \For {$i = 1$ to $k$}
+%             \State $x_n \leftarrow \argmin_{q\in\mathcal{G}} d(q, \alpha(i))$
+%             \State $(\tilde{u}^p, x_r) \leftarrow \beta(x_n, \alpha(i))$
+%             \State $\mathcal{G}\text{.add\_vertex}(x_r)$
+%             \State $\mathcal{G}\text{.add\_edge}(\tilde{u}^p)$
+%         \EndFor
+%     \end{algorithmic}
+% \end{algorithm}

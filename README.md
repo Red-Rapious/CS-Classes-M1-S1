@@ -56,7 +56,7 @@ Classes are in active development. Below is a summary of the current availabilit
 | Forward Kinematics | :white_check_mark: |
 | Inverse Kinematics | :white_check_mark: |
 | Direct and Inverse Dynamics | :white_check_mark: |
-| Motion Planning | :large_orange_diamond: |
+| Motion Planning | :white_check_mark: |
 | Collision Detection | :large_orange_diamond: |
 | Optimal Control | :x: |
 
