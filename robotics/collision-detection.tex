@@ -45,5 +45,64 @@ Such a method can become problematic if multiple objects are almost aligned on t
 \end{figure}
 
 \subsection{The narrow phase}
+\subsubsection{Introduction}
+The narrow phase is the second step of the collision detection process. It is used to determine the exact contact points between two objects that have been identified as potentially colliding in the broad phase. The goal is to find the exact contact points, and possibly the contact forces, between the two objects.
 
-\newpage
+Formally, given two objects $\mathscr{A}_1$ and $\mathscr{A}_2$ we want to solve the following optimization problem:
+\begin{equation*}
+    \min_{x_1\in\mathscr{A}_1, x_2\in\mathscr{A}_2} \frac{1}{2}\norm{x_1-x_2}^2
+\end{equation*}
+If the minimum is zero, then the two objects are in contact. The solution to this problem is the contact point. If the shapes are meshes, we can rewrite the problem as:
+\begin{equation*}
+    \min_{x_1, x_2} \frac{1}{2}\norm{x_1-x_2}^2 \quad \text{s.t. } \begin{cases}
+        A_1x_1\leq b_1\\
+        A_2x_2\leq b_2
+    \end{cases}
+\end{equation*}
+where the sizes of the matrix $A_1$ (respectively $A_2$) is the number of faces of the mesh of $\mathscr{A}_1$ (respectively $\mathscr{A}_2$).
+
+\subsubsection{Minkowski-based algorithms}
+We can introduce the Minkowski difference of our two objects:
+\begin{equation*}
+    \Ds := \mathscr{A}_1 - \mathscr{A}_2 = \set{x_1-x_2}{x_1\in\mathscr{A}_1, x_2\in\mathscr{A}_2}
+\end{equation*}
+Given the Minkowski difference, it is easy to see that the two objects are in contact if and only if the origin is in the Minkowski difference:
+\begin{equation*}
+    \mathscr{A}_1\cap\mathscr{A}_2\neq\emptyset \iff 0\in\Ds
+\end{equation*}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{collision-detection/minkowski.png}
+\end{figure}
+Hence, we can formally rewrite the optimization problem as a Minimum Norm Point (MNP) problem:
+\begin{equation*}
+    \min_{x_1\in\mathscr{A}_1, x_2\in\mathscr{A}_2} \frac{1}{2}\norm{x_1-x_2}^2 = \min_{x\in\Ds} \norm{x}^2
+\end{equation*}
+In practice, the Minkowski difference is intractable; to solve this problem, we work implicitly with $\Ds$ using the Frank-Wolfe algorithm.
+
+\subsubsection{Frank-Wolfe algorithm}
+The Frank-Wolfe algorithm solves a problem of the form:
+\begin{equation*}
+    \min_{x\in\Ds} f(x)
+\end{equation*}
+where both $f$ and $\Ds$ are convex. In the case of collision detection:
+\begin{equation*}
+    f(x) = \frac{1}{2}\norm{x}^2 \quad \text{and} \quad \Ds = \mathscr{A}_1 - \mathscr{A}_2
+\end{equation*}
+The algorithm acts as a sort of constrained gradient descent. It goes as follows:
+\begin{enumerate}
+    \item Compute the gradient $\nabla f(x_k)$ at current iterate $x_k$.
+    \item Compute the point $s_k\in\Ds$ which is the most in the direction of $-\nabla f(x_k)$, that is:
+    \begin{equation*}
+        s_k = \argmin_{y\in\Ds} \langle y, \nabla f(x_k)\rangle
+    \end{equation*}
+    \item Update the iterate $x_k$ towards $s_k$ to get $x_{k+1}$.
+\end{enumerate}
+
+Obviously, the difficulty is to compute the support points:
+\begin{equation*}
+    s_k = \argmin_{y\in\Ds} \langle y, \nabla f(x_k)\rangle
+\end{equation*}
+
+\subsubsection{GJK algorithm}
+The Gilbert-Johnson-Keerthi (GJK) algorithm is a popular algorithm to solve the narrow phase problem. It is an acceleration of the Frank-Wolfe algorithm, applied to an MNP.
