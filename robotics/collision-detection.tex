@@ -81,11 +81,11 @@ Hence, we can formally rewrite the optimization problem as a Minimum Norm Point 
 In practice, the Minkowski difference is intractable; to solve this problem, we work implicitly with $\Ds$ using the Frank-Wolfe algorithm.
 
 \subsubsection{Frank-Wolfe algorithm}
-The Frank-Wolfe algorithm solves a problem of the form:
+The Frank-Wolfe algorithm is an iterative first-order algorithm for convex optimization under constraints. Generally, it solves a problem of the form:
 \begin{equation*}
     \min_{x\in\Ds} f(x)
 \end{equation*}
-where both $f$ and $\Ds$ are convex. In the case of collision detection:
+where both $f$ and $\Ds$ are convex. In the case of collision detection, the function $f$ is the squared norm, and the set $\Ds$ is the Minkowski difference of the two objects:
 \begin{equation*}
     f(x) = \frac{1}{2}\norm{x}^2 \quad \text{and} \quad \Ds = \mathscr{A}_1 - \mathscr{A}_2
 \end{equation*}
@@ -98,11 +98,26 @@ The algorithm acts as a sort of constrained gradient descent. It goes as follows
     \end{equation*}
     \item Update the iterate $x_k$ towards $s_k$ to get $x_{k+1}$.
 \end{enumerate}
+The intuition behind the second step is to minimize the linear approximation of the problem given by the first-order Taylor approximation of $f$ at $x_k$.
 
 Obviously, the difficulty is to compute the support points:
 \begin{equation*}
     s_k = \argmin_{y\in\Ds} \langle y, \nabla f(x_k)\rangle
 \end{equation*}
+Hopefully, this can be done efficiently in the case of a Minkowski difference. We introduce $S_{\mathscr{A}}(d)$, the support function of a set $\mathscr{A}$ in the direction $d$, defined as:
+\begin{equation*}
+    S_{\mathscr{A}}(d)=\argmin_{x\in\mathscr{A}}x^\tp d
+\end{equation*}
+Note that:
+\begin{equation*}
+    \begin{cases*}
+        s_1\in S_{\mathscr{A}_1}(d)\\
+        s_2\in S_{\mathscr{A}_2}(-d)
+    \end{cases*}
+    \implies 
+    s:=s_1-s_2\in S_{\Ds}(d)
+\end{equation*}
+Hopefully, the support function can be computed efficiently for simple shapes.
 
 \subsubsection{GJK algorithm}
 The Gilbert-Johnson-Keerthi (GJK) algorithm is a popular algorithm to solve the narrow phase problem. It is an acceleration of the Frank-Wolfe algorithm, applied to an MNP.
