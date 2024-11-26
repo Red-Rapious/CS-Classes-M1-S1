@@ -1,0 +1,70 @@
+\section{Duality}
+\subsection{Recap on subdifferential calculus}
+Let $f:\mathbb{R}^n\to\mathbb{R}$ be a convex function. The subdifferential of $f$ at a point $x$ is defined as:
+\begin{align*}
+    \partial f : \R^n &\longrightarrow \Pc(\R^n)\\
+    x &\longmapsto \partial f(x) = \set{g\in\R^n}{\forall y\in\R^n, \: f(y)\geq f(x)+g^\tp(y-x)}
+\end{align*}
+and any $g\in\partial f(x)$ is called a subgradient of $f$ at $x$. The subdifferential is a set-valued function, and it is always non-empty for convex functions. If $f$ is differentiable at $x$, then $\partial f(x) = \{\nabla f(x)\}$. The subdifferential is a generalization of the gradient for non-differentiable functions.
+
+In the following, we derive formulae for the subdifferential of some common operations.
+
+\begin{property}[Subdifferential of a scaled function]
+    Let $f:\R^n\to\bar{\R}$ and $\alpha>0$. We define $h(x)=\alpha f(x)$. Then, for all $x\in\R^n$:
+    \begin{equation*}
+        \partial h(x) = \alpha\partial f(x)
+    \end{equation*}
+\end{property}
+
+\begin{property}[Subdifferential of a composition with linear mapping]
+    Let $f:\R^n\to\bar{\R}$ and $A\in\mathscr{M}_{n, d}(\R)$. We define $h(x)=f(Ax)$. Then, for all $x\in\R^n$:
+    \begin{equation*}
+        \partial h(x) = A^\tp\partial f(Ax)
+    \end{equation*}
+    when $\relint\dom h\neq\emptyset$.
+\end{property}
+
+\begin{property}[Subdifferential of a sum of functions]$ $\\
+    Let $f_1, f_2:\R^n\to\bar{\R}$ and $(\relint\dom f_1)\cap (\relint\dom f_2)\neq\emptyset$. Then, for all $x\in\R^n$:
+    \begin{equation*}
+        \partial(f_1+f_2)(x) = \partial f_1(x) + \partial f_2(x)
+    \end{equation*}
+\end{property}
+
+\begin{remark}
+    The assumption $(\relint\dom f_1)\cap (\relint\dom f_2)\neq\emptyset$ is often referred to as a \emph{constraint qualification}. Such a constraint is necessary. Consider the following example: the function $\ind_{(0,0)}$ is the indicator function of the origin in $\R^2$. Its subdifferential at $(0, 0)$ is $\partial\ind_{(0,0)}((0, 0)) = \R^2$. Now, consider the following decomposition:
+    \begin{equation*}
+        \ind_{(0, 0)} = \frac{\ind_{B_1} + \ind_{B_1}}{2}
+    \end{equation*}
+    where $B_1 = B((-1, 0), 1)$ and $B_2 = B((1, 0), 1)$. The subdifferential of the sum is:
+    \begin{equation*}
+        \partial(\ind_{B_1}+\ind_{B_2})((0, 0)) = \set{(\alpha, 0)}{\alpha\in\R}
+    \end{equation*}
+    which is not equal to $\R^2$.
+\end{remark}
+
+\begin{remark}[About the composition rule]
+    Let $S=\set{x\in\R^2}{x_1=x_2}$, and $f=\ind_S$. We define:
+    \begin{equation*}
+        A = \begin{bmatrix}
+            0 & 0\\
+            0 & 1
+        \end{bmatrix}
+    \end{equation*}
+    We do have $f(Ax)=\ind_{(0, 0)}$, but the sets $\partial h(0)$ and $A^\tp\partial f(0)$ are not equal. This does not contradict the rule, as the constraint qualification is not satisfied ($\relint\dom f(A\cdot)=\emptyset$).
+\end{remark}
+
+\subsection{Fermat's rule}
+\begin{theorem}[Fermat's rule]
+    Let $f:\R^n\to\bar{R}$ be any function, and $x\in\R^n$. Then, $x$ is a minimizer of $f$ if and only if $0\in\partial f(x)$.
+\end{theorem}
+\begin{proof}
+    A point $x$ minimizes $f$ if and only if:
+    \begin{equation*}
+        \forall y\in\R^n, \: f(y)\geq f(x) = f(x) + 0^\tp(y-x)
+    \end{equation*}
+    which by definition of the subdifferential is equivalent to $0\in\partial f(x)$.
+\end{proof}
+\begin{remark}
+    Fermat's rule also holds for non-convex functions; of course, it is difficult to check in general.
+\end{remark}
