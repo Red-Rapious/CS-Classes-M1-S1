@@ -32,6 +32,7 @@ In the following, we derive formulae for the subdifferential of some common oper
 \end{property}
 
 \begin{remark}
+    \label{rm:constraint-qualification}
     The assumption $(\relint\dom f_1)\cap (\relint\dom f_2)\neq\emptyset$ is often referred to as a \emph{constraint qualification}. Such a constraint is necessary. Consider the following example: the function $\ind_{(0,0)}$ is the indicator function of the origin in $\R^2$. Its subdifferential at $(0, 0)$ is $\partial\ind_{(0,0)}((0, 0)) = \R^2$. Now, consider the following decomposition:
     \begin{equation*}
         \ind_{(0, 0)} = \frac{\ind_{B_1} + \ind_{B_1}}{2}
@@ -55,6 +56,7 @@ In the following, we derive formulae for the subdifferential of some common oper
 \end{remark}
 
 \subsection{Fermat's rule}
+\subsubsection{Definition}
 \begin{theorem}[Fermat's rule]
     Let $f:\R^n\to\bar{R}$ be any function, and $x\in\R^n$. Then, $x$ is a minimizer of $f$ if and only if $0\in\partial f(x)$.
 \end{theorem}
@@ -65,6 +67,87 @@ In the following, we derive formulae for the subdifferential of some common oper
     \end{equation*}
     which by definition of the subdifferential is equivalent to $0\in\partial f(x)$.
 \end{proof}
-\begin{remark}
-    Fermat's rule also holds for non-convex functions; of course, it is difficult to check in general.
-\end{remark}
+Note that Fermat's rule also holds for non-convex functions, even with local minimizers.
+
+\begin{example}
+    Consider the following function:
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=.4\textwidth]{duality/fermat-rule.png}
+    \end{figure}
+    Then we have a global minimum at $x_1$:
+    \begin{equation*}
+        \partial f(x_1) = \{0\} \quad\text{and}\quad \nabla f(x_1)=0
+    \end{equation*}
+    and a local minimum at $x_2$:
+    \begin{equation*}
+        \partial f(x_2) = \emptyset \quad\text{and}\quad \nabla f(x_2)=0
+    \end{equation*}
+\end{example}
+
+In general, it is difficult to check Fermat's rule directly; we need to resort on the structure of the problem. For instance, if the optimization problem involves several functions, such as:
+\begin{equation*}
+    \min_{x\in\R^n} f(x) + g(x)
+\end{equation*}
+then we can check the optimality of $x$ by verifying that $0\in\partial f(x) + \partial g(x)$. This also works under constraint qualifications (remember Remark \ref{rm:constraint-qualification}).
+
+\subsubsection{Constraint qualifications}
+Suppose that we want to solve the following optimization problem:
+\begin{equation*}
+    \min_x f(x) + \ind_{Q_1}(x) + \ind_{Q_2}(x)
+\end{equation*}
+For instance in $\R^2$, we might have $f((x_1, x_2))=x_2$, $Q_1=\set{x\in\R^2}{\norm{x-(1, 0)}\leq 1}$, and $Q_2=\set{x\in\R^2}{\norm{x+(1, 0)}\leq 1}$:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.4\textwidth]{duality/q1-q2.png}
+\end{figure}
+There is no way to cancel the gradient using the sum of the subdifferentials, though $x=0$. This is because the constraint qualification is not satisfied. We need to directly check the subdifferential $\partial (f(x) + \ind_{Q_1} + \ind_{Q_2})$.
+
+\subsubsection{Optimality conditions}
+Let $f:\R^m\to\bar{\R}$, $g:\R^n\to\bar{\R}$ be closed, convex functions, and $A\in\mathscr{M}_{m, n}(\R)$. We study the following optimization problem:
+\begin{equation}
+    \label{eq:opt-condition}
+    \min_x f(Ax)+g(x)
+\end{equation}
+
+\begin{theorem}[Slater's Constraint Qualification]
+    \begin{equation}
+        \tag{Slater-CQ}
+        \exists \tilde{x}, \quad \tilde{x}\in(\relint\dom (f\circ A)) \cap(\relint\dom g)
+    \end{equation}
+\end{theorem}
+
+Assuming Slater's constraint qualification, then $x^*\in\R^n$ is a solution to \autoref{eq:opt-condition} if and only if $x^*$ satisfies:
+\begin{equation*}
+    0\in A^\tp\partial f(Ax^*) + \partial g(x^*)
+\end{equation*}
+This optimality condition implies that for such $x^*$ there is some $\lambda\in\R^n$ such that:
+\begin{equation*}
+    \lambda\in A^\tp\partial f(Ax^*) \quad\text{and}\quad -\lambda\in\partial g(x^*)
+\end{equation*}
+
+\subsection{Fenchel-Legendre conjugation}
+\subsubsection{Conjugate functions}
+\begin{definition}[Conjugate function]
+    The \emph{conjugate function} of $f:\R^n\to\R\cup\{+\infty\}$ is the function $f^*$ defined as:
+    \begin{equation*}
+        f^*(s):=\sup_x\left(s^\tp x-f(x)\right)
+    \end{equation*}
+    This definition is implicit via the optimization problem above.
+\end{definition}
+
+The conjugate $f^*$ is the supremum of a family of affine functions. If we define $a_x(s)=s^\tp x-f(x)$ an affine function parametrized by $x$, then $f^*(s)=\sup_x a_x(s)$. 
+
+The epigraph of $f^*$ is the intersection of the epigraphs of the $a_x$.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.4\textwidth]{duality/epigraph-conjugate.png}
+\end{figure}
+\begin{property}$ $
+    \begin{itemize}
+        \item $f^*$ is convex, since its epigraph is the intersection of the convex halfspaces $\epi a_x$
+        \item $f^*$ is closed, since its epigraph is the intersection of the closed halfspaces $\epi a_x$
+        \item $f^*$ is proper if $\partial f(x)\neq\emptyset$ for some $x\in\R^n$
+    \end{itemize}
+    In the following, we will always assume this last hypothesis.
+\end{property}
