@@ -130,15 +130,16 @@ This optimality condition implies that for such $x^*$ there is some $\lambda\in\
 \subsubsection{Conjugate functions}
 \begin{definition}[Conjugate function]
     The \emph{conjugate function} of $f:\R^n\to\R\cup\{+\infty\}$ is the function $f^*$ defined as:
-    \begin{equation*}
+    \begin{equation}
+        \label{eq:conjugate}
         f^*(s):=\sup_x\left(s^\tp x-f(x)\right)
-    \end{equation*}
+    \end{equation}
     This definition is implicit via the optimization problem above.
 \end{definition}
 
 The conjugate $f^*$ is the supremum of a family of affine functions. If we define $a_x(s)=s^\tp x-f(x)$ an affine function parametrized by $x$, then $f^*(s)=\sup_x a_x(s)$. 
 
-The epigraph of $f^*$ is the intersection of the epigraphs of the $a_x$.
+The epigraph of $f^*$ is the intersection of the epigraphs of the $a_x$, which results in interesting properties for $f^*$.
 \begin{figure}[H]
     \centering
     \includegraphics[width=.4\textwidth]{duality/epigraph-conjugate.png}
@@ -150,4 +151,72 @@ The epigraph of $f^*$ is the intersection of the epigraphs of the $a_x$.
         \item $f^*$ is proper if $\partial f(x)\neq\emptyset$ for some $x\in\R^n$
     \end{itemize}
     In the following, we will always assume this last hypothesis.
+\end{property}
+
+An interpretation of the conjugate $f^*(s)$ is that is defines an affine minorant of $f$ with slope $s$, where $-f^*(s)$ decides the constant offset to get support.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.5\textwidth]{duality/affine-minorant.png}
+\end{figure}
+Formally:
+\begin{align*}
+    f^*(s) = \sup_x\left(s^\tp x-f(x)\right) 
+    &\iff \forall x, \: f^s(s) \geq s^\tp x - f(x)\\
+    &\iff \forall x, \: f(x) \geq s^\tp x - f^*(s)
+\end{align*}
+The maximizing argument $x^*$ gives support: $f(x^*)=s^\tp x^*-f^*(s)$. Furthermore, we have $f(x^*)=s^\tp x^*-f^*(s)$ if and only if $s\in\partial f(x^*)$.
+
+\begin{property}
+    The conjugate of $f$ and $\Conv f$\footnote{The \emph{convex closure} of $f$, noted $\Conv f$, is the function such that $\epi \Conv f=\Conv\epi f$.} are the same, that is:
+    \begin{equation*}
+        f^* = (\Conv f)^*
+    \end{equation*}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=.7\textwidth]{duality/conv-closure.png}
+    \end{figure}
+    Both functions have the same supporting affine functions, and both epigraphs have the same supporting hyperplanes.
+\end{property}
+
+\begin{example}[Conjugate of the absolute value]
+    We aim at computing the conjugate of $f(x)=|x|$. By definition (\autoref{eq:conjugate}):
+    \begin{equation*}
+        f^*(s) = \sup_{x\in\R}\left(s^\tp x-f(x)\right)
+    \end{equation*}
+    If we choose $s<-1$, then $f^*(s)=+\infty$. For $-1\leq s\leq 1$, $f^*(s)=0$. For $s>1$, then $f^*(s)=+\infty$.
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=.7\textwidth]{duality/conjugate-abs.png}
+    \end{figure}
+    Therefore, $f^*(s)=\ind_{[-1, 1]}(s)$.
+\end{example}
+
+\subsubsection{Biconjugate}
+\begin{definition}[Biconjugate]
+    The \emph{biconjugate} of $f:\R^n\to\R\cup\{+\infty\}$ is the function $f^{**}$ defined as:
+    \begin{equation}
+        \label{eq:biconjugate}
+        f^{**}(x):=\sup_s\left(s^\tp x-f^*(s)\right)
+    \end{equation}
+    For every $x$, it is the largest value of all affine minorants of $f$.
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=.5\textwidth]{duality/biconjugate.png}
+    \end{figure}
+    Indeed, $x^\tp s-f^*(s)$ supports the affine minorant of $f$ with slope $s$. The biconjugate $f^{**}(x)$ picks the largest value over all these affine minorants evaluated at $x$.
+\end{definition}
+
+\begin{property}
+    The biconjugate $f^{**}$ is the closed convex envelope of $f$:
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=.5\textwidth]{duality/biconjugate-envelope.png}
+    \end{figure}
+\end{property}
+\begin{property}
+    The following inequality always holds:
+    \begin{equation*}
+        f^**\leq f
+    \end{equation*}
+    with equality if and only if $f$ is closed and convex.
 \end{property}
