@@ -1,4 +1,5 @@
 \section{Duality}
+An optimization problem can always be seen from two perspectives: the primal problem, which is the problem we want to solve, and the dual problem, which is a reformulation of the primal problem. While their solutions are not always equal, the dual problem is often easier to solve than the primal problem, and it can provide useful information about it.
 \subsection{Recap on subdifferential calculus}
 Let $f:\mathbb{R}^n\to\mathbb{R}$ be a convex function. The subdifferential of $f$ at a point $x$ is defined as:
 \begin{align*}
@@ -219,4 +220,122 @@ The maximizing argument $x^*$ gives support: $f(x^*)=s^\tp x^*-f^*(s)$. Furtherm
         f^**\leq f
     \end{equation*}
     with equality if and only if $f$ is closed and convex.
+\end{property}
+
+\subsubsection{Fenchel-Young's equality}
+\begin{theorem}[Fenchel-Young's inequality]
+    Let $f:\R^n\to\R\cup\{+\infty\}$ be a function. Then, for all $x\in\R^n$ and $s\in\R^n$:
+    \begin{equation}
+        \label{eq:fenchel-young-in}
+        f(x) \geq s^\tp x - f^*(s)
+    \end{equation}
+    with equality if and only if $s\in\partial f(x)$.
+\end{theorem}
+
+\begin{theorem}[Fenchel-Young's equality]
+    Let $f:\R^n\to\R$ be a closed, proper, convex function. Then, given $x, s\in\R^n$, the following statements are equivalent:
+    \begin{itemize}
+        \item $f(x)+f^*(s)=s^\tp x$
+        \item $s\in\partial f(x)$
+        \item $x\in\partial f^*(s)$
+    \end{itemize}
+    An equivalent way to write this result is that for a closed, convex function $f$:
+    \begin{equation}
+        \partial f^* = (\partial f)^{-1}
+    \end{equation}
+\end{theorem}
+
+\begin{example}[Stricly convex quadratic function]
+    For $Q\succ 0$, we define:
+    \begin{equation*}
+        f(x) = \frac{1}{2}x^\tp Qx
+    \end{equation*}
+    Its conjugate is:
+    \begin{equation*}
+        f^*(s) = \frac{1}{2}s^\tp Q^{-1}s
+    \end{equation*}
+    and $\nabla f^*(y) = Q^{-1}y$.
+\end{example}
+
+\begin{example}[Indicator of a point]
+    Let $x_0\in\R^n$. We consider $\ind_{x_0}$, the indicator function of $x_0$. Its conjugate is:
+    \begin{equation*}
+        \ind_{x_0}^*(s) = a^\tp s
+    \end{equation*}
+    Their subdifferentials are:
+    \begin{equation*}
+        \partial\ind_{\{x_0\}}(x) = \begin{cases*}
+            \{0\} & if $x=x_0$\\
+            \emptyset & otherwise
+        \end{cases*}
+        \quad\text{and}\quad
+        \partial\ind_{\{x_0\}}^*(s) = a
+    \end{equation*}
+\end{example}
+
+\begin{example}[Linear function]
+    The conjugate of a linear function is the indicator of a point, the slope of the linear function:
+    \begin{equation*}
+        f(x) = a^\tp x \implies f^*(s) = \ind_{a}(s)
+    \end{equation*}
+\end{example}
+
+\subsection{A first approach to duality}
+In this section, we consider an optimization problem, and we derive its \emph{dual problem} to understand what duality is, and how it can be helpful.
+
+Let $f:\R^m\to\bar{\R}$, $g:\R^n\to\bar{\R}$ be closed, convex functions, and $A\in\mathscr{M}_{m, n}(\R)$. We consider the following \emph{primal} optimization problem:
+\begin{equation}
+    \label{eq:primal}
+    \tag{Primal}
+    p^* = \min_{x\in\R^n} f(Ax)+g(x)
+\end{equation}
+We can reformulate this problem by decoupling the objective functions:
+\begin{equation*}
+    p^* = \min_{x, y} f(y)+g(x) \quad\text{s.t.}\quad y=Ax
+\end{equation*}
+
+We introduce the \emph{Lagrangian} $\L$ of this problem:
+\begin{equation}
+    \L(x, y, \lambda) := f(y)+g(x)+\lambda^\tp(Ax-y)
+\end{equation}
+for $\lambda\in\R^m$. An equivalent way to write our original problem using the Lagrangian is:
+\begin{equation*}
+    p^* = \min_{x,y} \max_{\lambda} \L(x, y, \lambda)
+\end{equation*}
+Indeed, $\lambda\mapsto\L(x, y, \lambda)$ is an affine function, whose maximum is different from $+\infty$ if and only if the slope of the affine function is null, that is $Ax-y=0$ (when the constraint is satisfied). Therefore, if the constraint can be satisfied, then the maximum of the Lagrangian is $f(y)+g(x)$, and we obtain the original problem back. If the constraint cannot be satisfied, then the maximum is $+\infty$, and the minimum is $+\infty$ as well.
+
+Notice that by definition of the maximum, we have:
+\begin{equation*}
+    p^* \geq \min_{x, y} \L(x, y, \lambda)
+\end{equation*}
+which is called \emph{Lagrangian relaxation}; this provides a lower bound on $p^*$. Finally, the \emph{dual problem} consists in maximizing this lower bound:
+\begin{equation}
+    p^* \geq \max_{\lambda} \min_{x, y} \L(x, y, \lambda)
+\end{equation}
+
+Writing it out explicitly:
+\begin{align*}
+    \max_\lambda\min_{x,y} f(y)+g(x)+\lambda^\tp(Ax-y) &= \max_\lambda\left[\min_x (g(x)+\lambda^\tp Ax) +\min_y (f(y)-\lambda^\tp y)\right]\\
+    &= \max_\lambda\left[-\max_x(-\lambda^\tp Ax-g(x))-\max_y(\lambda^\tp y-f(y))\right]
+\end{align*}
+Hence, we reach the explicit \emph{Fenchel dual formulation} of the problem:
+\begin{equation}
+    \label{eq:dual}
+    \tag{Dual}
+    d^* = \max_\lambda -g^*(-A^\tp\lambda)-f^*(\lambda)
+\end{equation}
+
+\begin{property}[Weak duality]
+    Given our primal problem:
+    \begin{equation*}
+        p^* = \min_{x\in\R^n} f(Ax)+g(x)
+    \end{equation*}
+    and its dual problem:
+    \begin{equation*}
+        d^* = \max_\lambda -g^*(-A^\tp\lambda)-f^*(\lambda)
+    \end{equation*}
+    we have the following inequality, called \emph{weak duality}:
+    \begin{equation}
+        d^*\leq p^*
+    \end{equation}
 \end{property}
