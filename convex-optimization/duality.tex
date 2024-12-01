@@ -113,18 +113,19 @@ Let $f:\R^m\to\bar{\R}$, $g:\R^n\to\bar{\R}$ be closed, convex functions, and $A
 
 \begin{theorem}[Slater's Constraint Qualification]
     \begin{equation}
+        \label{eq:slater-cq}
         \tag{Slater-CQ}
         \exists \tilde{x}, \quad \tilde{x}\in(\relint\dom (f\circ A)) \cap(\relint\dom g)
     \end{equation}
 \end{theorem}
 
-Assuming Slater's constraint qualification, then $x^*\in\R^n$ is a solution to \autoref{eq:opt-condition} if and only if $x^*$ satisfies:
+Assuming Slater's constraint qualification, then $x_*\in\R^n$ is a solution to \autoref{eq:opt-condition} if and only if $x_*$ satisfies:
 \begin{equation*}
-    0\in A^\tp\partial f(Ax^*) + \partial g(x^*)
+    0\in A^\tp\partial f(Ax_*) + \partial g(x_*)
 \end{equation*}
-This optimality condition implies that for such $x^*$ there is some $\lambda\in\R^n$ such that:
+This optimality condition implies that for such $x_*$ there is some $\lambda\in\R^n$ such that:
 \begin{equation*}
-    \lambda\in A^\tp\partial f(Ax^*) \quad\text{and}\quad -\lambda\in\partial g(x^*)
+    \lambda\in A^\tp\partial f(Ax_*) \quad\text{and}\quad -\lambda\in\partial g(x_*)
 \end{equation*}
 
 \subsection{Fenchel-Legendre conjugation}
@@ -165,7 +166,7 @@ Formally:
     &\iff \forall x, \: f^s(s) \geq s^\tp x - f(x)\\
     &\iff \forall x, \: f(x) \geq s^\tp x - f^*(s)
 \end{align*}
-The maximizing argument $x^*$ gives support: $f(x^*)=s^\tp x^*-f^*(s)$. Furthermore, we have $f(x^*)=s^\tp x^*-f^*(s)$ if and only if $s\in\partial f(x^*)$.
+The maximizing argument $x_*$ gives support: $f(x_*)=s^\tp x_*-f^*(s)$. Furthermore, we have $f(x_*)=s^\tp x_*-f^*(s)$ if and only if $s\in\partial f(x_*)$.
 
 \begin{property}
     The conjugate of $f$ and $\Conv f$\footnote{The \emph{convex closure} of $f$, noted $\Conv f$, is the function such that $\epi \Conv f=\Conv\epi f$.} are the same, that is:
@@ -287,11 +288,11 @@ Let $f:\R^m\to\bar{\R}$, $g:\R^n\to\bar{\R}$ be closed, convex functions, and $A
 \begin{equation}
     \label{eq:primal}
     \tag{Primal}
-    p^* = \min_{x\in\R^n} f(Ax)+g(x)
+    p_* = \min_{x\in\R^n} f(Ax)+g(x)
 \end{equation}
 We can reformulate this problem by decoupling the objective functions:
 \begin{equation*}
-    p^* = \min_{x, y} f(y)+g(x) \quad\text{s.t.}\quad y=Ax
+    p_* = \min_{x, y} f(y)+g(x) \quad\text{s.t.}\quad y=Ax
 \end{equation*}
 
 We introduce the \emph{Lagrangian} $\L$ of this problem:
@@ -300,17 +301,17 @@ We introduce the \emph{Lagrangian} $\L$ of this problem:
 \end{equation}
 for $\lambda\in\R^m$. An equivalent way to write our original problem using the Lagrangian is:
 \begin{equation*}
-    p^* = \min_{x,y} \max_{\lambda} \L(x, y, \lambda)
+    p_* = \min_{x,y} \max_{\lambda} \L(x, y, \lambda)
 \end{equation*}
 Indeed, $\lambda\mapsto\L(x, y, \lambda)$ is an affine function, whose maximum is different from $+\infty$ if and only if the slope of the affine function is null, that is $Ax-y=0$ (when the constraint is satisfied). Therefore, if the constraint can be satisfied, then the maximum of the Lagrangian is $f(y)+g(x)$, and we obtain the original problem back. If the constraint cannot be satisfied, then the maximum is $+\infty$, and the minimum is $+\infty$ as well.
 
 Notice that by definition of the maximum, we have:
 \begin{equation*}
-    p^* \geq \min_{x, y} \L(x, y, \lambda)
+    p_* \geq \min_{x, y} \L(x, y, \lambda)
 \end{equation*}
-which is called \emph{Lagrangian relaxation}; this provides a lower bound on $p^*$. Finally, the \emph{dual problem} consists in maximizing this lower bound:
+which is called \emph{Lagrangian relaxation}; this provides a lower bound on $p_*$. Finally, the \emph{dual problem} consists in maximizing this lower bound:
 \begin{equation}
-    p^* \geq \max_{\lambda} \min_{x, y} \L(x, y, \lambda)
+    p_* \geq \max_{\lambda} \min_{x, y} \L(x, y, \lambda)
 \end{equation}
 
 Writing it out explicitly:
@@ -322,20 +323,95 @@ Hence, we reach the explicit \emph{Fenchel dual formulation} of the problem:
 \begin{equation}
     \label{eq:dual}
     \tag{Dual}
-    d^* = \max_\lambda -g^*(-A^\tp\lambda)-f^*(\lambda)
+    d_* = \max_\lambda -g_*(-A^\tp\lambda)-f^*(\lambda)
 \end{equation}
 
 \begin{property}[Weak duality]
     Given our primal problem:
     \begin{equation*}
-        p^* = \min_{x\in\R^n} f(Ax)+g(x)
+        p_* = \min_{x\in\R^n} f(Ax)+g(x)
     \end{equation*}
     and its dual problem:
     \begin{equation*}
-        d^* = \max_\lambda -g^*(-A^\tp\lambda)-f^*(\lambda)
+        d_* = \max_\lambda -g_*(-A^\tp\lambda)-f^*(\lambda)
     \end{equation*}
     we have the following inequality, called \emph{weak duality}:
     \begin{equation}
-        d^*\leq p^*
+        d_*\leq p_*
     \end{equation}
 \end{property}
+
+\begin{property}[Strong duality]
+    If Slater's constraint qualification (\eqref{eq:slater-cq}) is satisfied, and if there exists $x_*$ such that:
+    \begin{equation*}
+        0\in A^\tp\partial f(Ax_*) + \partial g(x_*)
+    \end{equation*}
+    then we have \emph{strong duality}:
+    \begin{equation}
+        d_* = p_*
+    \end{equation}
+\end{property}
+\begin{proof}
+    Since:
+    \begin{equation*}
+        0\in A^\tp\partial f(Ax_*) + \partial g(x_*)
+    \end{equation*}
+    we can choose $\lambda_*$ such that:
+    \begin{equation*}
+        \lambda_*\in\partial f(Ax_*) \quad\text{and}\quad-A^\tp\lambda_*\in\partial g(x_*)
+    \end{equation*}
+    By Fenchel-Young's equality, this is equivalent to:
+    \begin{equation*}
+        f^*(\lambda_*) + f(Ax_*) = \lambda_*^\tp Ax_* \quad\text{and}\quad g_*(-A^\tp\lambda_*) + g(x_*) = -\lambda_*^\tp
+    \end{equation*}
+    The \emph{primal-dual gap} is then:
+    \begin{equation*}
+        p_*-d_* = f(Ax_*) + g(x_*) + f^*(\lambda_*) + g_*(-A^\tp\lambda_*) = 0
+    \end{equation*}
+\end{proof}
+
+Why should we care about duality? The dual problem is often easier to solve than the primal problem. Furthermore, the dual problem can provide useful information about the primal problem, such as the optimal value, the optimal solution, or the structure of the optimal solution. If strong duality holds, then we can solve:
+\begin{equation*}
+    \min_\lambda f^*(\lambda) + g_*(-A^\tp\lambda)
+\end{equation*}
+
+\begin{example}[Quadratic minimization]
+    We consider the primal quadratic minimization problem:
+    \begin{equation*}
+        \boxed{\min_x \frac{1}{2}x^\tp Qx \quad\text{s.t.}\quad Ax\leq b}
+    \end{equation*}
+    We can reformulate this problem as:
+    \begin{equation*}
+        \min_{x, y} \frac{1}{2}x^\tp Qx + \ind_{\R_-}(Ax-b)
+    \end{equation*}
+    Its Fenchel dual is:
+    \begin{equation*}
+        \max_\lambda -\frac{1}{2}\lambda^\tp AQ^{-1}A^\tp\lambda - \ind_{\R_-}^*(\lambda) - \lambda^\tp b
+    \end{equation*}
+    If the set $\set{x}{Ax\leq b}$ is feasible, then the duality gap is null. We can compute $\ind_{\R_-}^*$, the support function of the negative orthant:
+    \begin{equation*}
+        \partial\ind_{\R_-}^*(y) = \begin{cases*}
+            \R_+ & if $y=0$\\
+            \{0\} & if $y<0$\\
+            \emptyset & otherwise
+        \end{cases*}
+    \end{equation*}
+    Note that $\partial\ind_{\R_-}^* = \partial\ind_{\R_+}$, and that $\ind_{\R_-}^* = \ind_{\R_+}$. Therefore, the dual problem to quadratic minimization is:
+    \begin{equation}
+        \boxed{\max_{\lambda\geq0} -\frac{1}{2}\lambda^\tp AQ^{-1}A^\tp\lambda - \lambda^\tp b}
+    \end{equation}
+\end{example}
+
+\begin{example}[LASSO]
+    Consider the LASSO primal problem:
+    \begin{equation*}
+        \min_x \frac{1}{2}\norm{Ax-b}_2^2 + \alpha\norm{x}_1
+    \end{equation*}
+    Its dual problem is:
+    \begin{equation*}
+        \max_\lambda -\frac{1}{2}\norm{\lambda-b}_2^2 + \norm{b}_2^2 - \ind_{\norm{\cdot}\leq1}\left(\frac{A^\tp\lambda}{\alpha}\right)
+    \end{equation*}
+    It has a null duality gap, since the primal has full domain.
+\end{example}
+
+\subsection{A second approach to duality: standard forms}
