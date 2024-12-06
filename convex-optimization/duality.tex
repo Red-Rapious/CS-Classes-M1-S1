@@ -409,9 +409,124 @@ Why should we care about duality? The dual problem is often easier to solve than
     \end{equation*}
     Its dual problem is:
     \begin{equation*}
-        \max_\lambda -\frac{1}{2}\norm{\lambda-b}_2^2 + \norm{b}_2^2 - \ind_{\norm{\cdot}\leq1}\left(\frac{A^\tp\lambda}{\alpha}\right)
+        \max_\lambda -\frac{1}{2}\norm{\lambda-b}_2^2 + \norm{b}_2^2 - \ind_{\{\norm{\cdot}\leq1\}}\left(\frac{A^\tp\lambda}{\alpha}\right)
     \end{equation*}
     It has a null duality gap, since the primal has full domain.
 \end{example}
 
 \subsection{A second approach to duality: standard forms}
+\subsubsection{Formal definitions}
+We present another point of view on duality, which is essentially equivalent in spirit, but uses a different parametrization that exploits structure.
+
+Consider the following optimization problem in standard form (which is not necessarily convex):
+\begin{equation}
+    \label{eq:standard-form}
+    \min_{x\in\R^n} f(x) \quad\text{subject to}\quad \begin{cases}
+        \forall i\in\iset{1}{m}, \: g_i(x)\leq0\\
+        \forall j\in\iset{1}{p}, \: h_j(x)=0
+    \end{cases}
+\end{equation}
+of variable $x\in\R^n$, over a domain $\D$, with optimal value $p^*$.
+
+\begin{definition}[Lagrangian]
+    The \emph{Lagrangian} of a problem on standard form \eqref{eq:standard-form} is the function $\L:\R^n\times\R^m\times\R^p\to\R$ such that, with $\dom\L=\D\times\R^m\times\R^p$, defined by:
+    \begin{equation}
+        \L(x, \lambda, \nu) = f(x) + \sum_{i=1}^m\lambda_ig_i(x) + \sum_{j=1}^p\nu_jh_j(x)
+    \end{equation}
+    It is a weighted sum of objective and constraint functions, where $\lambda_i$ is the \emph{Lagrange multiplier} associated with $g_i(x)\leq0$, and $\nu_j$ is the \emph{Lagrange multiplier} associated with $h_j(x)=0$.
+\end{definition}
+
+\begin{definition}[Lagrange dual function]
+    The \emph{Lagrange dual function} is the function $g:\R^m\times\R^p\to\R\cup\{-\infty\}$ defined by:
+    \begin{equation}
+        g(\lambda, \nu) = \inf_{x\in\D} \L(x, \lambda, \nu)
+    \end{equation}
+    $g$ is always concave, and can take the value $-\infty$ for some values of $\lambda, \nu$.
+\end{definition}
+
+\begin{property}[Lower bound property]
+    If $\lambda\geq0$, then $g(\lambda, \nu)\leq p^*$.
+\end{property}
+\begin{proof}
+    Consider $\tilde{x}$ feasible and $\lambda\geq0$. Then:
+    \begin{equation*}
+        f(\tilde{x})\geq\L(\tilde{x},\lambda,\nu) \geq \inf_{x\in\D} \lambda(x,\lambda, \nu) = g(\lambda, \nu)
+    \end{equation*}
+    Minimizing this lower bound over all feasible $\tilde{x}$ gives $p^*\geq g(\lambda, \nu)$.
+\end{proof}
+
+\subsubsection{Least-norm solution of linear equations}
+We consider the following problem:
+\begin{equation*}
+    \min_x x^\tp x \quad\text{subject to}\quad Ax=b
+\end{equation*}
+The Lagrangian is:
+\begin{equation*}
+    \L(x, \nu) = x^\tp x + \nu^\tp(Ax-b)
+\end{equation*}
+To minimize $\L$ over $x$, we set its gradient to zero:
+\begin{equation*}
+    \nabla_x\L(x, \nu) = 2x + A^\tp\nu = 0 \implies x = -\frac{1}{2}A^\tp\nu
+\end{equation*}
+Plugging it into $\L$ to obtain the dual function $g$:
+\begin{equation*}
+    g(\nu) = \L\left(-\frac{1}{2}A^\tp\nu, \nu\right) = -\frac{1}{4}\nu^\tp AA^\tp\nu - b^\tp\nu
+\end{equation*}
+which is a concave function of $\nu$. The lower bound property gives us:
+\begin{equation*}
+    \forall\nu, \quad p^* \geq -\frac{1}{4}\nu^\tp AA^\tp\nu - b^\tp\nu
+\end{equation*}
+
+\subsubsection{Standard form LP}
+Recall that a linear programming (LP) problem has the following standard form:
+\begin{equation*}
+    \min_x c^\tp x \quad\text{subject to}\quad \begin{cases}
+        Ax=b\\
+        x\geq0
+    \end{cases}
+\end{equation*}
+Its Lagrangian is therefore:
+\begin{equation*}
+    \L(x, \lambda,\nu) = c^\tp x + \nu^\tp(Ax-b)-\lambda^\tp x = -b\tp\nu + (c+A^\tp\nu-\lambda)^\tp x
+\end{equation*}
+which is linear in $x$. Hence, it has a finite minimum if and only if its slope is null:
+\begin{equation*}
+    g(\lambda,\nu)=\inf_x\L(x,\lambda,\nu) = \begin{cases*}
+        -b^\tp\nu & if $A^\tp\nu-\lambda+c=0$\\
+        -\infty & otherwise
+    \end{cases*}
+\end{equation*}
+Note that $g$ is linear on the affine domain $\set{(\lambda,\nu)}{A^\tp\nu-\lambda+c=0}$, and is therefore concave as expected. The lower bound property gives us:
+\begin{equation*}
+    p^*\geq-b^\tp\nu \quad\text{if}\quad A^\tp\nu+c\geq0
+\end{equation*}
+
+\subsubsection{Equality constrained norm minimization}
+We consider the following problem in standard form, called \emph{equality constrained norm minimization}:
+\begin{equation*}
+    \min_x \norm{x} \quad\text{subject to}\quad Ax=b
+\end{equation*}
+The dual function of this problem is:
+\begin{equation*}
+    g(\nu)=\inf_x\left(\norm{x}-\nu^\tp Ax+b\tp\nu\right) = \begin{cases*}
+        b^\tp\nu & if $\norm{A^\tp\nu}_*\leq1$\\
+        -\infty & otherwise
+    \end{cases*}
+\end{equation*}
+where $\norm{v}_*=\sup_{\norm{u}\leq1}u^\tp v$ is the dual norm of $\norm{\cdot}$. The lower bound property gives us that:
+\begin{equation*}
+    p^* \geq b^\tp\nu \quad\text{if}\quad \norm{A^\tp\nu}\leq1
+\end{equation*}
+
+\begin{proof}
+    Let's show that $\inf_x\left(\norm{x}-y^\tp x\right)=0$ if $\norm{y}_*=1$, and $-\infty$ otherwise:
+    \begin{itemize}
+        \item If $\norm{y}_*\leq1$, then $\norm{x}-y^\tp x\geq 0$ for any $x$, with equality if $x=0$
+        \item If $\norm{y}_*>1$, we choose $x=tu$ where $\norm{u}\leq1$ and $u^\tp y=\norm{y}_*>1$. Then:
+        \begin{equation*}
+            \norm{x} - y^\tp x = t\left(\norm{u}-\norm{y}_*\right) \xlongrightarrow[t\to+\infty]{}-\infty
+        \end{equation*}
+    \end{itemize}
+\end{proof}
+
+\subsubsection{The dual problem}
