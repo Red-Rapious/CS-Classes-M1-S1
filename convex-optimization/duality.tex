@@ -1,4 +1,4 @@
-\section{Duality}
+\section{Duality I}
 An optimization problem can always be seen from two perspectives: the primal problem, which is the problem we want to solve, and the dual problem, which is a reformulation of the primal problem. While their solutions are not always equal, the dual problem is often easier to solve than the primal problem, and it can provide useful information about it.
 \subsection{Recap on subdifferential calculus}
 Let $f:\mathbb{R}^n\to\mathbb{R}$ be a convex function. The subdifferential of $f$ at a point $x$ is defined as:
@@ -416,6 +416,7 @@ Why should we care about duality? The dual problem is often easier to solve than
 
 \subsection{A second approach to duality: standard forms}
 \subsubsection{Formal definitions}
+\label{subsubsec:formal-definitions}
 We present another point of view on duality, which is essentially equivalent in spirit, but uses a different parametrization that exploits structure.
 
 Consider the following optimization problem in standard form (which is not necessarily convex):
@@ -455,7 +456,8 @@ of variable $x\in\R^n$, over a domain $\D$, with optimal value $p^*$.
     Minimizing this lower bound over all feasible $\tilde{x}$ gives $p^*\geq g(\lambda, \nu)$.
 \end{proof}
 
-\subsubsection{Least-norm solution of linear equations}
+\subsubsection{Examples}
+\paragraph*{Least-norm solution of linear equations}
 We consider the following problem:
 \begin{equation*}
     \min_x x^\tp x \quad\text{subject to}\quad Ax=b
@@ -477,7 +479,7 @@ which is a concave function of $\nu$. The lower bound property gives us:
     \forall\nu, \quad p^* \geq -\frac{1}{4}\nu^\tp AA^\tp\nu - b^\tp\nu
 \end{equation*}
 
-\subsubsection{Standard form LP}
+\paragraph*{Standard form LP}
 Recall that a linear programming (LP) problem has the following standard form:
 \begin{equation*}
     \min_x c^\tp x \quad\text{subject to}\quad \begin{cases}
@@ -501,7 +503,7 @@ Note that $g$ is linear on the affine domain $\set{(\lambda,\nu)}{A^\tp\nu-\lamb
     p^*\geq-b^\tp\nu \quad\text{if}\quad A^\tp\nu+c\geq0
 \end{equation*}
 
-\subsubsection{Equality constrained norm minimization}
+\paragraph*{Equality constrained norm minimization}
 We consider the following problem in standard form, called \emph{equality constrained norm minimization}:
 \begin{equation*}
     \min_x \norm{x} \quad\text{subject to}\quad Ax=b
@@ -530,3 +532,119 @@ where $\norm{v}_*=\sup_{\norm{u}\leq1}u^\tp v$ is the dual norm of $\norm{\cdot}
 \end{proof}
 
 \subsubsection{The dual problem}
+\begin{definition}[Lagrange dual problem]
+    Using the definitions of \ref{subsubsec:formal-definitions}, the \emph{Lagrange dual problem} is the following optimization problem:
+    \begin{equation}
+        \max_{\lambda,\nu} g(\lambda, \nu) \quad\text{such that}\quad \lambda\geq0
+    \end{equation}
+    This corresponds to finding the best lower bound on $p^*$ obtained from the Lagrange dual functions.
+\end{definition}
+In general, it is a convex optimization problem; we will denote its optimal value $d^*$. A couple $(\lambda, \nu)$ is dual feasible if $\lambda\geq0$ and $(\lambda, \nu)\in\dom g$. It is often simplified by making the implicit constraint $(\lambda,\nu)\in\dom g$ explicit.
+
+\begin{example}[Standard form LP]
+    The standard form LP problem is:
+    \begin{equation*}
+        \min c^\tp x \quad\text{subject to}\quad Ax=b, x\geq0
+    \end{equation*}
+   Its dual problem is:
+    \begin{equation*}
+        \max -b^\tp\nu \quad\text{such that}\quad A^\tp\nu+c\geq0
+    \end{equation*}
+\end{example}
+
+\paragraph*{Weak duality}
+The following inequality, called \emph{weak duality}, always holds for both convex and non-convex problems:
+\begin{equation*}
+    d^*\leq p^*
+\end{equation*}
+It can be used to find nontrivial lower bounds for difficult problems.
+
+\paragraph*{Strong duality}
+The following equality, called \emph{strong duality}, holds for convex problems but does not hold in general:
+\begin{equation*}
+    d^*=p^*
+\end{equation*}
+Conditions that guarantee strong duality in convex problems are called \emph{constraint qualifications} (for instance, Slater's constraint qualification).
+
+\begin{theorem}[Slater's constraint qualification]
+    For a convex problem of the form:
+    \begin{equation*}
+        \min_x f(x) \quad\text{subject to}\quad \begin{cases}
+            \forall i\in\iset{1}{m}, \: g_i(x)\leq0\\
+            Ax = b
+        \end{cases}
+    \end{equation*}
+    if there exists $\tilde{x}$ that is strictly feasible, that is:
+    \begin{equation*}
+        \forall i\in\iset{1}{m}, \: g_i(\tilde{x})<0 \quad\text{and}\quad A\tilde{x}=b
+    \end{equation*}
+    then strong duality holds. Furthermore, the dual optimal value is attained: $p^*>-\infty$.
+\end{theorem}
+
+\begin{example}[Inequality form of the LP problem]
+    Consider the following LP problem:
+    \begin{equation*}
+        \min c^\tp x \quad\text{subject to}\quad Ax\leq b
+    \end{equation*}
+    Its dual function is:
+    \begin{equation*}
+        g(\lambda) = \inf_x \left((c+A^\tp\lambda)^\tp x - b^\tp\lambda\right) = \begin{cases*}
+            -b^\tp\lambda & if $A^\tp\lambda+c=0$\\
+            -\infty & otherwise
+        \end{cases*}
+    \end{equation*}
+    Therefore, the dual problem is:
+    \begin{equation*}
+        \max -b^\tp\nu \quad\text{subject to}\quad A^\tp\nu+c=0, \lambda\geq0
+    \end{equation*}
+    According to Slater's condition, if there exists $\tilde{x}$ such that $A\tilde{x}<b$, then $p^*=d^*$; in fact, $p^*=d^*$ except when the primal and dual are infeasible.
+\end{example}
+
+\begin{example}[Quadratic program]
+    Consider the following quadratic program for some $P\in\Sb_n^{++}(\R)$:
+    \begin{equation*}
+        \min_x x^\tp Px \quad\text{subject to}\quad Ax\leq b
+    \end{equation*}
+    Its dual function is:
+    \begin{equation*}
+        g(\lambda) = \inf_x \left(x^\tp Px + \lambda^\tp(Ax-b)\right) = - \frac{1}{4}\lambda^\tp AP^{-1}A^\tp\lambda - b^\tp\lambda
+    \end{equation*}
+    Therefore, the dual problem is:
+    \begin{equation*}
+        \max -\frac{1}{4}\lambda^\tp AP^{-1}A^\tp\lambda - b^\tp\lambda \quad\text{subject to}\quad \lambda\geq0
+    \end{equation*}
+    According to Slater's condition, if there exists $\tilde{x}$ such that $A\tilde{x}<b$, then $p^*=d^*$; in fact, we always have $p^*=d^*$.
+\end{example}
+
+\begin{property}[Complementary slackness]
+    Assume that strong duality holds, and that $x^*$ is a primal optimal, and $(\lambda^*, \nu^*)$ is a dual optimal. Then, $x^*$ minimizes $x\to\L(x, \lambda^*, \nu^*)$, and the following \emph{complementary slackness} conditions hold:
+    \begin{equation}
+        \forall i\in\iset{1}{m}, \: \lambda_i^*g_i(x^*) = 0
+    \end{equation}
+    Said otherwise:
+    \begin{equation*}
+        \lambda_i^* > 0 \implies g_i(x^*) = 0 \quad\text{and}\quad g_i(x^*) < 0 \implies \lambda_i^* = 0
+    \end{equation*}
+\end{property}
+
+\subsubsection{Karush-Kuhn-Tucker conditions}
+\begin{theorem}[Karush-Kuhn-Tucker conditions]
+    Consider an optimization problem in standard form where the $g_i$ and $h_i$ are differentiable. Let $x^*$ be a primal optimal, and $(\lambda^*, \nu^*)$ be a dual optimal. Then, the following necessary conditions hold:
+    \begin{enumerate}
+        \item \textbf{Primal feasibility}: $g_i(x^*)\leq0$ and $h_j(x^*)=0$
+        \item \textbf{Dual feasibility}: $\lambda^*\geq0$
+        \item \textbf{Complementary slackness}: $\forall i\in\iset{1}{m}, \: \lambda_i^*g_i(x^*)=0$
+        \item \textbf{Stationarity}:
+        \begin{equation*}
+            \nabla f(x^*) + \sum_{i=1}^m\lambda_i^*\nabla g_i(x^*) + \sum_{j=1}^p\nu_j^*\nabla h_j(x^*) = 0
+        \end{equation*}
+    \end{enumerate}
+    If the problem is \textbf{convex}, they are also sufficient.
+\end{theorem}
+
+Reciprocally, if $\tilde{x}, \tilde{\lambda}, \tilde{\nu}$ satisfy the KKT conditions for a \textbf{convex problem}, then they are optimal:
+\begin{itemize}
+    \item from complementary slackness: $f(\tilde{x})=\L(\tilde{x}, \tilde{\lambda}, \tilde{\nu})$
+    \item from the 4th condition (and convexity): $g(\tilde{\lambda}, \tilde{\nu})=\L(\tilde{x}, \tilde{\lambda}, \tilde{\nu})$, hence $f(\tilde{x})=g(\tilde{\lambda}, \tilde{\nu})$
+\end{itemize}
+If Slater's condition is satisfied, then strong duality holds, and the KKT conditions are necessary and sufficient for optimality. This generalizes the optimality conditions $\nabla f(x)=0$ for unconstrained problems.
