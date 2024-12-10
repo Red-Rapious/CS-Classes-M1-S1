@@ -812,5 +812,98 @@ This result is called \emph{global sensitivity}. Assuming that $p^*(u,v)$ is dif
 \end{equation*}
 
 \subsection{Reformulations}
+Equivalent formulations of a problem can lead to very different duals; reformulating the primal problem can therefore be useful when the dual is difficult to derive, or do not bring any interesting information about the initial primal problem.
+
+There is multiple common ways to reformulate a problem, that often lead to improved duals. Introducing new variables and equality constraints can make the dual more interesting. One can also make explicit some constraints that were implicit, or vice-versa. Finally, it might be useful to transform the objective or cosntraint functions. For instance, replacing $f(x)$ by $\varphi\circ f(x)$ with $\varphi$ a convex and increasing function is a trick often used in practice. We will give a few examples to illustrate those methods.
+
+\subsubsection{Introducing new variables and equality constraints}
+Consider a problem of the form:
+\begin{equation*}
+    \minimize_x f(Ax+b)
+\end{equation*}
+The dual function is constant, $g=\inf_x \L(x) = \inf_x f(Ax+b)=p^*$, since there are no constraints. In this case, we have strong duality, but the dual problem is quite useless.
+
+We can reformulate it by introducing a new variable, and a matching new equality constraint:
+\begin{equation*}
+    \minimize_x f(y) \subj Ax+b-y=0
+\end{equation*}
+Since we added a new constraint, the dual problem becomes:
+\begin{equation*}
+    \maximize_\nu b^\tp\nu - f^*(\nu) \subj A^\tp\nu=0
+\end{equation*}
+Indeed, the dual function follows from:
+\begin{equation*}
+    g(\nu) = \inf_{x,y}\left(f(y)-\nu^\tp y +\nu^\tp Ax+b^\tp\nu\right) = \begin{cases*}
+        -f^*(\nu)+b^\tp\nu & if $A^\tp\nu=0$\\
+        -\infty & otherwise
+    \end{cases*}
+\end{equation*}
+
+\begin{example}[Norm approximation problem]
+    The norm approximation problem:
+    \begin{equation*}
+        \minimize_x \norm{Ax-b}
+    \end{equation*}
+    can be reformulated as:
+    \begin{equation*}
+        \minimize_x \norm{y} \subj y=Ax-b
+    \end{equation*}
+    Hence, we can obtain a much more interesting dual problem:
+    \begin{align*}
+        g(\nu) &= \inf_{x,y} \left(\norm{y}-\nu^\tp y-\nu^\tp Ax+b^\tp\nu\right)\\
+        &= \begin{cases*}
+            b^\tp\nu+\inf_y\left(\norm{y}+\nu^\tp y\right) & if $A^\tp\nu=0$\\
+            -\infty & otherwise
+        \end{cases*}\\
+        &= \begin{cases*}
+            b^\tp\nu & if $A^\tp\nu=0$ and $\norm{\nu}_*\leq1$\\
+            -\infty & otherwise
+        \end{cases*}
+    \end{align*}
+    This finally gives the following dual approximation problem:
+    \begin{equation*}
+        \maximize b^\tp\nu \subj \begin{cases}
+            A^\tp\nu=0\\
+            \norm{\nu}_*\leq1
+        \end{cases}
+    \end{equation*}
+\end{example}
+
+\subsubsection{Implicit constraints}
+In some cases, it is useful to transform explicit constraints into implicit one, by changing the cost function. This allows to keep the dual problem simple, which makes it easier to solve.
+
+\begin{example}[LP with box constraints]
+    Consider the following LP problem with \emph{box constraints}:
+    \begin{equation*}
+        \minimize_x c^\tp x \subj \begin{cases}
+            Ax=b\\
+            -\textbf{1}\leq x\leq\textbf{1}
+        \end{cases}
+    \end{equation*}
+    Because of all the constraints, the dual problem is quite complicated:
+    \begin{equation*}
+        \maximize_\nu -b^\tp\nu-\textbf{1}^\tp\lambda_1-\textbf{1}^\tp\lambda^2 \subj \begin{cases}
+            c+A^\tp\nu+\lambda_1-\lambda_2=0\\
+            \lambda_1\geq0\\
+            \lambda_2\geq0
+        \end{cases}
+    \end{equation*}
+    We can reformulate it by introducing the box constraints in the cost function, making them implicit:
+    \begin{equation*}
+        \minimize_x \tilde{f}(x) := \begin{cases*}
+            c^\tp x & if $-\textbf{1}\leq x\leq\textbf{1}$\\
+            +\infty & otherwise
+        \end{cases*}
+        \subj Ax=b
+    \end{equation*}
+    The dual function becomes:
+    \begin{equation*}
+        \tilde{g}(\nu) = \inf_{-\textbf{1}\leq x\leq\textbf{1}} \left(c^\tp x+\nu^\tp(Ax-b)\right) = -b^\tp\nu-\norm{A^\tp\nu+c}_1
+    \end{equation*}
+    Hence, the dual problem simply becomes:
+    \begin{equation*}
+        \maximize_\nu -b^\tp\nu - \norm{A^\tp\nu+c}_1
+    \end{equation*}
+\end{example}
 
 \subsection{Generalized inequalities}
