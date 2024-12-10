@@ -460,7 +460,7 @@ of variable $x\in\R^n$, over a domain $\D$, with optimal value $p^*$.
 \paragraph*{Least-norm solution of linear equations}
 We consider the following problem:
 \begin{equation*}
-    \min_x x^\tp x \quad\text{subject to}\quad Ax=b
+    \minimize_x x^\tp x \subj Ax=b
 \end{equation*}
 The Lagrangian is:
 \begin{equation*}
@@ -482,7 +482,7 @@ which is a concave function of $\nu$. The lower bound property gives us:
 \paragraph*{Standard form LP}
 Recall that a linear programming (LP) problem has the following standard form:
 \begin{equation*}
-    \min_x c^\tp x \quad\text{subject to}\quad \begin{cases}
+    \minimize_x c^\tp x \subj \begin{cases}
         Ax=b\\
         x\geq0
     \end{cases}
@@ -500,13 +500,13 @@ which is linear in $x$. Hence, it has a finite minimum if and only if its slope 
 \end{equation*}
 Note that $g$ is linear on the affine domain $\set{(\lambda,\nu)}{A^\tp\nu-\lambda+c=0}$, and is therefore concave as expected. The lower bound property gives us:
 \begin{equation*}
-    p^*\geq-b^\tp\nu \quad\text{if}\quad A^\tp\nu+c\geq0
+    p^*\geq-b^\tp\nu \subj A^\tp\nu+c\geq0
 \end{equation*}
 
 \paragraph*{Equality constrained norm minimization}
 We consider the following problem in standard form, called \emph{equality constrained norm minimization}:
 \begin{equation*}
-    \min_x \norm{x} \quad\text{subject to}\quad Ax=b
+    \minimize_x \norm{x} \quad\text{subject to}\quad Ax=b
 \end{equation*}
 The dual function of this problem is:
 \begin{equation*}
@@ -517,7 +517,7 @@ The dual function of this problem is:
 \end{equation*}
 where $\norm{v}_*=\sup_{\norm{u}\leq1}u^\tp v$ is the dual norm of $\norm{\cdot}$. The lower bound property gives us that:
 \begin{equation*}
-    p^* \geq b^\tp\nu \quad\text{if}\quad \norm{A^\tp\nu}\leq1
+    p^* \geq b^\tp\nu \subj \norm{A^\tp\nu}\leq1
 \end{equation*}
 
 \begin{proof}
@@ -648,3 +648,136 @@ Reciprocally, if $\tilde{x}, \tilde{\lambda}, \tilde{\nu}$ satisfy the KKT condi
     \item from the 4th condition (and convexity): $g(\tilde{\lambda}, \tilde{\nu})=\L(\tilde{x}, \tilde{\lambda}, \tilde{\nu})$, hence $f(\tilde{x})=g(\tilde{\lambda}, \tilde{\nu})$
 \end{itemize}
 If Slater's condition is satisfied, then strong duality holds, and the KKT conditions are necessary and sufficient for optimality. This generalizes the optimality conditions $\nabla f(x)=0$ for unconstrained problems.
+
+
+\newpage
+\section{Duality II}
+This second part about duality is focused on optimality conditions related to duality: we will introduce conditions for strong duality (with proofs), and multiple examples.
+
+\subsection{Examples and interpretations}
+This part introduces classical optimization problems and provide a step-by-step resolution using duality.
+\subsubsection{Least-norm solution of linear equations}
+We consider the following problem, which aims at finding the solution of the equation $Ax=b$ having the smallest possible norm:
+\begin{equation*}
+    \minimize_x x^\tp x \subj Ax=b
+\end{equation*}
+Its Lagrangian is $\L(x,\nu) = x^\tp x + \nu^\tp(Ax-b)$. To obtain $g$, we need to minimize $\L$ over $x$ for any fixed $\nu$; therefore we set its gradient to zero:
+\begin{equation*}
+    \nabla_x\L(x,\nu) = 2x+A^\tp\nu = 0 \implies x = - \frac{1}{2}A^\tp\nu
+\end{equation*}
+Which gives us:
+\begin{equation*}
+    g(\nu) = \L\left(-\frac{1}{2}A^\tp\nu, \nu\right) = -\frac{1}{4}\nu^\tp AA^\tp\nu - b^\tp\nu
+\end{equation*}
+The lower-bound property is therefore:
+\begin{equation*}
+    \forall\nu, \quad p^* \geq -\frac{1}{4}\nu^\tp AA^\tp\nu - b^\tp\nu
+\end{equation*}
+Strong duality holds if the set of solutions $\set{x}{Ax=b}$ is non-empty.
+
+\subsubsection{Equality constrained norm minimization}
+We consider a variation of the previous problem, but consider the norm instead of the squared-norm:
+\begin{equation*}
+    \minimize_x \norm{x} \subj Ax=b
+\end{equation*}
+We already showed that:
+\begin{equation*}
+    g(\nu) = \inf_x\left(\norm{x}-\nu^\tp Ax + b^\tp\nu\right) = \begin{cases*}
+        b^\tp\nu & if $\norm{A^\tp\nu}\leq1$ \\
+        -\infty & otherwise
+    \end{cases*}
+\end{equation*}
+where $\norm{v}_*=\sup_{\norm{u}\leq1}u^\tp v$ is the dual norm of $\norm{\cdot}$.
+Like previously, strong duality holds if the set of solutions $\set{x}{Ax=b}$ is non-empty.
+
+\subsubsection{LP problem in standard form}
+We already considered the LP problem, whose standard form is:
+\begin{equation*}
+    \minimize_x c^\tp x \subj \begin{cases}
+        Ax=b\\
+        x\geq0
+    \end{cases}
+\end{equation*}
+Strong duality holds once again if the constrained set is not empty, that is $\set{x}{Ax=b, x\geq0}\neq\emptyset$.
+
+\subsubsection{Two-way partitioning}
+We introduce another problem, \emph{two-way partitioning}:
+\begin{equation*}
+    \minimize_x x^\tp Wx \subj \forall i\in\iset{1}{n}, \: x_i^2=1
+\end{equation*}
+It is a non-convex problem whose feasible set contains $2^n$ discrete points. An interpretation is that we partition $\iset{1}{n}$ in two sets, respectively $\set{i\in\iset{1}{n}}{x_i=1}$ and $\set{i\in\iset{1}{n}}{x_i=-1}$. The weights $W_{ij}$ corresponds to the cost of assigning $i$ and $j$ to the same set; reciprocally, $-W_{ij}$ is the cost of assigning $i$ and $j$ to different sets.
+
+The dual function of this problem is given by:
+\begin{equation*}
+    g(\nu) = \inf\left(x^\tp Wx + \sum_i\nu_i(x_i^2-1)\right) = \inf_x x^\tp(W+\diag(\nu))x - \textbf{1}^\tp\nu = \begin{cases*}
+        -\textbf{1}^\tp\nu & if $W+\diag(\nu)\succcurlyeq0_n$\\
+        -\infty & otherwise
+    \end{cases*}
+\end{equation*}
+We can derive the following lower-bound property:
+\begin{equation*}
+    W+\diag(\nu)\succcurlyeq0_n \implies p^* \geq -\textbf{1}^\tp\nu
+\end{equation*}
+For instance, choosing $\nu=-\lambda_{\min}(W)\textbf{1}$ gives us:
+\begin{equation*}
+    p^*\geq n\lambda_{\min}(W)
+\end{equation*}
+Strong duality does not hold a priori.
+
+\subsubsection{A non-convex problem with strong duality}
+Strong duality does not hold only in the case where the problem is convex. An example of such a non-convex problem with strong duality is given by:
+\begin{equation*}
+    \minimize_x x^\tp Ax + 2b^\tp x \subj x^\tp x\leq1
+\end{equation*}
+which is non-convex if we do not have $A\succcurlyeq$.
+
+Its dual function is:
+\begin{equation*}
+    g(\lambda) = \inf_x \left(x^\tp(A+\lambda I)x+2b^\tp x-\lambda\right)
+\end{equation*}
+The quantity in the $\inf_x$ is unbounded below if we do not have $A+\lambda I\succcurlyeq0$ or if $A+\lambda I\succcurlyeq0$ and $b\notin\im(A+\lambda I)$. Otherwise, it is minimized by $x=-(A+\lambda I)^\dagger b$:
+\begin{equation*}
+    g(\lambda)=-b^\tp(A+\lambda I)^\dagger b-\lambda
+\end{equation*}
+
+Therefore, its dual problem is:
+\begin{equation*}
+    \maximize_x -b^\tp(A+\lambda I)^\dagger b-\lambda \subj \begin{cases}
+        A+\lambda I\succcurlyeq0\\
+        b\in\im(A+\lambda I)
+    \end{cases}
+\end{equation*}
+It can be rewritten as an equivalent SDP of higher dimension:
+\begin{equation*}
+    \maximize_x -t-\lambda \subj \begin{bmatrix}
+        A+\lambda I & b\\
+        b^\tp & t
+    \end{bmatrix}\succcurlyeq0
+\end{equation*}
+
+\subsubsection{Water-filling}
+Given some $\alpha_i>0$ for $i\in\iset{1}{n}$, consider the following problem:
+\begin{equation*}
+    \minimize_x -\sum_{i=1}^n \log(x_i+\alpha_i) \subj \begin{cases}
+        x\geq0\\
+        \textbf{1}^\tp x=1
+    \end{cases}
+\end{equation*}
+Using the KKT conditions, notice that $x$ is optimal if and only if $x\geq0$, $\textbf{1}^\tp x=1$, and there exists $\lambda\in\R^n$ and $\nu\in\R$ such that:
+\begin{equation*}
+    \lambda\geq0,\quad\lambda_ix_i=0,\quad \frac{1}{x_i+\alpha_i}+\lambda_i=\nu
+\end{equation*}
+If $\nu<1/\alpha_i$, then $\lambda_i=0$ and $x_i=1/\nu-\alpha_i$. If $\nu\geq1$, then $\lambda_i=\nu-1/\alpha_i$ and $x_i=0$. We can therefore determine $\nu$ from $\textbf{1}^\tp x=\sum_{i=1}^n\max(0, 1/\nu-\alpha_i)=1$.
+
+The optimization problem can be interpreted as a modeling of \say{water-filling}: considering $n$ patches, the level of patch $i$ being of height $\alpha_i$. We flood the area with one unit of water, such that the cumulative height ($x_i+\alpha_i$) is the same everywhere. Hence, the resulting level is $1/\nu^*$.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.5\textwidth]{duality/water.png}
+    \caption{Interpretation of the problem as water-filling.}
+\end{figure}
+
+\subsection{Perturbations}
+
+\subsection{Reformulations}
+
+\subsection{Generalized inequalities}
