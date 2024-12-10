@@ -907,3 +907,74 @@ In some cases, it is useful to transform explicit constraints into implicit one,
 \end{example}
 
 \subsection{Generalized inequalities}
+Consider $K_i$ to be pointed, salient and solid convex cones. We previously introduced the generalized inequality $\preccurlyeq_{K_i}$ on $\R^{k_i}$; we would like to generalize duality to such inequalities. In the following, we will consider the normal form of a problem with generalized inequalities to be:
+\begin{equation*}
+    \minimize_x f(x) \subj \begin{cases}
+        \forall i\in\iset{1}{m}\: g(x)\preccurlyeq_{K_i}0\\
+        \forall j\in\iset{1}{p}\: h(x)=0
+    \end{cases}
+\end{equation*}
+
+The definitions are similar to the scalar case. The Lagrange multiplier for $g_i(x)\preccurlyeq_{K_i}0$ becomes a vector $\lambda_i\in\R^{k_i}$.
+\begin{definition}[Generalize Inequalities Lagrangian]
+    The Lagrangian in the generalized inequalities case is the function $\L:\R^n\times\R^{k_1}\times\dots\times\R^{k_m}\times\R^p\to\R$ defined by:
+    \begin{equation*}
+        \L(x, \lambda_1, \dots, \lambda_m, \nu) := f(x) + \sum_{i=1}^m\lambda_i^\tp g_i(x) + \sum_{j=1}^p \nu_jh_j(x)
+    \end{equation*}
+\end{definition}
+
+\begin{definition}[Dual function]
+    The dual function in the generalized inequalities case is the function $g:\R^{k_1}\times\dots\times\R^{k_m}\times\R^p\to\R$ defined as:
+    \begin{equation*}
+        g(\lambda_1,\dots,\lambda_m,\nu) := \inf_{x\in\D} \L(x,\lambda_1, \dots, \lambda_m, \nu)
+    \end{equation*}
+\end{definition}
+
+\begin{property}[Lower bound property]
+    If $\lambda_i\preccurlyeq_{K_i^*}0$, then $g(\lambda_1, \dots, \lambda_m,\nu)\leq p^*$.
+\end{property}
+\begin{proof}
+    If $\tilde{x}$ is feasible and $\lambda_i\preccurlyeq_{K_i^*}0$, then:
+    \begin{align*}
+        f(\tilde{x}) &\geq f(\tilde{x}) + \sum_{i=1}^m\lambda_i^\tp g_i(\tilde{x}) + \sum_{j=1}^p \nu_jh_j(\tilde{x})\\
+        &\geq \inf_{x\in\D} \L(x, \lambda_1, \dots, \lambda_m,\nu)\\
+        &= g(\lambda_1, \dots, \lambda_m, \nu)
+    \end{align*}
+    Minimizing this inequality over all feasible $\tilde{x}$ gives us $g(\lambda_1, \dots, \lambda_m,\nu)\leq p^*$.
+\end{proof}
+
+\begin{definition}[Dual problem]
+    The dual problem in the generalized inequalities case is:
+    \begin{equation*}
+        \maximize_\nu g(\lambda_1, \dots, \lambda_m, \nu) \subj \forall i\in\iset{1}{m}, \: \lambda_i \preccurlyeq_{K_i^*}0
+    \end{equation*}
+\end{definition}
+
+Similarly to the real case, weak duality $p^*\geq d^*$ always holds, and strong duality $d^*=p^*$ holds for convex problems with constraint qualification.
+
+\begin{example}[Semidefinite program]
+    The \textbf{Primal SDP} problem for $G_i, H\in\Sb_k$ is:
+    \begin{equation*}
+        \minimize_x c^\tp x \subj \sum_{i=1}^n x_i G_i \preccurlyeq H
+    \end{equation*}
+    The Lagrange multiplier is a matrix $Z\in\Sb_k$. The Lagrangian itself is:
+    \begin{equation*}
+        \L(x,Z) = c^\tp x+\Tr(Z(x_1 G_1+\dots+x_n G_n - H))
+    \end{equation*}
+    The dual function is:
+    \begin{equation*}
+        g(Z) = \inf_x \L(x, Z) = \begin{cases*}
+            -\Tr(GZ) & if $\forall i\in\iset{1}{n},\:\Tr(G_iZ)+c_i=0$\\
+            -\infty & otherwise
+        \end{cases*}
+    \end{equation*}
+
+    The \textbf{Dual SDP} is therefore:
+    \begin{equation*}
+        \maximize_Z -\Tr(HZ) \subj \begin{cases}
+            Z\succcurlyeq 0\\
+            \forall i\in\iset{1}{n}, \: \Tr(G_i Z) + c_i = 0
+        \end{cases}
+    \end{equation*}
+    We have strong duality if the primal SDP is strictly feasible, that is that there exists some $x$ with $\sum_i x_iG_i\prec H$.
+\end{example}
