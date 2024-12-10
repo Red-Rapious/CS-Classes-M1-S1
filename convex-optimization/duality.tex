@@ -776,7 +776,40 @@ The optimization problem can be interpreted as a modeling of \say{water-filling}
     \caption{Interpretation of the problem as water-filling.}
 \end{figure}
 
-\subsection{Perturbations}
+\subsection{Perturbations and sensitivity analysis}
+Consider an (unperturbed) optimization problem:
+\begin{equation*}
+    \minimize_x f(x) \subj \begin{cases*}
+        \forall i\in\iset{1}{m}\: g_i(x)\leq0\\
+        \forall j\in\iset{1}{p}\: h_j(x)=0
+    \end{cases*}
+\end{equation*}
+and its dual:
+\begin{equation*}
+    \maximize g(\lambda, \nu) \subj \lambda\geq0
+\end{equation*}
+
+For parameters $u$ and $v$, we introduce the \emph{perturbed problem}:
+\begin{equation*}
+    \minimize_x f(x) \subj \begin{cases*}
+        \forall i\in\iset{1}{m}\: g_i(x)\leq u_i\\
+        \forall j\in\iset{1}{p}\: h_j(x)=v_i
+    \end{cases*}
+\end{equation*}
+and its dual:
+\begin{equation*}
+    \maximize g(\lambda, \nu) - u^\tp\lambda-v^\tp\nu \subj \lambda\geq0
+\end{equation*}
+The optimal value $p^*$ becomes a function of $u$ and $v$, such that $p^*(u,v)$ is the optimal value of the problem above. We are interested in information about $p^*(u,v)$ that we can obtain from the solution of the unperturbed problem and its dual.
+
+Assume that strond duality holds for the unperturbed problem, and let $(\lambda^*$, $\nu^*)$ be the dual optimal of the unperturbed problem. Applying weak duality to the perturbed problem results in:
+\begin{equation*}
+    p^*(u, v) \geq g(\lambda^*,\nu^*) - u^\tp\lambda^*-v^\tp\nu^* = p^*(0,0)-u^\tp\lambda^*-v^\tp\nu^*
+\end{equation*}
+This result is called \emph{global sensitivity}. Assuming that $p^*(u,v)$ is differentiable at $(0,0)$, we can also use \emph{local sensitivity}:
+\begin{equation*}
+    \lambda_i^* = -\partfrac{p^*}{u_i}(0,0) \quad\text{and}\quad \nu_i^* = -\partfrac{p^*}{v_i}(0,0)
+\end{equation*}
 
 \subsection{Reformulations}
 
