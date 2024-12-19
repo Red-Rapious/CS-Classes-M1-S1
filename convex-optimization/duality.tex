@@ -218,7 +218,7 @@ The maximizing argument $x_*$ gives support: $f(x_*)=s^\tp x_*-f^*(s)$. Furtherm
 \begin{property}
     The following inequality always holds:
     \begin{equation*}
-        f^**\leq f
+        f^{**}\leq f
     \end{equation*}
     with equality if and only if $f$ is closed and convex.
 \end{property}
@@ -510,7 +510,7 @@ We consider the following problem in standard form, called \emph{equality constr
 \end{equation*}
 The dual function of this problem is:
 \begin{equation*}
-    g(\nu)=\inf_x\left(\norm{x}-\nu^\tp Ax+b\tp\nu\right) = \begin{cases*}
+    g(\nu)=\inf_x\left(\norm{x}-\nu^\tp Ax+b^\tp\nu\right) = \begin{cases*}
         b^\tp\nu & if $\norm{A^\tp\nu}_*\leq1$\\
         -\infty & otherwise
     \end{cases*}
